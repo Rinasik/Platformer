@@ -1,4 +1,7 @@
 .vscode
 *.dSYM
 
+.DS_Store
+app
+
 deps
