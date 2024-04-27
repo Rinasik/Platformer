@@ -13,7 +13,7 @@ public:
 
     Exit(int ix, int iy, int mapNumber);
 
-    auto Run(std::vector<Entity *> neighbours) -> void;
+    auto Run(std::set<Entity *> neighbours) -> void;
     auto Draw() -> void;
 };
 
@@ -28,7 +28,7 @@ Exit::Exit(int ix, int iy, int mapNumber) : Entity{
     this->mapNumber = mapNumber;
 }
 
-auto Exit::Run(std::vector<Entity *> neighbours) -> void {}
+auto Exit::Run(std::set<Entity *> neighbours) -> void {}
 auto Exit::Draw() -> void {}
 auto Exit::collisionLeftDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void {}
 auto Exit::collisionRightDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void {}

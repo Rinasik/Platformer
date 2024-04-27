@@ -53,6 +53,8 @@ void Engine(int time)
 {
     auto bricks = machine.FindNearby(hero.GetShape());
 
+    auto tmp = machine;
+
     for (auto entity : entities)
     {
         entity->Run(bricks);
@@ -66,11 +68,16 @@ void Engine(int time)
         auto pattern = opt_pattern.value();
         machine.Clear();
 
+        CreateEntities(pattern.positions, entities);
+
         for (auto brick : pattern.bricks)
         {
             machine.AddObject(brick);
         }
-        CreateEntities(pattern.positions, entities);
+        for (auto entity : entities)
+        {
+            machine.AddObject(entity);
+        }
     }
 
     glutPostRedisplay();
@@ -98,9 +105,9 @@ int main(int argc, char **argv)
             {
                 machine.AddObject(brick);
             }
-            for (auto entitie : entities)
+            for (auto entity : entities)
             {
-                machine.AddObject(entitie);
+                machine.AddObject(entity);
             }
 
             for (auto position : pattern.positions)

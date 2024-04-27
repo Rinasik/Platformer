@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vector>
+#include <set>
 
 #include "utils.hpp"
 #include "constants.hpp"
@@ -18,7 +18,7 @@ protected:
     int _sizeY;
 
     auto windowBoundsCollision(double &virtualDeltaX, double &virtualDeltaY) -> void;
-    auto entitiesAndMapCollisionX(std::vector<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
+    auto entitiesAndMapCollisionX(std::set<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
 
     virtual auto collisionLeftDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void = 0;
     virtual auto collisionRightDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void = 0;
@@ -31,7 +31,7 @@ public:
 
     auto GetShape() -> Shape;
     virtual auto Draw() -> void = 0;
-    virtual auto Run(std::vector<Entity *> neighbours) -> void = 0;
+    virtual auto Run(std::set<Entity *> neighbours) -> void = 0;
 };
 
 Entity::Entity(int ix, int iy, int sizeX, int sizeY, MapEncoding type) : _x(multiply(ix, DELTA_X)), _y(multiply(HEIGHT - iy - 1, DELTA_Y)), _sizeX(sizeX), _sizeY(sizeY), type(type) {}
@@ -77,7 +77,7 @@ auto Entity::windowBoundsCollision(double &virtualDeltaX, double &virtualDeltaY)
     }
 }
 
-auto Entity::entitiesAndMapCollisionX(std::vector<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
+auto Entity::entitiesAndMapCollisionX(std::set<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
 {
     auto shape = GetShape();
 

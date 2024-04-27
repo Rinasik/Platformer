@@ -14,15 +14,15 @@
 class Machine
 {
 private:
-    std::unordered_map<int, std::set<Entity *>> dict;
-    std::unordered_map<Entity *, int> objects;
+    std::unordered_map<int, std::unordered_map<Entity *, int>> dict;
+    std::unordered_map<Entity *, std::vector<int>> objects;
 
     auto key(int x, int y) -> long long int;
 
 public:
     auto UpdatePosition(Entity *entity) -> void;
     auto AddObject(Entity *entity) -> void;
-    auto FindNearby(Shape shape) -> std::vector<Entity *>;
+    auto FindNearby(Shape shape) -> std::set<Entity *>;
     auto Clear() -> void;
 };
 
@@ -31,9 +31,9 @@ auto Machine::key(int x, int y) -> long long int
     return ((x + 1) * 73856093) ^ ((y + 1) * 19349663);
 }
 
-auto Machine::FindNearby(Shape shape) -> std::vector<Entity *>
+auto Machine::FindNearby(Shape shape) -> std::set<Entity *>
 {
-    auto result = std::vector<Entity *>();
+    auto result = std::set<Entity *>();
 
     int left_i = floor(shape.left / DELTA_X) + decimalPart(shape.left / DELTA_X);
     int right_i = ceil(shape.right / DELTA_X) - 1;
@@ -59,7 +59,7 @@ auto Machine::FindNearby(Shape shape) -> std::vector<Entity *>
             auto k = key(i, j);
             for (auto vector : dict[k])
             {
-                result.push_back(vector);
+                result.emplace(vector.first);
             }
         }
     }
@@ -85,26 +85,33 @@ auto Machine::AddObject(Entity *entity) -> void
 
             if (dict.find(k) == dict.end())
             {
-                dict.emplace(k, std::set<Entity *>());
+                dict.emplace(k, std::unordered_map<Entity *, int>());
             }
+            dict[k].emplace(entity, 1);
 
-            dict[k].insert(entity);
-            objects.emplace(entity, k);
+            if (objects.find(entity) == objects.end())
+            {
+                objects.emplace(entity, std::vector<int>());
+            }
+            objects[entity].push_back(k);
         }
     }
 }
 
 auto Machine::UpdatePosition(Entity *entity) -> void
 {
-    auto k = objects[entity];
+    auto ks = objects[entity];
 
+    for (auto k : ks)
+    {
+        dict[k].erase(entity);
+    }
     objects.erase(entity);
-    dict[k].erase(entity);
 
     AddObject(entity);
 }
 
 auto Machine::Clear() -> void
 {
-    dict = std::unordered_map<int, std::set<Entity *>>();
+    dict = std::unordered_map<int, std::unordered_map<Entity *, int>>();
 }

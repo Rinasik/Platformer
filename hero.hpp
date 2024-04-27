@@ -11,9 +11,9 @@ private:
     bool _alive = true;
     bool _isFalling = false;
 
-    auto computeCollision(std::vector<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
-    auto entitiesAndMapCollision(std::vector<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
-    auto entitiesAndMapCollisionY(std::vector<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
+    auto computeCollision(std::set<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
+    auto entitiesAndMapCollision(std::set<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
+    auto entitiesAndMapCollisionY(std::set<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
 
     auto collisionLeftDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void;
     auto collisionRightDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void;
@@ -26,7 +26,7 @@ public:
     Hero();
     Hero(int ix, int iy, int sizeX, int sizeY, int lives);
 
-    auto Run(std::vector<Entity *> neighbours) -> void;
+    auto Run(std::set<Entity *> neighbours) -> void;
     auto Draw() -> void;
     auto HandleClick(int key) -> void;
 };
@@ -84,7 +84,7 @@ auto Hero::HandleClick(int key) -> void
     }
 }
 
-auto Hero::Run(std::vector<Entity *> neighbours) -> void
+auto Hero::Run(std::set<Entity *> neighbours) -> void
 {
     if (!_alive)
     {
@@ -124,7 +124,7 @@ auto Hero::Run(std::vector<Entity *> neighbours) -> void
     _y += virtualDeltaY;
 }
 
-auto Hero::entitiesAndMapCollisionY(std::vector<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
+auto Hero::entitiesAndMapCollisionY(std::set<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
 {
     auto shape = GetShape();
     auto onPlatform = false;
@@ -140,12 +140,12 @@ auto Hero::entitiesAndMapCollisionY(std::vector<Entity *> neighbours, double &vi
         if (!(isEntireLeft || isEntireRight))
         {
             // Летит вниз
-            if (nShape.top <= (shape.bottom) && nShape.top >= (shape.bottom + virtualDeltaY))
+            if (virtualDeltaY <= 0 && nShape.top <= (shape.bottom) && nShape.top >= (shape.bottom + virtualDeltaY))
             {
                 collisionTopDetected(neighbour, nShape, virtualDeltaY);
             }
             // Летит вверх
-            else if ((nShape.bottom >= (shape.top)) && (nShape.bottom <= (shape.top + virtualDeltaY)))
+            else if (virtualDeltaY >= 0 && (nShape.bottom >= (shape.top)) && (nShape.bottom <= (shape.top + virtualDeltaY)))
             {
                 collisionBottomDetected(neighbour, nShape, virtualDeltaY);
             }
@@ -168,13 +168,13 @@ auto Hero::entitiesAndMapCollisionY(std::vector<Entity *> neighbours, double &vi
     }
 }
 
-auto Hero::entitiesAndMapCollision(std::vector<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
+auto Hero::entitiesAndMapCollision(std::set<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
 {
     entitiesAndMapCollisionX(neighbours, virtualDeltaX, virtualDeltaY);
     entitiesAndMapCollisionY(neighbours, virtualDeltaX, virtualDeltaY);
 }
 
-auto Hero::computeCollision(std::vector<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
+auto Hero::computeCollision(std::set<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
 {
     windowBoundsCollision(virtualDeltaX, virtualDeltaY);
     entitiesAndMapCollision(neighbours, virtualDeltaX, virtualDeltaY);
@@ -232,6 +232,12 @@ auto Hero::collisionTopDetected(Entity *neighbour, Shape nShape, double &virtual
     {
         Platform *platform = dynamic_cast<Platform *>(neighbour);
         _x += platform->lastDeltaX;
+        _y = nShape.top;
+
+        _isFalling = false;
+        _velY = 0;
+
+        virtualDeltaY = 0;
     }
 }
 

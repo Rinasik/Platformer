@@ -15,7 +15,7 @@ public:
     double lastDeltaX;
 
     auto Draw() -> void;
-    auto Run(std::vector<Entity *> neighbours) -> void;
+    auto Run(std::set<Entity *> neighbours) -> void;
 };
 
 Platform::Platform(int ix, int iy, int sizeX) : Entity{
@@ -28,7 +28,7 @@ Platform::Platform(int ix, int iy, int sizeX) : Entity{
     _velX = 0.0025f;
 }
 
-auto Platform::Run(std::vector<Entity *> neighbours) -> void
+auto Platform::Run(std::set<Entity *> neighbours) -> void
 {
     _x += _velX;
     lastDeltaX = _velX;
