@@ -15,6 +15,8 @@ private:
 
     auto collisionLeftDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void;
     auto collisionRightDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void;
+    auto collisionBottomDetected(Entity *neighbour, Shape nShape, double &virtualDeltaY) -> void;
+    auto collisionTopDetected(Entity *neighbour, Shape nShape, double &virtualDeltaY) -> void;
 
 public:
     int level = 0;
@@ -140,20 +142,12 @@ auto Hero::entitiesAndMapCollision(std::vector<Entity *> neighbours, double &vir
             // Летит вниз
             if (virtualDeltaY < 0 && nShape.top <= (shape.bottom) && nShape.top >= (shape.bottom + virtualDeltaY))
             {
-                _y = nShape.top;
-
-                _isFalling = false;
-                _velY = 0;
-
-                virtualDeltaY = 0;
+                collisionTopDetected(neighbour, nShape, virtualDeltaY);
             }
             // Летит вверх
             else if (virtualDeltaY > 0 && (nShape.bottom >= (shape.top)) && (nShape.bottom <= (shape.top + virtualDeltaY)))
             {
-                _y = nShape.bottom - _sizeY * DELTA_Y;
-
-                _velY = -_velY / 2;
-                virtualDeltaY = 0;
+                collisionBottomDetected(neighbour, nShape, virtualDeltaY);
             }
         }
         // На платформе платформы
@@ -204,6 +198,40 @@ auto Hero::collisionLeftDetected(Entity *neighbour, Shape nShape, double &virtua
 
         _velX = 0;
         virtualDeltaX = 0;
+    }
+    else if (neighbour->type == MapEncoding::Exit)
+    {
+        Exit *exit = dynamic_cast<Exit *>(neighbour);
+        level = exit->mapNumber;
+    }
+}
+
+auto Hero::collisionTopDetected(Entity *neighbour, Shape nShape, double &virtualDeltaY) -> void
+{
+    if (neighbour->type == MapEncoding::Brick)
+    {
+        _y = nShape.top;
+
+        _isFalling = false;
+        _velY = 0;
+
+        virtualDeltaY = 0;
+    }
+    else if (neighbour->type == MapEncoding::Exit)
+    {
+        Exit *exit = dynamic_cast<Exit *>(neighbour);
+        level = exit->mapNumber;
+    }
+}
+
+auto Hero::collisionBottomDetected(Entity *neighbour, Shape nShape, double &virtualDeltaY) -> void
+{
+    if (neighbour->type == MapEncoding::Brick)
+    {
+        _y = nShape.bottom - _sizeY * DELTA_Y;
+
+        _velY = -_velY / 2;
+        virtualDeltaY = 0;
     }
     else if (neighbour->type == MapEncoding::Exit)
     {
