@@ -12,6 +12,7 @@ private:
 
     auto computeCollision(std::vector<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
     auto entitiesAndMapCollision(std::vector<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
+    auto entitiesAndMapCollisionY(std::vector<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
 
     auto collisionLeftDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void;
     auto collisionRightDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void;
@@ -122,12 +123,10 @@ auto Hero::Run(std::vector<Entity *> neighbours) -> void
     _y += virtualDeltaY;
 }
 
-auto Hero::entitiesAndMapCollision(std::vector<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
+auto Hero::entitiesAndMapCollisionY(std::vector<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
 {
     auto shape = GetShape();
     auto onPlatform = false;
-
-    entitiesAndMapCollisionX(neighbours, virtualDeltaX, virtualDeltaY);
 
     for (auto neighbour : neighbours)
     {
@@ -166,6 +165,12 @@ auto Hero::entitiesAndMapCollision(std::vector<Entity *> neighbours, double &vir
     {
         _isFalling = false;
     }
+}
+
+auto Hero::entitiesAndMapCollision(std::vector<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
+{
+    entitiesAndMapCollisionX(neighbours, virtualDeltaX, virtualDeltaY);
+    entitiesAndMapCollisionY(neighbours, virtualDeltaX, virtualDeltaY);
 }
 
 auto Hero::computeCollision(std::vector<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
