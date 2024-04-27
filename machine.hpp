@@ -3,20 +3,24 @@
 #include <cmath>
 #include <unordered_map>
 #include <vector>
+#include <set>
 #include <cmath>
 
 #include "utils.hpp"
 #include "entity.hpp"
 #include "constants.hpp"
 
+// Spatial Hashing
 class Machine
 {
 private:
-    std::unordered_map<int, std::vector<Entity *>> dict;
+    std::unordered_map<int, std::set<Entity *>> dict;
+    std::unordered_map<Entity *, int> objects;
 
     auto key(int x, int y) -> long long int;
 
 public:
+    auto UpdatePosition(Entity *entity) -> void;
     auto AddObject(Entity *entity) -> void;
     auto FindNearby(Shape shape) -> std::vector<Entity *>;
     auto Clear() -> void;
@@ -81,15 +85,26 @@ auto Machine::AddObject(Entity *entity) -> void
 
             if (dict.find(k) == dict.end())
             {
-                dict.emplace(k, std::vector<Entity *>());
+                dict.emplace(k, std::set<Entity *>());
             }
 
-            dict[k].push_back(entity);
+            dict[k].insert(entity);
+            objects.emplace(entity, k);
         }
     }
 }
 
+auto Machine::UpdatePosition(Entity *entity) -> void
+{
+    auto k = objects[entity];
+
+    objects.erase(entity);
+    dict[k].erase(entity);
+
+    AddObject(entity);
+}
+
 auto Machine::Clear() -> void
 {
-    dict = std::unordered_map<int, std::vector<Entity *>>();
+    dict = std::unordered_map<int, std::set<Entity *>>();
 }

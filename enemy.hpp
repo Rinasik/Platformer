@@ -68,15 +68,9 @@ auto Enemy::mapCollision(std::vector<MapEncoding> mapPattern) -> void
 {
 }
 
-void CreateEnemies(std::vector<EntityPosition> positions, std::vector<Enemy *> &enemies)
+void CreateEnemie(Position position, std::vector<Entity *> &entities)
 {
-    for (auto position : positions)
-    {
-        if (position.entityType != MapEncoding::Hero)
-        {
-            enemies.push_back(new Enemy(position.position.ix, position.position.iy, 1, 1, 2));
-        }
-    }
+    entities.push_back(new Enemy(position.ix, position.iy, 1, 1, 2));
 }
 
 auto Enemy::collisionLeftDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void {}

@@ -7,13 +7,29 @@
 #include "constants.hpp"
 #include "enemy.hpp"
 #include "hero.hpp"
+#include "platform.hpp"
 #include "machine.hpp"
 
 auto map = Map(WIDTH, HEIGHT, "./resources");
 auto machine = Machine();
 
 Hero hero;
-std::vector<Enemy *> enemies;
+std::vector<Entity *> entities;
+
+void CreateEntities(std::vector<EntityPosition> positions, std::vector<Entity *> &entities)
+{
+    for (auto position : positions)
+    {
+        if (position.entityType == MapEncoding::Enemy)
+        {
+            CreateEnemie(position.position, entities);
+        }
+        else if (position.entityType == MapEncoding::Platform)
+        {
+            CreatePlatforms(position.position, entities);
+        }
+    }
+}
 
 void drawCb()
 {
@@ -23,7 +39,7 @@ void drawCb()
 
     map.Draw();
     // Drawing entities
-    for (auto enemy : enemies)
+    for (auto enemy : entities)
     {
         enemy->Draw();
     }
@@ -37,9 +53,10 @@ void Engine(int time)
 {
     auto bricks = machine.FindNearby(hero.GetShape());
 
-    for (auto enemy : enemies)
+    for (auto entity : entities)
     {
-        // enemy->Run(bricks);
+        entity->Run(bricks);
+        machine.UpdatePosition(entity);
     }
     hero.Run(bricks);
 
@@ -53,7 +70,7 @@ void Engine(int time)
         {
             machine.AddObject(brick);
         }
-        CreateEnemies(pattern.positions, enemies);
+        CreateEntities(pattern.positions, entities);
     }
 
     glutPostRedisplay();
@@ -75,12 +92,16 @@ int main(int argc, char **argv)
         {
             auto pattern = opt_pattern.value();
 
+            CreateEntities(pattern.positions, entities);
+
             for (auto brick : pattern.bricks)
             {
                 machine.AddObject(brick);
             }
-
-            CreateEnemies(pattern.positions, enemies);
+            for (auto entitie : entities)
+            {
+                machine.AddObject(entitie);
+            }
 
             for (auto position : pattern.positions)
             {

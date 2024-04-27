@@ -1,6 +1,7 @@
 #pragma once
 
 #include "entity.hpp"
+#include "platform.hpp"
 #include <GL/glut.h>
 
 class Hero : virtual public Entity
@@ -136,15 +137,15 @@ auto Hero::entitiesAndMapCollisionY(std::vector<Entity *> neighbours, double &vi
         auto isEntireLeft = ((nShape.left - (shape.right + virtualDeltaX)) >= -250 * EPSILON) && ((nShape.left - (shape.left + virtualDeltaX)) >= -250 * EPSILON);
         auto isEntireRight = ((shape.left + virtualDeltaX - nShape.right) >= -250 * EPSILON) && ((shape.right + virtualDeltaX - nShape.right) >= -250 * EPSILON);
 
-        if (_isFalling && !(isEntireLeft || isEntireRight))
+        if (!(isEntireLeft || isEntireRight))
         {
             // Летит вниз
-            if (virtualDeltaY < 0 && nShape.top <= (shape.bottom) && nShape.top >= (shape.bottom + virtualDeltaY))
+            if (nShape.top <= (shape.bottom) && nShape.top >= (shape.bottom + virtualDeltaY))
             {
                 collisionTopDetected(neighbour, nShape, virtualDeltaY);
             }
             // Летит вверх
-            else if (virtualDeltaY > 0 && (nShape.bottom >= (shape.top)) && (nShape.bottom <= (shape.top + virtualDeltaY)))
+            else if ((nShape.bottom >= (shape.top)) && (nShape.bottom <= (shape.top + virtualDeltaY)))
             {
                 collisionBottomDetected(neighbour, nShape, virtualDeltaY);
             }
@@ -181,7 +182,7 @@ auto Hero::computeCollision(std::vector<Entity *> neighbours, double &virtualDel
 
 auto Hero::collisionRightDetected(Entity *neighbour, Shape nShape, double &virtualDeltaX) -> void
 {
-    if (neighbour->type == MapEncoding::Brick)
+    if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform)
     {
         _x = nShape.left - _sizeX * DELTA_X;
 
@@ -197,7 +198,7 @@ auto Hero::collisionRightDetected(Entity *neighbour, Shape nShape, double &virtu
 
 auto Hero::collisionLeftDetected(Entity *neighbour, Shape nShape, double &virtualDeltaX) -> void
 {
-    if (neighbour->type == MapEncoding::Brick)
+    if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform)
     {
         _x = nShape.right;
 
@@ -227,11 +228,16 @@ auto Hero::collisionTopDetected(Entity *neighbour, Shape nShape, double &virtual
         Exit *exit = dynamic_cast<Exit *>(neighbour);
         level = exit->mapNumber;
     }
+    else if (neighbour->type == MapEncoding::Platform)
+    {
+        Platform *platform = dynamic_cast<Platform *>(neighbour);
+        _x += platform->lastDeltaX;
+    }
 }
 
 auto Hero::collisionBottomDetected(Entity *neighbour, Shape nShape, double &virtualDeltaY) -> void
 {
-    if (neighbour->type == MapEncoding::Brick)
+    if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform)
     {
         _y = nShape.bottom - _sizeY * DELTA_Y;
 

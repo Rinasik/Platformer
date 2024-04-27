@@ -93,6 +93,13 @@ auto Map::InitDraw(int newMap) -> std::optional<Pattern>
         {
             positions.push_back(EntityPosition{MapEncoding::Enemy, Position{i % _width, i / _width}});
         }
+        else if (point == 4)
+        {
+            positions.push_back(EntityPosition{MapEncoding::Platform, Position{i % _width, i / _width}});
+            mapPattern.push_back(MapEncoding::Empty);
+
+            i++;
+        }
     }
 
     _currentMap = mapPattern;

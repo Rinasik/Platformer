@@ -28,5 +28,6 @@ enum class MapEncoding
     Brick = 1,
     Hero = 2,
     Enemy = 3,
+    Platform = 4,
     Exit = -1
 };
