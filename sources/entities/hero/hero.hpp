@@ -1,6 +1,7 @@
 #pragma once
 
 #include <GL/glut.h>
+
 #include "../entity/entity.hpp"
 #include "../platform/platform.hpp"
 #include "../exit/exit.hpp"
@@ -32,7 +33,8 @@ public:
 
     auto Run(std::set<Object *> neighbours) -> void;
     auto Draw() -> void;
-    auto HandleClick(int key) -> void;
+    auto HandleClickDown(int key) -> void;
+    auto HandleClickUp(int key) -> void;
 };
 
 Hero::Hero(){};
@@ -99,7 +101,7 @@ auto Hero::Draw() -> void
     }
 }
 
-auto Hero::HandleClick(int key) -> void
+auto Hero::HandleClickDown(int key) -> void
 {
     switch (key)
     {
@@ -117,6 +119,21 @@ auto Hero::HandleClick(int key) -> void
             _velY += DELTA_Y_VELOCITY;
             _isFalling = true;
         }
+        break;
+    case GLUT_KEY_DOWN:
+        _sizeY = 0.5;
+        break;
+    default:
+        break;
+    }
+}
+
+auto Hero::HandleClickUp(int key) -> void
+{
+    switch (key)
+    {
+    case GLUT_KEY_DOWN:
+        _sizeY = 1;
         break;
     default:
         break;
@@ -233,7 +250,7 @@ auto Hero::collisionRightDetected(Object *neighbour, Shape nShape, double &virtu
         Exit *exit = dynamic_cast<Exit *>(neighbour);
         level = exit->mapNumber;
     }
-    else if (!_isInvisible && neighbour->type == MapEncoding::Magma)
+    else if (neighbour->type == MapEncoding::Magma)
     {
         _lives = 0;
     }
@@ -257,7 +274,7 @@ auto Hero::collisionLeftDetected(Object *neighbour, Shape nShape, double &virtua
         Exit *exit = dynamic_cast<Exit *>(neighbour);
         level = exit->mapNumber;
     }
-    else if (!_isInvisible && neighbour->type == MapEncoding::Magma)
+    else if (neighbour->type == MapEncoding::Magma)
     {
         _lives = 0;
     }
@@ -294,7 +311,7 @@ auto Hero::collisionBottomDetected(Object *neighbour, Shape nShape, double &virt
 
         virtualDeltaY = 0;
     }
-    else if (!_isInvisible && neighbour->type == MapEncoding::Magma)
+    else if (neighbour->type == MapEncoding::Magma)
     {
         _lives = 0;
     }
@@ -318,7 +335,7 @@ auto Hero::collisionTopDetected(Object *neighbour, Shape nShape, double &virtual
         Exit *exit = dynamic_cast<Exit *>(neighbour);
         level = exit->mapNumber;
     }
-    else if (!_isInvisible && neighbour->type == MapEncoding::Magma)
+    else if (neighbour->type == MapEncoding::Magma)
     {
         _lives = 0;
     }

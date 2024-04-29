@@ -73,30 +73,28 @@ auto Engine::UpdateState(Hero &hero, std::vector<Entity *> &entities) -> void
 
 auto Engine::InitState(Hero &hero, std::vector<Entity *> &entities) -> void
 {
+    entities = std::vector<Entity *>();
+    _machine.Clear();
 
-    auto opt_pattern = _map.InitDraw(0);
+    auto opt_pattern = _map.InitDraw(-1);
+    auto pattern = opt_pattern.value();
 
-    if (opt_pattern.has_value())
+    createEntities(pattern.positions, entities);
+
+    for (auto brick : pattern.bricks)
     {
-        auto pattern = opt_pattern.value();
+        _machine.AddObject(brick);
+    }
+    for (auto entity : entities)
+    {
+        _machine.AddObject(entity);
+    }
 
-        createEntities(pattern.positions, entities);
-
-        for (auto brick : pattern.bricks)
+    for (auto position : pattern.positions)
+    {
+        if (position.entityType == MapEncoding::Hero)
         {
-            _machine.AddObject(brick);
-        }
-        for (auto entity : entities)
-        {
-            _machine.AddObject(entity);
-        }
-
-        for (auto position : pattern.positions)
-        {
-            if (position.entityType == MapEncoding::Hero)
-            {
-                hero = Hero(position.position.ix, position.position.iy, 1, 1, HERO_MAX_LIVES);
-            }
+            hero = Hero(position.position.ix, position.position.iy, 1, 1, HERO_MAX_LIVES);
         }
     }
 }

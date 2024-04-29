@@ -16,7 +16,7 @@
 
 namespace fs = std::filesystem;
 
-struct Pattern
+struct MapPattern
 {
     std::vector<EntityPosition> positions;
     std::vector<Object *> bricks;
@@ -38,7 +38,7 @@ private:
 public:
     Map(int width, int height, const std::string &path);
 
-    auto InitDraw(int newMap) -> std::optional<Pattern>;
+    auto InitDraw(int newMap) -> std::optional<MapPattern>;
     auto Draw() -> void;
 };
 
@@ -50,12 +50,17 @@ Map::Map(int width, int height, const std::string &path)
     parseMaps(path);
 }
 
-auto Map::InitDraw(int newMap) -> std::optional<Pattern>
+auto Map::InitDraw(int newMap) -> std::optional<MapPattern>
 {
-    if (newMap == _currentMapIndex)
+    if (newMap != -1 && newMap == _currentMapIndex)
     {
         return std::nullopt;
     }
+    if (newMap == -1)
+    {
+        newMap = 0;
+    }
+
     _currentMapIndex = newMap;
 
     auto map = _maps[newMap];
@@ -114,7 +119,7 @@ auto Map::InitDraw(int newMap) -> std::optional<Pattern>
 
     _currentMap = mapPattern;
 
-    return Pattern{positions, bricks};
+    return MapPattern{positions, bricks};
 }
 
 auto Map::Draw() -> void

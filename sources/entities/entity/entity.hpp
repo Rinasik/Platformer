@@ -26,8 +26,8 @@ public:
 
 Entity::Entity(int ix, int iy, int sizeX, int sizeY, MapEncoding type) : Object{ix,
                                                                                 iy,
-                                                                                sizeX,
-                                                                                sizeY,
+                                                                                (double)sizeX,
+                                                                                (double)sizeY,
                                                                                 type} {}
 
 auto Entity::windowBoundsCollision(double &virtualDeltaX, double &virtualDeltaY) -> void

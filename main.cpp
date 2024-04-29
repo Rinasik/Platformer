@@ -35,10 +35,24 @@ void EngineCb(int time)
     glutTimerFunc(1000 / FRAME_FREQUENCY, EngineCb, 0);
 }
 
-void specialKey(int key, int x, int y)
+void specialKeyDown(int key, int x, int y)
 {
-    hero.HandleClick(key);
+    hero.HandleClickDown(key);
     glutPostRedisplay();
+}
+
+void specialKeyUp(int key, int x, int y)
+{
+    hero.HandleClickUp(key);
+    glutPostRedisplay();
+}
+
+void handleKey(unsigned char key, int x, int y)
+{
+    if (key == 'q')
+    {
+        engine.InitState(hero, entities);
+    }
 }
 
 int main(int argc, char **argv)
@@ -50,7 +64,11 @@ int main(int argc, char **argv)
 
     glutTimerFunc(1000 / FRAME_FREQUENCY, EngineCb, 0);
 
-    window.RegisterSpecialKeyboardCb(specialKey);
+    window.RegisterSpecialKeyboardDownCb(specialKeyDown);
+    window.RegisterSpecialKeyboardUpCb(specialKeyUp);
+
+    window.RegisterKeyboardCb(handleKey);
+
     window.Draw(drawCb);
 
     return 0;

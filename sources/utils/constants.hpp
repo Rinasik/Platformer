@@ -13,17 +13,17 @@ constexpr int SCREEN_HEIGHT = 800;
 constexpr double DELTA_X = 2.0 / WIDTH;
 constexpr double DELTA_Y = 2.0 / HEIGHT;
 
-constexpr double MAX_X_VELOCITY = 0.25;
+constexpr double MAX_X_VELOCITY = 0.3;
 constexpr double MAX_Y_VELOCITY = 0.6;
 
-constexpr double DELTA_X_VELOCITY = 0.0015;
+constexpr double DELTA_X_VELOCITY = 0.002;
 constexpr double X_ACC = 0.00025;
 
 constexpr double DELTA_Y_VELOCITY = 0.52;
 constexpr double Y_ACC = 0.04;
 
 constexpr int HERO_MAX_LIVES = 3;
-constexpr int INVISIBLE_TICKS_COUNT = 150;
+constexpr int INVISIBLE_TICKS_COUNT = 74;
 
 enum class MapEncoding
 {

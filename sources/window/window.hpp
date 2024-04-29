@@ -17,7 +17,8 @@ public:
     auto Init(int argc, char **argv) -> void;
     auto Draw(void (*callback)()) -> void;
     auto RegisterKeyboardCb(void (*callback)(unsigned char key, int x, int y)) -> void;
-    auto RegisterSpecialKeyboardCb(void (*callback)(int key, int x, int y)) -> void;
+    auto RegisterSpecialKeyboardDownCb(void (*callback)(int key, int x, int y)) -> void;
+    auto RegisterSpecialKeyboardUpCb(void (*callback)(int key, int x, int y)) -> void;
 };
 
 Window::Window(int width, int height) : _width(width), _height(height), _x_pos(0), _y_pos(0) {}
@@ -43,7 +44,12 @@ auto Window::RegisterKeyboardCb(void (*callback)(unsigned char key, int x, int y
     glutKeyboardFunc(callback);
 }
 
-auto Window::RegisterSpecialKeyboardCb(void (*callback)(int key, int x, int y)) -> void
+auto Window::RegisterSpecialKeyboardDownCb(void (*callback)(int key, int x, int y)) -> void
 {
     glutSpecialFunc(callback);
+}
+
+auto Window::RegisterSpecialKeyboardUpCb(void (*callback)(int key, int x, int y)) -> void
+{
+    glutSpecialUpFunc(callback);
 }
