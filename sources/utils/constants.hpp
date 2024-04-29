@@ -23,6 +23,7 @@ const double DELTA_Y_VELOCITY = 0.52;
 const double Y_ACC = 0.04;
 
 const int HERO_MAX_LIVES = 3;
+const int INVISIBLE_TICKS_COUNT = 150;
 
 enum class MapEncoding
 {

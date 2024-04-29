@@ -10,6 +10,8 @@ class Hero : virtual public Entity
 private:
     int _lives;
     bool _isFalling = false;
+    bool _isInvisible = false;
+    int _invisibleCounter = 0;
 
     auto computeCollision(std::set<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
     auto entitiesAndMapCollision(std::set<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
@@ -19,6 +21,8 @@ private:
     auto collisionRightDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void;
     auto collisionBottomDetected(Entity *neighbour, Shape nShape, double &virtualDeltaY) -> void;
     auto collisionTopDetected(Entity *neighbour, Shape nShape, double &virtualDeltaY) -> void;
+
+    auto getDamage() -> void;
 
 public:
     int level = 0;
@@ -71,16 +75,28 @@ auto Hero::Draw() -> void
         return;
     }
 
-    glColor3f(0.0f, 0.0f, 1.0f);
+    if (!_isInvisible || _invisibleCounter % 2)
+    {
+        glColor3f(0.0f, 0.0f, 1.0f);
 
-    glBegin(GL_QUADS);
+        glBegin(GL_QUADS);
 
-    glVertex2f(_x - 1.f, _y - 1.f);
-    glVertex2f(_x - 1.f, _y + DELTA_Y * _sizeY - 1.f);
-    glVertex2f(_x + DELTA_X * _sizeX - 1.f, _y + DELTA_Y * _sizeY - 1.f);
-    glVertex2f(_x + DELTA_X * _sizeX - 1.f, _y - 1.f);
+        glVertex2f(_x - 1.f, _y - 1.f);
+        glVertex2f(_x - 1.f, _y + DELTA_Y * _sizeY - 1.f);
+        glVertex2f(_x + DELTA_X * _sizeX - 1.f, _y + DELTA_Y * _sizeY - 1.f);
+        glVertex2f(_x + DELTA_X * _sizeX - 1.f, _y - 1.f);
 
-    glEnd();
+        glEnd();
+    }
+    if (_isInvisible)
+    {
+        _invisibleCounter++;
+        if (_invisibleCounter == INVISIBLE_TICKS_COUNT)
+        {
+            _invisibleCounter = 0;
+            _isInvisible = false;
+        }
+    }
 }
 
 auto Hero::HandleClick(int key) -> void
@@ -217,6 +233,10 @@ auto Hero::collisionRightDetected(Entity *neighbour, Shape nShape, double &virtu
         Exit *exit = dynamic_cast<Exit *>(neighbour);
         level = exit->mapNumber;
     }
+    else if (!_isInvisible && neighbour->type == MapEncoding::Magma)
+    {
+        _lives = 0;
+    }
 }
 
 auto Hero::collisionLeftDetected(Entity *neighbour, Shape nShape, double &virtualDeltaX) -> void
@@ -232,6 +252,10 @@ auto Hero::collisionLeftDetected(Entity *neighbour, Shape nShape, double &virtua
     {
         Exit *exit = dynamic_cast<Exit *>(neighbour);
         level = exit->mapNumber;
+    }
+    else if (!_isInvisible && neighbour->type == MapEncoding::Magma)
+    {
+        _lives = 0;
     }
 }
 
@@ -262,7 +286,7 @@ auto Hero::collisionTopDetected(Entity *neighbour, Shape nShape, double &virtual
 
         virtualDeltaY = 0;
     }
-    else if (neighbour->type == MapEncoding::Magma)
+    else if (!_isInvisible && neighbour->type == MapEncoding::Magma)
     {
         _lives = 0;
     }
@@ -282,4 +306,15 @@ auto Hero::collisionBottomDetected(Entity *neighbour, Shape nShape, double &virt
         Exit *exit = dynamic_cast<Exit *>(neighbour);
         level = exit->mapNumber;
     }
+    else if (!_isInvisible && neighbour->type == MapEncoding::Magma)
+    {
+        _lives = 0;
+    }
+}
+
+auto Hero::getDamage() -> void
+{
+    _velY = 0.4;
+    _lives -= 1;
+    _isInvisible = true;
 }
