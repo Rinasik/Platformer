@@ -22,7 +22,7 @@ private:
     auto collisionBottomDetected(Object *neighbour, Shape nShape, double &virtualDeltaY) -> void;
     auto collisionTopDetected(Object *neighbour, Shape nShape, double &virtualDeltaY) -> void;
 
-    auto getDamage() -> void;
+    auto getDamage(Direction direction) -> void;
 
 public:
     int level = 0;
@@ -181,12 +181,12 @@ auto Hero::entitiesAndMapCollisionY(std::set<Object *> neighbours, double &virtu
             // Летит вниз
             if (virtualDeltaY <= 0 && nShape.top <= (shape.bottom) && nShape.top >= (shape.bottom + virtualDeltaY))
             {
-                collisionTopDetected(neighbour, nShape, virtualDeltaY);
+                collisionBottomDetected(neighbour, nShape, virtualDeltaY);
             }
             // Летит вверх
             else if (virtualDeltaY >= 0 && (nShape.bottom >= (shape.top)) && (nShape.bottom <= (shape.top + virtualDeltaY)))
             {
-                collisionBottomDetected(neighbour, nShape, virtualDeltaY);
+                collisionTopDetected(neighbour, nShape, virtualDeltaY);
             }
         }
         // На платформе платформы
@@ -237,6 +237,10 @@ auto Hero::collisionRightDetected(Object *neighbour, Shape nShape, double &virtu
     {
         _lives = 0;
     }
+    else if (!_isInvisible && neighbour->type == MapEncoding::Enemy)
+    {
+        getDamage(Direction::Left);
+    }
 }
 
 auto Hero::collisionLeftDetected(Object *neighbour, Shape nShape, double &virtualDeltaX) -> void
@@ -257,9 +261,13 @@ auto Hero::collisionLeftDetected(Object *neighbour, Shape nShape, double &virtua
     {
         _lives = 0;
     }
+    else if (!_isInvisible && neighbour->type == MapEncoding::Enemy)
+    {
+        getDamage(Direction::Right);
+    }
 }
 
-auto Hero::collisionTopDetected(Object *neighbour, Shape nShape, double &virtualDeltaY) -> void
+auto Hero::collisionBottomDetected(Object *neighbour, Shape nShape, double &virtualDeltaY) -> void
 {
     if (neighbour->type == MapEncoding::Brick)
     {
@@ -290,9 +298,13 @@ auto Hero::collisionTopDetected(Object *neighbour, Shape nShape, double &virtual
     {
         _lives = 0;
     }
+    else if (!_isInvisible && neighbour->type == MapEncoding::Enemy)
+    {
+        getDamage(Direction::Up);
+    }
 }
 
-auto Hero::collisionBottomDetected(Object *neighbour, Shape nShape, double &virtualDeltaY) -> void
+auto Hero::collisionTopDetected(Object *neighbour, Shape nShape, double &virtualDeltaY) -> void
 {
     if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform)
     {
@@ -312,9 +324,19 @@ auto Hero::collisionBottomDetected(Object *neighbour, Shape nShape, double &virt
     }
 }
 
-auto Hero::getDamage() -> void
+// Direction - направление куда отскачило
+auto Hero::getDamage(Direction direction) -> void
 {
     _velY = 0.4;
     _lives -= 1;
     _isInvisible = true;
+
+    if (direction == Direction::Left)
+    {
+        _velX = -0.008f;
+    }
+    else if (direction == Direction::Right)
+    {
+        _velX = 0.008f;
+    }
 }

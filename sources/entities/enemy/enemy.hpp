@@ -10,7 +10,6 @@ private:
     double _velY = 0;
 
     int _lives;
-    bool _alive = true;
 
     auto mapCollision(std::set<MapEncoding> mapPattern) -> void;
 
@@ -20,7 +19,6 @@ private:
 public:
     Enemy(int ix, int iy, int sizeX, int sizeY, int lives);
 
-    auto GetShape() -> Shape;
     auto Run(std::set<Object *> neighbours) -> void;
     auto Draw() -> void;
 };
@@ -29,7 +27,6 @@ void CreateEnemie(Position position, std::vector<Entity *> &entities)
 {
     entities.push_back(new Enemy(position.ix, position.iy, 1, 1, 2));
 }
-
 
 Enemy::Enemy(int ix, int iy, int sizeX, int sizeY, int lives) : Entity{
                                                                     ix,
@@ -43,12 +40,12 @@ Enemy::Enemy(int ix, int iy, int sizeX, int sizeY, int lives) : Entity{
 
 auto Enemy::Draw() -> void
 {
-    if (!_alive)
+    if (!_lives)
     {
         return;
     }
 
-    glColor3f(1.0f, 0.0f, 0.0f);
+    glColor3f(0.87f, 0.0f, 0.32f);
 
     glBegin(GL_QUADS);
 
@@ -62,10 +59,12 @@ auto Enemy::Draw() -> void
 
 auto Enemy::Run(std::set<Object *> neighbours) -> void
 {
-    if (!_alive)
+    if (!_lives)
     {
         return;
     }
+
+    _x += _velX;
 }
 
 auto Enemy::mapCollision(std::set<MapEncoding> mapPattern) -> void

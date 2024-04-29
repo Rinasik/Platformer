@@ -36,3 +36,9 @@ enum class MapEncoding
     Magma = -1,
 };
 
+enum class Direction
+{
+    Up = 0,
+    Left = 1,
+    Right = 2
+};
