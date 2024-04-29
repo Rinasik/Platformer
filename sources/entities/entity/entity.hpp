@@ -2,8 +2,8 @@
 
 #include <set>
 
-#include "utils.hpp"
-#include "constants.hpp"
+#include "../../utils/constants.hpp"
+#include "../../utils/utils.hpp"
 
 class Entity
 {
@@ -18,7 +18,7 @@ protected:
     int _sizeY;
 
     auto windowBoundsCollision(double &virtualDeltaX, double &virtualDeltaY) -> void;
-    auto entitiesAndMapCollisionX(std::set<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
+    auto entitiesAndMapCollisionX(std::set<Entity *> neighbours, double &virtualDeltaX) -> void;
 
     virtual auto collisionLeftDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void = 0;
     virtual auto collisionRightDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void = 0;
@@ -77,7 +77,7 @@ auto Entity::windowBoundsCollision(double &virtualDeltaX, double &virtualDeltaY)
     }
 }
 
-auto Entity::entitiesAndMapCollisionX(std::set<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
+auto Entity::entitiesAndMapCollisionX(std::set<Entity *> neighbours, double &virtualDeltaX) -> void
 {
     auto shape = GetShape();
 

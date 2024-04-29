@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Gl/glut.h>
-#include "entity.hpp"
+#include "../entity/entity.hpp"
 
 class Platform : virtual public Entity
 {
@@ -18,6 +18,11 @@ public:
     auto Run(std::set<Entity *> neighbours) -> void;
 };
 
+void CreatePlatforms(Position position, std::vector<Entity *> &entities)
+{
+    entities.push_back(new Platform(position.ix, position.iy, 2));
+}
+
 Platform::Platform(int ix, int iy, int sizeX) : Entity{
                                                     ix,
                                                     iy,
@@ -30,8 +35,11 @@ Platform::Platform(int ix, int iy, int sizeX) : Entity{
 
 auto Platform::Run(std::set<Entity *> neighbours) -> void
 {
-    _x += _velX;
-    lastDeltaX = _velX;
+    auto deltaX = _velX;
+    entitiesAndMapCollisionX(neighbours, deltaX);
+
+    _x += deltaX;
+    lastDeltaX = deltaX;
 }
 
 auto Platform::Draw() -> void
@@ -48,10 +56,19 @@ auto Platform::Draw() -> void
     glEnd();
 }
 
-void CreatePlatforms(Position position, std::vector<Entity *> &entities)
+auto Platform::collisionLeftDetected(Entity *neighbour, Shape nShape, double &virtualDeltaX) -> void
 {
-    entities.push_back(new Platform(position.ix, position.iy, 2));
+    if (neighbour->type == MapEncoding::Brick)
+    {
+        _velX = -_velX;
+        virtualDeltaX = 0;
+    }
 }
-
-auto Platform::collisionLeftDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void {}
-auto Platform::collisionRightDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void {}
+auto Platform::collisionRightDetected(Entity *neighbour, Shape nShape, double &virtualDeltaX) -> void
+{
+    if (neighbour->type == MapEncoding::Brick)
+    {
+        _velX = -_velX;
+        virtualDeltaX = 0;
+    }
+}

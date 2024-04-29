@@ -7,11 +7,11 @@
 #include <fstream>
 #include <optional>
 
-#include "constants.hpp"
-#include "entity.hpp"
-#include "utils.hpp"
-#include "brick.hpp"
-#include "exit.hpp"
+#include "../entities/entity/entity.hpp"
+#include "../entities/brick/brick.hpp"
+#include "../entities/exit/exit.hpp"
+#include "../utils/constants.hpp"
+#include "../utils/utils.hpp"
 
 namespace fs = std::filesystem;
 

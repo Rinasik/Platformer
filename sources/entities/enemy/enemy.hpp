@@ -1,9 +1,7 @@
 #pragma once
 
-#include "entity.hpp"
-#include "utils.hpp"
-#include "constants.hpp"
 #include <GL/glut.h>
+#include "../entity/entity.hpp"
 
 class Enemy : virtual public Entity
 {
@@ -26,6 +24,12 @@ public:
     auto Run(std::set<Entity *> neighbours) -> void;
     auto Draw() -> void;
 };
+
+void CreateEnemie(Position position, std::vector<Entity *> &entities)
+{
+    entities.push_back(new Enemy(position.ix, position.iy, 1, 1, 2));
+}
+
 
 Enemy::Enemy(int ix, int iy, int sizeX, int sizeY, int lives) : Entity{
                                                                     ix,
@@ -66,11 +70,6 @@ auto Enemy::Run(std::set<Entity *> neighbours) -> void
 
 auto Enemy::mapCollision(std::set<MapEncoding> mapPattern) -> void
 {
-}
-
-void CreateEnemie(Position position, std::vector<Entity *> &entities)
-{
-    entities.push_back(new Enemy(position.ix, position.iy, 1, 1, 2));
 }
 
 auto Enemy::collisionLeftDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void {}

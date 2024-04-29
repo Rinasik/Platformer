@@ -2,34 +2,19 @@
 #include <math.h>
 #include <fstream>
 
-#include "window.hpp"
-#include "map.hpp"
-#include "constants.hpp"
-#include "enemy.hpp"
-#include "hero.hpp"
-#include "platform.hpp"
-#include "machine.hpp"
+#include "sources/window/window.hpp"
+#include "sources/map/map.hpp"
+#include "sources/utils/constants.hpp"
+#include "sources/entities/enemy/enemy.hpp"
+#include "sources/entities/hero/hero.hpp"
+#include "sources/entities/platform/platform.hpp"
+#include "sources/machine/machine.hpp"
+#include "sources/engine/engine.hpp"
 
-auto map = Map(WIDTH, HEIGHT, "./resources");
-auto machine = Machine();
+auto engine = Engine("./resources");
 
 Hero hero;
 std::vector<Entity *> entities;
-
-void CreateEntities(std::vector<EntityPosition> positions, std::vector<Entity *> &entities)
-{
-    for (auto position : positions)
-    {
-        if (position.entityType == MapEncoding::Enemy)
-        {
-            CreateEnemie(position.position, entities);
-        }
-        else if (position.entityType == MapEncoding::Platform)
-        {
-            CreatePlatforms(position.position, entities);
-        }
-    }
-}
 
 void drawCb()
 {
@@ -37,51 +22,17 @@ void drawCb()
     glClearColor(1, 1, 1, 1);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    map.Draw();
-    // Drawing entities
-    for (auto enemy : entities)
-    {
-        enemy->Draw();
-    }
-
-    hero.Draw();
+    engine.Draw(hero, entities);
 
     glutSwapBuffers();
 }
 
-void Engine(int time)
+void EngineCb(int time)
 {
-    auto bricks = machine.FindNearby(hero.GetShape());
-
-    auto tmp = machine;
-
-    for (auto entity : entities)
-    {
-        entity->Run(bricks);
-        machine.UpdatePosition(entity);
-    }
-    hero.Run(bricks);
-
-    auto opt_pattern = map.InitDraw(hero.level);
-    if (opt_pattern.has_value())
-    {
-        auto pattern = opt_pattern.value();
-        machine.Clear();
-
-        CreateEntities(pattern.positions, entities);
-
-        for (auto brick : pattern.bricks)
-        {
-            machine.AddObject(brick);
-        }
-        for (auto entity : entities)
-        {
-            machine.AddObject(entity);
-        }
-    }
+    engine.UpdateState(hero, entities);
 
     glutPostRedisplay();
-    glutTimerFunc(1000 / FRAME_FREQUENCY, Engine, 0);
+    glutTimerFunc(1000 / FRAME_FREQUENCY, EngineCb, 0);
 }
 
 void specialKey(int key, int x, int y)
@@ -92,38 +43,12 @@ void specialKey(int key, int x, int y)
 
 int main(int argc, char **argv)
 {
-    {
-        auto opt_pattern = map.InitDraw(0);
-
-        if (opt_pattern.has_value())
-        {
-            auto pattern = opt_pattern.value();
-
-            CreateEntities(pattern.positions, entities);
-
-            for (auto brick : pattern.bricks)
-            {
-                machine.AddObject(brick);
-            }
-            for (auto entity : entities)
-            {
-                machine.AddObject(entity);
-            }
-
-            for (auto position : pattern.positions)
-            {
-                if (position.entityType == MapEncoding::Hero)
-                {
-                    hero = Hero(position.position.ix, position.position.iy, 1, 1, 3);
-                }
-            }
-        }
-    }
+    engine.InitState(hero, entities);
 
     auto window = Window(SCREEN_WIDTH, SCREEN_HEIGHT);
     window.Init(argc, argv);
 
-    glutTimerFunc(1000 / FRAME_FREQUENCY, Engine, 0);
+    glutTimerFunc(1000 / FRAME_FREQUENCY, EngineCb, 0);
 
     window.RegisterSpecialKeyboardCb(specialKey);
     window.Draw(drawCb);

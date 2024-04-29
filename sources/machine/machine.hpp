@@ -6,9 +6,9 @@
 #include <set>
 #include <cmath>
 
-#include "utils.hpp"
-#include "entity.hpp"
-#include "constants.hpp"
+#include "../utils/utils.hpp"
+#include "../utils/constants.hpp"
+#include "../entities/entity/entity.hpp"
 
 // Spatial Hashing
 class Machine

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "entity.hpp"
+#include "../entity/entity.hpp"
 
 class Brick : virtual public Entity
 {
@@ -14,6 +14,7 @@ public:
     auto Run(std::set<Entity *> neighbours) -> void;
     auto Draw() -> void;
 };
+
 
 Brick::Brick(int ix, int iy) : Entity{
                                    ix,

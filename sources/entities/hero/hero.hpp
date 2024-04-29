@@ -1,8 +1,9 @@
 #pragma once
 
-#include "entity.hpp"
-#include "platform.hpp"
 #include <GL/glut.h>
+#include "../entity/entity.hpp"
+#include "../platform/platform.hpp"
+#include "../exit/exit.hpp"
 
 class Hero : virtual public Entity
 {
@@ -30,6 +31,7 @@ public:
     auto Draw() -> void;
     auto HandleClick(int key) -> void;
 };
+
 
 Hero::Hero(){};
 Hero::Hero(int ix, int iy, int sizeX, int sizeY, int lives) : Entity{
@@ -170,7 +172,7 @@ auto Hero::entitiesAndMapCollisionY(std::set<Entity *> neighbours, double &virtu
 
 auto Hero::entitiesAndMapCollision(std::set<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
 {
-    entitiesAndMapCollisionX(neighbours, virtualDeltaX, virtualDeltaY);
+    entitiesAndMapCollisionX(neighbours, virtualDeltaX);
     entitiesAndMapCollisionY(neighbours, virtualDeltaX, virtualDeltaY);
 }
 
