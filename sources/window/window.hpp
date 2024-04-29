@@ -29,7 +29,7 @@ auto Window::Init(int argc, char **argv) -> void
     glutInitWindowSize(_width, _height);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 
-    descriptor = glutCreateWindow("Window");
+    descriptor = glutCreateWindow("Platformer");
 }
 
 auto Window::Draw(void (*callback)()) -> void
