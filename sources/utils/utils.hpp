@@ -2,15 +2,6 @@
 
 #include <vector>
 #include <cmath>
-#include "constants.hpp"
-
-struct Shape
-{
-    double top;
-    double bottom;
-    double left;
-    double right;
-};
 
 inline double multiply(double x, double y)
 {
@@ -50,14 +41,3 @@ inline int Sign(double x)
     return 0;
 }
 
-struct Position
-{
-    int ix;
-    int iy;
-};
-
-struct EntityPosition
-{
-    MapEncoding entityType;
-    Position position;
-};

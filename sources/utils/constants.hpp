@@ -35,3 +35,4 @@ enum class MapEncoding
     Exit = 100,
     Magma = -1,
 };
+

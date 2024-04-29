@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Gl/glut.h>
+#include <GL/glut.h>
 #include "../entity/entity.hpp"
 
 class Platform : virtual public Entity
