@@ -9,7 +9,6 @@ class Hero : virtual public Entity
 {
 private:
     int _lives;
-    bool _alive = true;
     bool _isFalling = false;
 
     auto computeCollision(std::set<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
@@ -32,7 +31,6 @@ public:
     auto HandleClick(int key) -> void;
 };
 
-
 Hero::Hero(){};
 Hero::Hero(int ix, int iy, int sizeX, int sizeY, int lives) : Entity{
                                                                   ix,
@@ -46,10 +44,33 @@ Hero::Hero(int ix, int iy, int sizeX, int sizeY, int lives) : Entity{
 
 auto Hero::Draw() -> void
 {
-    if (!_alive)
+    // Отрисовка жизней
+    for (int i = 0; i < HERO_MAX_LIVES; ++i)
+    {
+        if (_lives > i)
+        {
+            glColor3f(1.0f, 0.0f, 0.0f);
+        }
+        else
+        {
+            glColor3f(0.5f, 0.5f, 0.5f);
+        }
+
+        glBegin(GL_QUADS);
+
+        glVertex2f(DELTA_X * (2 * i + 0.2) / 2 - 1.f, -DELTA_Y * (0.2) / 2 + 1.f);
+        glVertex2f(DELTA_X * (2 * i + 1.2) / 2 - 1.f, -DELTA_Y * (0.2) / 2 + 1.f);
+        glVertex2f(DELTA_X * (2 * i + 1.2) / 2 - 1.f, -DELTA_Y * (1.2) / 2 + 1.f);
+        glVertex2f(DELTA_X * (2 * i + 0.2) / 2 - 1.f, -DELTA_Y * (1.2) / 2 + 1.f);
+
+        glEnd();
+    }
+
+    if (!_lives)
     {
         return;
     }
+
     glColor3f(0.0f, 0.0f, 1.0f);
 
     glBegin(GL_QUADS);
@@ -88,7 +109,7 @@ auto Hero::HandleClick(int key) -> void
 
 auto Hero::Run(std::set<Entity *> neighbours) -> void
 {
-    if (!_alive)
+    if (!_lives)
     {
         return;
     }
@@ -240,6 +261,10 @@ auto Hero::collisionTopDetected(Entity *neighbour, Shape nShape, double &virtual
         _velY = 0;
 
         virtualDeltaY = 0;
+    }
+    else if (neighbour->type == MapEncoding::Magma)
+    {
+        _lives = 0;
     }
 }
 

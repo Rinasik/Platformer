@@ -22,6 +22,8 @@ const double X_ACC = 0.00025;
 const double DELTA_Y_VELOCITY = 0.52;
 const double Y_ACC = 0.04;
 
+const int HERO_MAX_LIVES = 3;
+
 enum class MapEncoding
 {
     Empty = 0,
@@ -29,5 +31,6 @@ enum class MapEncoding
     Hero = 2,
     Enemy = 3,
     Platform = 4,
-    Exit = -1
+    Exit = 100,
+    Magma = -1,
 };

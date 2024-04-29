@@ -95,7 +95,7 @@ auto Engine::InitState(Hero &hero, std::vector<Entity *> &entities) -> void
         {
             if (position.entityType == MapEncoding::Hero)
             {
-                hero = Hero(position.position.ix, position.position.iy, 1, 1, 3);
+                hero = Hero(position.position.ix, position.position.iy, 1, 1, HERO_MAX_LIVES);
             }
         }
     }

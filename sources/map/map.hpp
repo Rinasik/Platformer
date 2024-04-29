@@ -10,6 +10,7 @@
 #include "../entities/entity/entity.hpp"
 #include "../entities/brick/brick.hpp"
 #include "../entities/exit/exit.hpp"
+#include "../entities/magma/magma.hpp"
 #include "../utils/constants.hpp"
 #include "../utils/utils.hpp"
 
@@ -66,7 +67,15 @@ auto Map::InitDraw(int newMap) -> std::optional<Pattern>
     for (int i = 0; i < map.size(); ++i)
     {
         auto point = map[i];
-        if (point == 1)
+
+        if (point == -1)
+        {
+            mapPattern.push_back(MapEncoding::Magma);
+            Entity *magma = new Magma(i % _width, i / _width);
+
+            bricks.push_back(magma);
+        }
+        else if (point == 1)
         {
             mapPattern.push_back(MapEncoding::Brick);
             Entity *brick = new Brick(i % _width, i / _width);
@@ -85,6 +94,7 @@ auto Map::InitDraw(int newMap) -> std::optional<Pattern>
             mapPattern.push_back(MapEncoding::Empty);
         }
 
+        // Заполнение живых сущностей
         if (point == 2)
         {
             positions.push_back(EntityPosition{MapEncoding::Hero, Position{i % _width, i / _width}});
@@ -119,6 +129,7 @@ auto Map::Draw() -> void
             {
                 continue;
             }
+
             if (block == MapEncoding::Brick)
             {
                 glColor3f(0.1f, 0.1f, 0.1f);
@@ -126,6 +137,10 @@ auto Map::Draw() -> void
             else if (block == MapEncoding::Exit)
             {
                 glColor3f(1.0f, 1.0f, 0);
+            }
+            else if (block == MapEncoding::Magma)
+            {
+                glColor3f(1.0f, 0.65f, 0);
             }
             glBegin(GL_QUADS);
 
@@ -141,7 +156,7 @@ auto Map::Draw() -> void
 
 auto Map::parseMaps(const std::string &path) -> void
 {
-    for (const auto &entry : fs::directory_iterator("./resources"))
+    for (const auto &entry : fs::directory_iterator(path))
     {
         auto stream = std::ifstream(entry.path());
 
