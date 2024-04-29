@@ -14,14 +14,14 @@ private:
 
     auto mapCollision(std::set<MapEncoding> mapPattern) -> void;
 
-    auto collisionLeftDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void;
-    auto collisionRightDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void;
+    auto collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
+    auto collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
 
 public:
     Enemy(int ix, int iy, int sizeX, int sizeY, int lives);
 
     auto GetShape() -> Shape;
-    auto Run(std::set<Entity *> neighbours) -> void;
+    auto Run(std::set<Object *> neighbours) -> void;
     auto Draw() -> void;
 };
 
@@ -60,7 +60,7 @@ auto Enemy::Draw() -> void
     glEnd();
 }
 
-auto Enemy::Run(std::set<Entity *> neighbours) -> void
+auto Enemy::Run(std::set<Object *> neighbours) -> void
 {
     if (!_alive)
     {
@@ -72,5 +72,5 @@ auto Enemy::mapCollision(std::set<MapEncoding> mapPattern) -> void
 {
 }
 
-auto Enemy::collisionLeftDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void {}
-auto Enemy::collisionRightDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void {}
+auto Enemy::collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void {}
+auto Enemy::collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void {}

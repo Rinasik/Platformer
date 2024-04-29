@@ -13,14 +13,14 @@ private:
     bool _isInvisible = false;
     int _invisibleCounter = 0;
 
-    auto computeCollision(std::set<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
-    auto entitiesAndMapCollision(std::set<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
-    auto entitiesAndMapCollisionY(std::set<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
+    auto computeCollision(std::set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
+    auto entitiesAndMapCollision(std::set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
+    auto entitiesAndMapCollisionY(std::set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
 
-    auto collisionLeftDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void;
-    auto collisionRightDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void;
-    auto collisionBottomDetected(Entity *neighbour, Shape nShape, double &virtualDeltaY) -> void;
-    auto collisionTopDetected(Entity *neighbour, Shape nShape, double &virtualDeltaY) -> void;
+    auto collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
+    auto collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
+    auto collisionBottomDetected(Object *neighbour, Shape nShape, double &virtualDeltaY) -> void;
+    auto collisionTopDetected(Object *neighbour, Shape nShape, double &virtualDeltaY) -> void;
 
     auto getDamage() -> void;
 
@@ -30,7 +30,7 @@ public:
     Hero();
     Hero(int ix, int iy, int sizeX, int sizeY, int lives);
 
-    auto Run(std::set<Entity *> neighbours) -> void;
+    auto Run(std::set<Object *> neighbours) -> void;
     auto Draw() -> void;
     auto HandleClick(int key) -> void;
 };
@@ -62,10 +62,10 @@ auto Hero::Draw() -> void
 
         glBegin(GL_QUADS);
 
-        glVertex2f(DELTA_X * (2 * i + 0.2) / 2 - 1.f, -DELTA_Y * (0.2) / 2 + 1.f);
-        glVertex2f(DELTA_X * (2 * i + 1.2) / 2 - 1.f, -DELTA_Y * (0.2) / 2 + 1.f);
-        glVertex2f(DELTA_X * (2 * i + 1.2) / 2 - 1.f, -DELTA_Y * (1.2) / 2 + 1.f);
-        glVertex2f(DELTA_X * (2 * i + 0.2) / 2 - 1.f, -DELTA_Y * (1.2) / 2 + 1.f);
+        glVertex2f(DELTA_X * (1.2 * i + 0.2) / 2 - 1.f, -DELTA_Y * (0.2) / 2 + 1.f);
+        glVertex2f(DELTA_X * (1.2 * i + 1.2) / 2 - 1.f, -DELTA_Y * (0.2) / 2 + 1.f);
+        glVertex2f(DELTA_X * (1.2 * i + 1.2) / 2 - 1.f, -DELTA_Y * (1.2) / 2 + 1.f);
+        glVertex2f(DELTA_X * (1.2 * i + 0.2) / 2 - 1.f, -DELTA_Y * (1.2) / 2 + 1.f);
 
         glEnd();
     }
@@ -123,7 +123,7 @@ auto Hero::HandleClick(int key) -> void
     }
 }
 
-auto Hero::Run(std::set<Entity *> neighbours) -> void
+auto Hero::Run(std::set<Object *> neighbours) -> void
 {
     if (!_lives)
     {
@@ -163,7 +163,7 @@ auto Hero::Run(std::set<Entity *> neighbours) -> void
     _y += virtualDeltaY;
 }
 
-auto Hero::entitiesAndMapCollisionY(std::set<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
+auto Hero::entitiesAndMapCollisionY(std::set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
 {
     auto shape = GetShape();
     auto onPlatform = false;
@@ -207,19 +207,19 @@ auto Hero::entitiesAndMapCollisionY(std::set<Entity *> neighbours, double &virtu
     }
 }
 
-auto Hero::entitiesAndMapCollision(std::set<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
+auto Hero::entitiesAndMapCollision(std::set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
 {
-    entitiesAndMapCollisionX(neighbours, virtualDeltaX);
+    objectsCollisionX(neighbours, virtualDeltaX);
     entitiesAndMapCollisionY(neighbours, virtualDeltaX, virtualDeltaY);
 }
 
-auto Hero::computeCollision(std::set<Entity *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
+auto Hero::computeCollision(std::set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
 {
     windowBoundsCollision(virtualDeltaX, virtualDeltaY);
     entitiesAndMapCollision(neighbours, virtualDeltaX, virtualDeltaY);
 }
 
-auto Hero::collisionRightDetected(Entity *neighbour, Shape nShape, double &virtualDeltaX) -> void
+auto Hero::collisionRightDetected(Object *neighbour, Shape nShape, double &virtualDeltaX) -> void
 {
     if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform)
     {
@@ -239,7 +239,7 @@ auto Hero::collisionRightDetected(Entity *neighbour, Shape nShape, double &virtu
     }
 }
 
-auto Hero::collisionLeftDetected(Entity *neighbour, Shape nShape, double &virtualDeltaX) -> void
+auto Hero::collisionLeftDetected(Object *neighbour, Shape nShape, double &virtualDeltaX) -> void
 {
     if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform)
     {
@@ -259,7 +259,7 @@ auto Hero::collisionLeftDetected(Entity *neighbour, Shape nShape, double &virtua
     }
 }
 
-auto Hero::collisionTopDetected(Entity *neighbour, Shape nShape, double &virtualDeltaY) -> void
+auto Hero::collisionTopDetected(Object *neighbour, Shape nShape, double &virtualDeltaY) -> void
 {
     if (neighbour->type == MapEncoding::Brick)
     {
@@ -292,7 +292,7 @@ auto Hero::collisionTopDetected(Entity *neighbour, Shape nShape, double &virtual
     }
 }
 
-auto Hero::collisionBottomDetected(Entity *neighbour, Shape nShape, double &virtualDeltaY) -> void
+auto Hero::collisionBottomDetected(Object *neighbour, Shape nShape, double &virtualDeltaY) -> void
 {
     if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform)
     {

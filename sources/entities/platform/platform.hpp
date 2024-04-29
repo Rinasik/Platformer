@@ -6,8 +6,8 @@
 class Platform : virtual public Entity
 {
 private:
-    auto collisionLeftDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void;
-    auto collisionRightDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void;
+    auto collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
+    auto collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
 
 public:
     Platform(int ix, int iy, int sizeX);
@@ -15,7 +15,7 @@ public:
     double lastDeltaX;
 
     auto Draw() -> void;
-    auto Run(std::set<Entity *> neighbours) -> void;
+    auto Run(std::set<Object *> neighbours) -> void;
 };
 
 void CreatePlatforms(Position position, std::vector<Entity *> &entities)
@@ -33,10 +33,10 @@ Platform::Platform(int ix, int iy, int sizeX) : Entity{
     _velX = 0.0025f;
 }
 
-auto Platform::Run(std::set<Entity *> neighbours) -> void
+auto Platform::Run(std::set<Object *> neighbours) -> void
 {
     auto deltaX = _velX;
-    entitiesAndMapCollisionX(neighbours, deltaX);
+    objectsCollisionX(neighbours, deltaX);
 
     _x += deltaX;
     lastDeltaX = deltaX;
@@ -56,7 +56,7 @@ auto Platform::Draw() -> void
     glEnd();
 }
 
-auto Platform::collisionLeftDetected(Entity *neighbour, Shape nShape, double &virtualDeltaX) -> void
+auto Platform::collisionLeftDetected(Object *neighbour, Shape nShape, double &virtualDeltaX) -> void
 {
     if (neighbour->type == MapEncoding::Brick)
     {
@@ -64,7 +64,7 @@ auto Platform::collisionLeftDetected(Entity *neighbour, Shape nShape, double &vi
         virtualDeltaX = 0;
     }
 }
-auto Platform::collisionRightDetected(Entity *neighbour, Shape nShape, double &virtualDeltaX) -> void
+auto Platform::collisionRightDetected(Object *neighbour, Shape nShape, double &virtualDeltaX) -> void
 {
     if (neighbour->type == MapEncoding::Brick)
     {

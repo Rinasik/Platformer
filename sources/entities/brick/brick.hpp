@@ -1,22 +1,14 @@
 #pragma once
 
-#include "../entity/entity.hpp"
+#include "../object/object.hpp"
 
-class Brick : virtual public Entity
+class Brick : virtual public Object
 {
-private:
-    auto collisionLeftDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void;
-    auto collisionRightDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void;
-
 public:
     Brick(int ix, int iy);
-
-    auto Run(std::set<Entity *> neighbours) -> void;
-    auto Draw() -> void;
 };
 
-
-Brick::Brick(int ix, int iy) : Entity{
+Brick::Brick(int ix, int iy) : Object{
                                    ix,
                                    iy,
                                    1,
@@ -24,8 +16,3 @@ Brick::Brick(int ix, int iy) : Entity{
                                    MapEncoding::Brick}
 {
 }
-
-auto Brick::Run(std::set<Entity *> neighbours) -> void {}
-auto Brick::Draw() -> void {}
-auto Brick::collisionLeftDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void {}
-auto Brick::collisionRightDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void {}

@@ -2,44 +2,33 @@
 
 #include <set>
 
-#include "../../utils/constants.hpp"
-#include "../../utils/utils.hpp"
+#include "../object/object.hpp"
 
-class Entity
+class Entity : public Object
 {
 protected:
-    double _x = 0;
-    double _y = 0;
-
     double _velX = 0;
     double _velY = 0;
 
-    int _sizeX;
-    int _sizeY;
-
     auto windowBoundsCollision(double &virtualDeltaX, double &virtualDeltaY) -> void;
-    auto entitiesAndMapCollisionX(std::set<Entity *> neighbours, double &virtualDeltaX) -> void;
+    auto objectsCollisionX(std::set<Object *> neighbours, double &virtualDeltaX) -> void;
 
-    virtual auto collisionLeftDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void = 0;
-    virtual auto collisionRightDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void = 0;
+    virtual auto collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void = 0;
+    virtual auto collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void = 0;
 
 public:
-    MapEncoding type;
-
     Entity(){};
     Entity(int ix, int iy, int sizeX, int sizeY, MapEncoding type);
 
-    auto GetShape() -> Shape;
     virtual auto Draw() -> void = 0;
-    virtual auto Run(std::set<Entity *> neighbours) -> void = 0;
+    virtual auto Run(std::set<Object *> neighbours) -> void = 0;
 };
 
-Entity::Entity(int ix, int iy, int sizeX, int sizeY, MapEncoding type) : _x(multiply(ix, DELTA_X)), _y(multiply(HEIGHT - iy - 1, DELTA_Y)), _sizeX(sizeX), _sizeY(sizeY), type(type) {}
-
-inline auto Entity::GetShape() -> Shape
-{
-    return Shape{add(multiply(_sizeY, DELTA_Y), _y), _y, _x, add(multiply((_sizeX), DELTA_X), _x)};
-}
+Entity::Entity(int ix, int iy, int sizeX, int sizeY, MapEncoding type) : Object{ix,
+                                                                                iy,
+                                                                                sizeX,
+                                                                                sizeY,
+                                                                                type} {}
 
 auto Entity::windowBoundsCollision(double &virtualDeltaX, double &virtualDeltaY) -> void
 {
@@ -77,7 +66,7 @@ auto Entity::windowBoundsCollision(double &virtualDeltaX, double &virtualDeltaY)
     }
 }
 
-auto Entity::entitiesAndMapCollisionX(std::set<Entity *> neighbours, double &virtualDeltaX) -> void
+auto Entity::objectsCollisionX(std::set<Object *> neighbours, double &virtualDeltaX) -> void
 {
     auto shape = GetShape();
 

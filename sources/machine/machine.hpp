@@ -8,21 +8,21 @@
 
 #include "../utils/utils.hpp"
 #include "../utils/constants.hpp"
-#include "../entities/entity/entity.hpp"
+#include "../entities/object/object.hpp"
 
 // Spatial Hashing
 class Machine
 {
 private:
-    std::unordered_map<int, std::unordered_map<Entity *, int>> dict;
-    std::unordered_map<Entity *, std::vector<int>> objects;
+    std::unordered_map<int, std::unordered_map<Object *, int>> dict;
+    std::unordered_map<Object *, std::vector<int>> objects;
 
     auto key(int x, int y) -> long long int;
 
 public:
-    auto UpdatePosition(Entity *entity) -> void;
-    auto AddObject(Entity *entity) -> void;
-    auto FindNearby(Shape shape) -> std::set<Entity *>;
+    auto UpdatePosition(Object *object) -> void;
+    auto AddObject(Object *object) -> void;
+    auto FindNearby(Shape shape) -> std::set<Object *>;
     auto Clear() -> void;
 };
 
@@ -31,9 +31,9 @@ auto Machine::key(int x, int y) -> long long int
     return ((x + 1) * 73856093) ^ ((y + 1) * 19349663);
 }
 
-auto Machine::FindNearby(Shape shape) -> std::set<Entity *>
+auto Machine::FindNearby(Shape shape) -> std::set<Object *>
 {
-    auto result = std::set<Entity *>();
+    auto result = std::set<Object *>();
 
     int left_i = floor(shape.left / DELTA_X) + decimalPart(shape.left / DELTA_X);
     int right_i = ceil(shape.right / DELTA_X) - 1;
@@ -66,9 +66,9 @@ auto Machine::FindNearby(Shape shape) -> std::set<Entity *>
     return result;
 }
 
-auto Machine::AddObject(Entity *entity) -> void
+auto Machine::AddObject(Object *object) -> void
 {
-    auto shape = entity->GetShape();
+    auto shape = object->GetShape();
 
     int left_i = floor(shape.left / DELTA_X) + decimalPart(shape.left / DELTA_X);
     int right_i = ceil(shape.right / DELTA_X) - 1;
@@ -85,33 +85,33 @@ auto Machine::AddObject(Entity *entity) -> void
 
             if (dict.find(k) == dict.end())
             {
-                dict.emplace(k, std::unordered_map<Entity *, int>());
+                dict.emplace(k, std::unordered_map<Object *, int>());
             }
-            dict[k].emplace(entity, 1);
+            dict[k].emplace(object, 1);
 
-            if (objects.find(entity) == objects.end())
+            if (objects.find(object) == objects.end())
             {
-                objects.emplace(entity, std::vector<int>());
+                objects.emplace(object, std::vector<int>());
             }
-            objects[entity].push_back(k);
+            objects[object].push_back(k);
         }
     }
 }
 
-auto Machine::UpdatePosition(Entity *entity) -> void
+auto Machine::UpdatePosition(Object *object) -> void
 {
-    auto ks = objects[entity];
+    auto ks = objects[object];
 
     for (auto k : ks)
     {
-        dict[k].erase(entity);
+        dict[k].erase(object);
     }
-    objects.erase(entity);
+    objects.erase(object);
 
-    AddObject(entity);
+    AddObject(object);
 }
 
 auto Machine::Clear() -> void
 {
-    dict = std::unordered_map<int, std::unordered_map<Entity *, int>>();
+    dict = std::unordered_map<int, std::unordered_map<Object *, int>>();
 }

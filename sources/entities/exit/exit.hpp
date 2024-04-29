@@ -1,23 +1,16 @@
 #pragma once
 
-#include "../entity/entity.hpp"
+#include "../object/object.hpp"
 
-class Exit : virtual public Entity
+class Exit : virtual public Object
 {
-private:
-    auto collisionLeftDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void;
-    auto collisionRightDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void;
-
 public:
     int mapNumber;
 
     Exit(int ix, int iy, int mapNumber);
-
-    auto Run(std::set<Entity *> neighbours) -> void;
-    auto Draw() -> void;
 };
 
-Exit::Exit(int ix, int iy, int mapNumber) : Entity{
+Exit::Exit(int ix, int iy, int mapNumber) : Object{
                                                 ix,
                                                 iy,
                                                 1,
@@ -27,8 +20,3 @@ Exit::Exit(int ix, int iy, int mapNumber) : Entity{
 {
     this->mapNumber = mapNumber;
 }
-
-auto Exit::Run(std::set<Entity *> neighbours) -> void {}
-auto Exit::Draw() -> void {}
-auto Exit::collisionLeftDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void {}
-auto Exit::collisionRightDetected(Entity *neighbour, Shape nshape, double &virtualDeltaX) -> void {}

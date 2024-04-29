@@ -7,7 +7,7 @@
 #include <fstream>
 #include <optional>
 
-#include "../entities/entity/entity.hpp"
+#include "../entities/object/object.hpp"
 #include "../entities/brick/brick.hpp"
 #include "../entities/exit/exit.hpp"
 #include "../entities/magma/magma.hpp"
@@ -19,7 +19,7 @@ namespace fs = std::filesystem;
 struct Pattern
 {
     std::vector<EntityPosition> positions;
-    std::vector<Entity *> bricks;
+    std::vector<Object *> bricks;
 };
 
 class Map
@@ -61,7 +61,7 @@ auto Map::InitDraw(int newMap) -> std::optional<Pattern>
     auto map = _maps[newMap];
     std::vector<MapEncoding> mapPattern;
 
-    std::vector<Entity *> bricks;
+    std::vector<Object *> bricks;
     std::vector<EntityPosition> positions;
 
     for (int i = 0; i < map.size(); ++i)
@@ -71,21 +71,21 @@ auto Map::InitDraw(int newMap) -> std::optional<Pattern>
         if (point == -1)
         {
             mapPattern.push_back(MapEncoding::Magma);
-            Entity *magma = new Magma(i % _width, i / _width);
+            Object *magma = new Magma(i % _width, i / _width);
 
             bricks.push_back(magma);
         }
         else if (point == 1)
         {
             mapPattern.push_back(MapEncoding::Brick);
-            Entity *brick = new Brick(i % _width, i / _width);
+            Object *brick = new Brick(i % _width, i / _width);
 
             bricks.push_back(brick);
         }
         else if (point >= 100)
         {
             mapPattern.push_back(MapEncoding::Exit);
-            Entity *exit = new Exit(i % _width, i / _width, point - 101);
+            Object *exit = new Exit(i % _width, i / _width, point - 101);
 
             bricks.push_back(exit);
         }
