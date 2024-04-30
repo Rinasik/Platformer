@@ -5,6 +5,7 @@
 #include "../entity/entity.hpp"
 #include "../platform/platform.hpp"
 #include "../exit/exit.hpp"
+#include "../../texture/texture.hpp"
 
 class Hero : virtual public Entity
 {
@@ -13,6 +14,8 @@ private:
     bool _isFalling = false;
     bool _isInvisible = false;
     int _invisibleCounter = 0;
+
+    Texture _heart;
 
     auto computeCollision(std::set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
     auto entitiesAndMapCollision(std::set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
@@ -46,30 +49,39 @@ Hero::Hero(int ix, int iy, int sizeX, int sizeY, int lives) : Entity{
                                                                   MapEncoding::Hero},
                                                               _lives(lives)
 {
+    _heart = Texture("images/Heart.png", true);
 }
 
+// auto Hero::Draw(unsigned int textId = 0) -> void
 auto Hero::Draw() -> void
 {
     // Отрисовка жизней
-    for (int i = 0; i < HERO_MAX_LIVES; ++i)
+    for (int i = 0; i < _lives; ++i)
     {
-        if (_lives > i)
-        {
-            glColor3f(1.0f, 0.0f, 0.0f);
-        }
-        else
-        {
-            glColor3f(0.5f, 0.5f, 0.5f);
-        }
+        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+        glBindTexture(GL_TEXTURE_2D, _heart.GetTexture());
+        glEnable(GL_TEXTURE_2D);
+
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
         glBegin(GL_QUADS);
 
+        glTexCoord2f(0, 1);
         glVertex2f(DELTA_X * (1.2 * i + 0.2) / 2 - 1.f, -DELTA_Y * (0.2) / 2 + 1.f);
-        glVertex2f(DELTA_X * (1.2 * i + 1.2) / 2 - 1.f, -DELTA_Y * (0.2) / 2 + 1.f);
-        glVertex2f(DELTA_X * (1.2 * i + 1.2) / 2 - 1.f, -DELTA_Y * (1.2) / 2 + 1.f);
+
+        glTexCoord2f(0, 0);
         glVertex2f(DELTA_X * (1.2 * i + 0.2) / 2 - 1.f, -DELTA_Y * (1.2) / 2 + 1.f);
 
+        glTexCoord2f(1, 0);
+        glVertex2f(DELTA_X * (1.2 * i + 1.2) / 2 - 1.f, -DELTA_Y * (1.2) / 2 + 1.f);
+
+        glTexCoord2f(1, 1);
+        glVertex2f(DELTA_X * (1.2 * i + 1.2) / 2 - 1.f, -DELTA_Y * (0.2) / 2 + 1.f);
+
         glEnd();
+
+        glDisable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
 
     if (!_lives)
@@ -79,7 +91,7 @@ auto Hero::Draw() -> void
 
     if (!_isInvisible || _invisibleCounter % 2)
     {
-        glColor3f(0.0f, 0.0f, 1.0f);
+        glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
 
         glBegin(GL_QUADS);
 
@@ -189,7 +201,7 @@ auto Hero::entitiesAndMapCollisionY(std::set<Object *> neighbours, double &virtu
     {
         auto nShape = neighbour->GetShape();
 
-        // Летит
+        // Вне платформы
         auto isEntireLeft = ((nShape.left - (shape.right + virtualDeltaX)) >= -250 * EPSILON) && ((nShape.left - (shape.left + virtualDeltaX)) >= -250 * EPSILON);
         auto isEntireRight = ((shape.left + virtualDeltaX - nShape.right) >= -250 * EPSILON) && ((shape.right + virtualDeltaX - nShape.right) >= -250 * EPSILON);
 
@@ -206,8 +218,9 @@ auto Hero::entitiesAndMapCollisionY(std::set<Object *> neighbours, double &virtu
                 collisionTopDetected(neighbour, nShape, virtualDeltaY);
             }
         }
-        // На платформе платформы
-        if (!(isEntireLeft || isEntireRight) && !_isFalling)
+        auto isBelowThanTop = abs(nShape.bottom - shape.top) <= EPSILON;
+        // На платформе(не за платформой && не падает && не под платформой)
+        if (!(isEntireLeft || isEntireRight) && !_isFalling && !isBelowThanTop)
         {
             onPlatform = true;
         }

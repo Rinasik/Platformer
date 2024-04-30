@@ -31,6 +31,8 @@ auto Window::Init(int argc, char **argv) -> void
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 
     descriptor = glutCreateWindow("Platformer");
+
+    glEnable(GL_BLEND);
 }
 
 auto Window::Draw(void (*callback)()) -> void

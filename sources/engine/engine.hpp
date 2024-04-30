@@ -19,6 +19,7 @@ private:
     auto createEntities(std::vector<EntityPosition> positions, std::vector<Entity *> &entities) -> void;
 
 public:
+    Engine(){};
     Engine(std::string path) : _map(Map(WIDTH, HEIGHT, path)), _machine(Machine()){};
 
     auto InitState(Hero &hero, std::vector<Entity *> &entities) -> void;

@@ -45,7 +45,7 @@ auto Enemy::Draw() -> void
         return;
     }
 
-    glColor3f(0.87f, 0.0f, 0.32f);
+    glColor4f(0.87f, 0.0f, 0.32f, 1);
 
     glBegin(GL_QUADS);
 

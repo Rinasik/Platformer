@@ -44,7 +44,7 @@ auto Platform::Run(std::set<Object *> neighbours) -> void
 
 auto Platform::Draw() -> void
 {
-    glColor3f(1.0f, 0.0f, 1.0f);
+    glColor4f(1.0f, 0.0f, 1.0f, 1);
 
     glBegin(GL_QUADS);
 

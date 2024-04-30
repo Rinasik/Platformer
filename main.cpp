@@ -11,7 +11,7 @@
 #include "sources/machine/machine.hpp"
 #include "sources/engine/engine.hpp"
 
-auto engine = Engine("./resources");
+Engine engine;
 
 Hero hero;
 std::vector<Entity *> entities;
@@ -57,10 +57,11 @@ void handleKey(unsigned char key, int x, int y)
 
 int main(int argc, char **argv)
 {
-    engine.InitState(hero, entities);
-
     auto window = Window(SCREEN_WIDTH, SCREEN_HEIGHT);
     window.Init(argc, argv);
+
+    engine = Engine("./resources");
+    engine.InitState(hero, entities);
 
     glutTimerFunc(1000 / FRAME_FREQUENCY, EngineCb, 0);
 
