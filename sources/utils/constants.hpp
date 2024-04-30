@@ -25,6 +25,9 @@ constexpr double Y_ACC = 0.04;
 constexpr int HERO_MAX_LIVES = 3;
 constexpr int INVISIBLE_TICKS_COUNT = 74;
 
+constexpr double ENEMY_X_VELOCITY = 0.0025;
+
+
 enum class MapEncoding
 {
     Empty = 0,
