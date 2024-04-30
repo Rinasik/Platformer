@@ -33,6 +33,7 @@ auto Window::Init(int argc, char **argv) -> void
     descriptor = glutCreateWindow("Platformer");
 
     glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 auto Window::Draw(void (*callback)()) -> void

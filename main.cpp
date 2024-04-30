@@ -16,7 +16,7 @@
 Engine engine;
 
 Hero hero;
-std::vector<Entity *> entities;
+std::set<Entity *> entities;
 
 void drawCb()
 {
@@ -39,18 +39,20 @@ void EngineCb(int time)
 
 void specialKeyDown(int key, int x, int y)
 {
-    hero.HandleClickDown(key);
+    hero.HandleSpecialClickDown(key);
     glutPostRedisplay();
 }
 
 void specialKeyUp(int key, int x, int y)
 {
-    hero.HandleClickUp(key);
+    hero.HandleSpecialClickUp(key);
     glutPostRedisplay();
 }
 
 void handleKey(unsigned char key, int x, int y)
 {
+    hero.HandleClickDown(key);
+
     if (key == 'q')
     {
         engine.InitState(hero, entities);

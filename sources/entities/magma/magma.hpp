@@ -9,8 +9,8 @@ public:
 };
 
 Magma::Magma(int ix, int iy) : Object{
-                                   ix,
-                                   iy,
+                                   (double)ix,
+                                   (double)iy,
                                    1,
                                    1,
                                    MapEncoding::Magma}

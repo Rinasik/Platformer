@@ -1,10 +1,12 @@
 #pragma once
 
 #include <GL/glut.h>
+#include <optional>
 
 #include "../entity/entity.hpp"
 #include "../platform/platform.hpp"
 #include "../exit/exit.hpp"
+#include "../hit/hit.hpp"
 #include "../../texture/texture.hpp"
 
 class Hero : virtual public Entity
@@ -14,6 +16,10 @@ private:
     bool _isFalling = false;
     bool _isInvisible = false;
     int _invisibleCounter = 0;
+
+    std::optional<Hit *> _hit = std::nullopt;
+    std::function<void(Hit *)> _addHit;
+    std::function<void(Hit *)> _removeHit;
 
     Texture _heart;
 
@@ -32,22 +38,23 @@ public:
     int level = 0;
 
     Hero();
-    Hero(int ix, int iy, int sizeX, int sizeY, int lives);
+    Hero(int ix, int iy, int sizeX, int sizeY, int lives, std::function<void(Hit *)> addHit, std::function<void(Hit *)> removeHit);
 
     auto Run(std::set<Object *> neighbours) -> void;
     auto Draw() -> void;
-    auto HandleClickDown(int key) -> void;
-    auto HandleClickUp(int key) -> void;
+    auto HandleSpecialClickDown(int key) -> void;
+    auto HandleSpecialClickUp(int key) -> void;
+    auto HandleClickDown(unsigned char key) -> void;
 };
 
 Hero::Hero(){};
-Hero::Hero(int ix, int iy, int sizeX, int sizeY, int lives) : Entity{
-                                                                  ix,
-                                                                  iy,
-                                                                  (double)sizeX,
-                                                                  (double)sizeY,
-                                                                  MapEncoding::Hero},
-                                                              _lives(lives)
+Hero::Hero(int ix, int iy, int sizeX, int sizeY, int lives, std::function<void(Hit *)> addHit, std::function<void(Hit *)> removeHit) : Entity{
+                                                                                                                                           (double)ix,
+                                                                                                                                           (double)iy,
+                                                                                                                                           (double)sizeX,
+                                                                                                                                           (double)sizeY,
+                                                                                                                                           MapEncoding::Hero},
+                                                                                                                                       _lives(lives), _addHit(addHit), _removeHit(removeHit)
 {
     _heart = Texture("images/Heart.png", true);
 }
@@ -113,8 +120,13 @@ auto Hero::Draw() -> void
     }
 }
 
-auto Hero::HandleClickDown(int key) -> void
+auto Hero::HandleSpecialClickDown(int key) -> void
 {
+    if (!_lives)
+    {
+        return;
+    }
+
     switch (key)
     {
     case GLUT_KEY_RIGHT:
@@ -140,8 +152,13 @@ auto Hero::HandleClickDown(int key) -> void
     }
 }
 
-auto Hero::HandleClickUp(int key) -> void
+auto Hero::HandleSpecialClickUp(int key) -> void
 {
+    if (!_lives)
+    {
+        return;
+    }
+
     switch (key)
     {
     case GLUT_KEY_DOWN:
@@ -152,8 +169,44 @@ auto Hero::HandleClickUp(int key) -> void
     }
 }
 
+auto Hero::HandleClickDown(unsigned char key) -> void
+{
+    if (!_lives)
+    {
+        return;
+    }
+
+    switch (key)
+    {
+    case 'a':
+        if (!_hit.has_value())
+        {
+            _hit = std::optional(new Hit(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Left));
+            _addHit(_hit.value());
+        }
+        break;
+    case 'd':
+        if (!_hit.has_value())
+        {
+            _hit = std::optional(new Hit(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Right));
+            _addHit(_hit.value());
+        }
+        break;
+    default:
+        break;
+    }
+}
+
 auto Hero::Run(std::set<Object *> neighbours) -> void
 {
+    if (_hit.has_value())
+    {
+        if (_hit.value()->isDestroyed)
+        {
+            _removeHit(_hit.value());
+            _hit = std::nullopt;
+        }
+    }
     if (!_lives)
     {
         return;

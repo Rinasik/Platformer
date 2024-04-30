@@ -11,8 +11,8 @@ public:
 };
 
 Exit::Exit(int ix, int iy, int mapNumber) : Object{
-                                                ix,
-                                                iy,
+                                                (double)ix,
+                                                (double)iy,
                                                 1,
                                                 1,
                                                 MapEncoding::Exit}

@@ -154,7 +154,7 @@ auto Map::Draw() -> void
                 // }
 
                 glBindTexture(GL_TEXTURE_2D, _background.GetTexture());
-                glColor4f(0.3f, 0.3f, 0.3f, 0.3f);
+                glColor4f(0.3f, 0.3f, 0.3f, 1.0f);
             }
             else if (block == MapEncoding::Brick)
             {
@@ -163,7 +163,7 @@ auto Map::Draw() -> void
             }
             else if (block == MapEncoding::Exit)
             {
-                glColor4f(1.0f, 1.0f, 0, 1);
+                glColor4f(1.0f, 1.0f, 0, 1.0f);
                 glBegin(GL_QUADS);
 
                 glVertex2f((j * DELTA_X) - 1.f, -DELTA_Y * i + 1.f);

@@ -27,14 +27,14 @@ public:
     auto Draw() -> void;
 };
 
-void CreateEnemie(Position position, std::vector<Entity *> &entities)
+void CreateEnemie(Position position, std::set<Entity *> &entities)
 {
-    entities.push_back(new Enemy(position.ix, position.iy, 1, 1, 2));
+    entities.emplace(new Enemy(position.ix, position.iy, 1, 1, 2));
 }
 
 Enemy::Enemy(int ix, int iy, int sizeX, int sizeY, int lives) : Entity{
-                                                                    ix,
-                                                                    iy,
+                                                                    (double)ix,
+                                                                    (double)iy,
                                                                     (double)sizeX,
                                                                     (double)sizeY,
                                                                     MapEncoding::Enemy},
@@ -51,7 +51,7 @@ auto Enemy::Draw() -> void
         return;
     }
 
-    glColor4f(0.87f, 0.0f, 0.32f, 1);
+    glColor4f(0.87f, 0.0f, 0.32f, 1.0f);
 
     glBegin(GL_QUADS);
 

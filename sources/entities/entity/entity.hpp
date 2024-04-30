@@ -18,17 +18,17 @@ protected:
 
 public:
     Entity(){};
-    Entity(int ix, int iy, double sizeX, double sizeY, MapEncoding type);
+    Entity(double x, double y, double sizeX, double sizeY, MapEncoding type);
 
     virtual auto Draw() -> void = 0;
     virtual auto Run(std::set<Object *> neighbours) -> void = 0;
 };
 
-Entity::Entity(int ix, int iy, double sizeX, double sizeY, MapEncoding type) : Object{ix,
-                                                                                iy,
-                                                                                sizeX,
-                                                                                sizeY,
-                                                                                type} {}
+Entity::Entity(double x, double y, double sizeX, double sizeY, MapEncoding type) : Object{x,
+                                                                                          y,
+                                                                                          sizeX,
+                                                                                          sizeY,
+                                                                                          type} {}
 
 auto Entity::windowBoundsCollision(double &virtualDeltaX, double &virtualDeltaY) -> void
 {

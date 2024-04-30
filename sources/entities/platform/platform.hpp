@@ -20,14 +20,14 @@ public:
     auto Run(std::set<Object *> neighbours) -> void;
 };
 
-void CreatePlatforms(Position position, std::vector<Entity *> &entities)
+void CreatePlatforms(Position position, std::set<Entity *> &entities)
 {
-    entities.push_back(new Platform(position.ix, position.iy, 2));
+    entities.emplace(new Platform(position.ix, position.iy, 2));
 }
 
 Platform::Platform(int ix, int iy, int sizeX) : Entity{
-                                                    ix,
-                                                    iy,
+                                                    (double)ix,
+                                                    (double)iy,
                                                     (double)sizeX,
                                                     1,
                                                     MapEncoding::Platform}

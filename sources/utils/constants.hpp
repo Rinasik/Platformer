@@ -26,7 +26,7 @@ constexpr int HERO_MAX_LIVES = 3;
 constexpr int INVISIBLE_TICKS_COUNT = 74;
 
 constexpr double ENEMY_X_VELOCITY = 0.0025;
-
+constexpr double HIT_VELOCITY = 0.005;
 
 enum class MapEncoding
 {
@@ -37,6 +37,7 @@ enum class MapEncoding
     Platform = 4,
     Exit = 100,
     Magma = -1,
+    Hit = -100
 };
 
 enum class Direction

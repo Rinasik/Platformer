@@ -22,6 +22,7 @@ private:
 public:
     auto UpdatePosition(Object *object) -> void;
     auto AddObject(Object *object) -> void;
+    auto RemoveObject(Object *object) -> void;
     auto FindNearby(Shape shape) -> std::set<Object *>;
     auto Clear() -> void;
 };
@@ -98,7 +99,7 @@ auto Machine::AddObject(Object *object) -> void
     }
 }
 
-auto Machine::UpdatePosition(Object *object) -> void
+auto Machine::RemoveObject(Object *object) -> void
 {
     auto ks = objects[object];
 
@@ -107,7 +108,11 @@ auto Machine::UpdatePosition(Object *object) -> void
         dict[k].erase(object);
     }
     objects.erase(object);
+}
 
+auto Machine::UpdatePosition(Object *object) -> void
+{
+    RemoveObject(object);
     AddObject(object);
 }
 
