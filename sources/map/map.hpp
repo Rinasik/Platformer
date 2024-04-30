@@ -38,7 +38,7 @@ private:
 
     Texture _wall;
     Texture _magma;
-`
+
 public:
     Map(){};
     Map(int width, int height, const std::string &path);
