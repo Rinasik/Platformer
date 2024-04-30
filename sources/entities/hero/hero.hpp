@@ -19,13 +19,12 @@ private:
 
     std::optional<Hit *> _hit = std::nullopt;
     std::function<void(Hit *)> _addHit;
-    std::function<void(Hit *)> _removeHit;
 
     Texture _heart;
 
-    auto computeCollision(std::set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
-    auto entitiesAndMapCollision(std::set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
-    auto entitiesAndMapCollisionY(std::set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
+    auto computeCollision(std::unordered_set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
+    auto entitiesAndMapCollision(std::unordered_set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
+    auto entitiesAndMapCollisionY(std::unordered_set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
 
     auto collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
     auto collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
@@ -38,9 +37,9 @@ public:
     int level = 0;
 
     Hero();
-    Hero(int ix, int iy, int sizeX, int sizeY, int lives, std::function<void(Hit *)> addHit, std::function<void(Hit *)> removeHit);
+    Hero(int ix, int iy, int sizeX, int sizeY, int lives, std::function<void(Hit *)> addHit);
 
-    auto Run(std::set<Object *> neighbours) -> void;
+    auto Run(std::unordered_set<Object *> neighbours) -> void;
     auto Draw() -> void;
     auto HandleSpecialClickDown(int key) -> void;
     auto HandleSpecialClickUp(int key) -> void;
@@ -48,13 +47,13 @@ public:
 };
 
 Hero::Hero(){};
-Hero::Hero(int ix, int iy, int sizeX, int sizeY, int lives, std::function<void(Hit *)> addHit, std::function<void(Hit *)> removeHit) : Entity{
+Hero::Hero(int ix, int iy, int sizeX, int sizeY, int lives, std::function<void(Hit *)> addHit) : Entity{
                                                                                                                                            (double)ix,
                                                                                                                                            (double)iy,
                                                                                                                                            (double)sizeX,
                                                                                                                                            (double)sizeY,
                                                                                                                                            MapEncoding::Hero},
-                                                                                                                                       _lives(lives), _addHit(addHit), _removeHit(removeHit)
+                                                                                                                                       _lives(lives), _addHit(addHit)
 {
     _heart = Texture("images/Heart.png", true);
 }
@@ -197,13 +196,12 @@ auto Hero::HandleClickDown(unsigned char key) -> void
     }
 }
 
-auto Hero::Run(std::set<Object *> neighbours) -> void
+auto Hero::Run(std::unordered_set<Object *> neighbours) -> void
 {
     if (_hit.has_value())
     {
         if (_hit.value()->isDestroyed)
         {
-            _removeHit(_hit.value());
             _hit = std::nullopt;
         }
     }
@@ -245,7 +243,7 @@ auto Hero::Run(std::set<Object *> neighbours) -> void
     _y += virtualDeltaY;
 }
 
-auto Hero::entitiesAndMapCollisionY(std::set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
+auto Hero::entitiesAndMapCollisionY(std::unordered_set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
 {
     auto shape = GetShape();
     auto onPlatform = false;
@@ -290,13 +288,13 @@ auto Hero::entitiesAndMapCollisionY(std::set<Object *> neighbours, double &virtu
     }
 }
 
-auto Hero::entitiesAndMapCollision(std::set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
+auto Hero::entitiesAndMapCollision(std::unordered_set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
 {
     objectsCollisionX(neighbours, virtualDeltaX);
     entitiesAndMapCollisionY(neighbours, virtualDeltaX, virtualDeltaY);
 }
 
-auto Hero::computeCollision(std::set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
+auto Hero::computeCollision(std::unordered_set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
 {
     windowBoundsCollision(virtualDeltaX, virtualDeltaY);
     entitiesAndMapCollision(neighbours, virtualDeltaX, virtualDeltaY);

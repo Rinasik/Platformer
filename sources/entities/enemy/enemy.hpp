@@ -2,6 +2,7 @@
 
 #include <GL/glut.h>
 #include "../entity/entity.hpp"
+#include "../hit/hit.hpp"
 
 class Enemy : virtual public Entity
 {
@@ -15,7 +16,7 @@ private:
 
     int _lives;
 
-    auto mapCollision(std::set<MapEncoding> mapPattern) -> void;
+    auto mapCollision(std::unordered_set<MapEncoding> mapPattern) -> void;
 
     auto collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
     auto collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
@@ -23,11 +24,11 @@ private:
 public:
     Enemy(int ix, int iy, int sizeX, int sizeY, int lives);
 
-    auto Run(std::set<Object *> neighbours) -> void;
+    auto Run(std::unordered_set<Object *> neighbours) -> void;
     auto Draw() -> void;
 };
 
-void CreateEnemie(Position position, std::set<Entity *> &entities)
+void CreateEnemie(Position position, std::unordered_set<Entity *> &entities)
 {
     entities.emplace(new Enemy(position.ix, position.iy, 1, 1, 2));
 }
@@ -63,10 +64,11 @@ auto Enemy::Draw() -> void
     glEnd();
 }
 
-auto Enemy::Run(std::set<Object *> neighbours) -> void
+auto Enemy::Run(std::unordered_set<Object *> neighbours) -> void
 {
     if (!_lives)
     {
+        isDestroyed = true;
         return;
     }
 
@@ -83,13 +85,30 @@ auto Enemy::Run(std::set<Object *> neighbours) -> void
         _prevX = _x;
         _currentStep = _nextStep;
     }
+    objectsCollisionX(neighbours, _velX);
 
     _x += _velX;
 }
 
-auto Enemy::mapCollision(std::set<MapEncoding> mapPattern) -> void
+auto Enemy::mapCollision(std::unordered_set<MapEncoding> mapPattern) -> void
 {
 }
 
-auto Enemy::collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void {}
-auto Enemy::collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void {}
+auto Enemy::collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void
+{
+    if (neighbour->type == MapEncoding::Hit)
+    {
+        _lives--;
+        Hit *hit = dynamic_cast<Hit *>(neighbour);
+        hit->isDestroyed = true;
+    }
+}
+auto Enemy::collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void
+{
+    if (neighbour->type == MapEncoding::Hit)
+    {
+        _lives--;
+        Hit *hit = dynamic_cast<Hit *>(neighbour);
+        hit->isDestroyed = true;
+    }
+}

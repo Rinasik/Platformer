@@ -3,6 +3,7 @@
 #include <fstream>
 #include <ctime>
 #include <cstdlib>
+#include <unordered_set>
 
 #include "sources/window/window.hpp"
 #include "sources/map/map.hpp"
@@ -16,7 +17,7 @@
 Engine engine;
 
 Hero hero;
-std::set<Entity *> entities;
+std::unordered_set<Entity *> entities;
 
 void drawCb()
 {

@@ -17,10 +17,10 @@ public:
     double lastDeltaX;
 
     auto Draw() -> void;
-    auto Run(std::set<Object *> neighbours) -> void;
+    auto Run(std::unordered_set<Object *> neighbours) -> void;
 };
 
-void CreatePlatforms(Position position, std::set<Entity *> &entities)
+void CreatePlatforms(Position position, std::unordered_set<Entity *> &entities)
 {
     entities.emplace(new Platform(position.ix, position.iy, 2));
 }
@@ -35,7 +35,7 @@ Platform::Platform(int ix, int iy, int sizeX) : Entity{
     _velX = 0.0025f;
 }
 
-auto Platform::Run(std::set<Object *> neighbours) -> void
+auto Platform::Run(std::unordered_set<Object *> neighbours) -> void
 {
     auto deltaX = _velX;
     objectsCollisionX(neighbours, deltaX);

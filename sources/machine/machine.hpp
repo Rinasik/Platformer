@@ -3,7 +3,6 @@
 #include <cmath>
 #include <unordered_map>
 #include <vector>
-#include <set>
 #include <cmath>
 
 #include "../utils/utils.hpp"
@@ -23,7 +22,7 @@ public:
     auto UpdatePosition(Object *object) -> void;
     auto AddObject(Object *object) -> void;
     auto RemoveObject(Object *object) -> void;
-    auto FindNearby(Shape shape) -> std::set<Object *>;
+    auto FindNearby(Shape shape) -> std::unordered_set<Object *>;
     auto Clear() -> void;
 };
 
@@ -32,9 +31,9 @@ auto Machine::key(int x, int y) -> long long int
     return ((x + 1) * 73856093) ^ ((y + 1) * 19349663);
 }
 
-auto Machine::FindNearby(Shape shape) -> std::set<Object *>
+auto Machine::FindNearby(Shape shape) -> std::unordered_set<Object *>
 {
-    auto result = std::set<Object *>();
+    auto result = std::unordered_set<Object *>();
 
     int left_i = floor(shape.left / DELTA_X) + decimalPart(shape.left / DELTA_X);
     int right_i = ceil(shape.right / DELTA_X) - 1;

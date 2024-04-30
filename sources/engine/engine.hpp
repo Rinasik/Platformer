@@ -11,8 +11,7 @@
 #include "../entities/enemy/enemy.hpp"
 #include "../entities/platform/platform.hpp"
 
-auto RemoveHit(Machine &machine, std::set<Entity *> &entities) -> std::function<void(Hit *)>;
-auto AddHit(Machine &machine, std::set<Entity *> &entities) -> std::function<void(Hit *)>;
+auto AddHit(Machine &machine, std::unordered_set<Entity *> &entities) -> std::function<void(Hit *)>;
 
 class Engine
 {
@@ -20,19 +19,19 @@ private:
     Map _map;
     Machine _machine;
 
-    auto createEntities(std::vector<EntityPosition> positions, std::set<Entity *> &entities) -> void;
-    auto removeHit(Hit *hit) -> void;
+    auto createEntities(std::vector<EntityPosition> positions, std::unordered_set<Entity *> &entities) -> void;
+    auto removeEntity(Entity *&entity, std::unordered_set<Entity *> &entities) -> void;
 
 public:
     Engine(){};
     Engine(std::string path) : _map(Map(WIDTH, HEIGHT, path)), _machine(Machine()){};
 
-    auto InitState(Hero &hero, std::set<Entity *> &entities) -> void;
-    auto UpdateState(Hero &hero, std::set<Entity *> &entities) -> void;
-    auto Draw(Hero &hero, std::set<Entity *> &entities) -> void;
+    auto InitState(Hero &hero, std::unordered_set<Entity *> &entities) -> void;
+    auto UpdateState(Hero &hero, std::unordered_set<Entity *> &entities) -> void;
+    auto Draw(Hero &hero, std::unordered_set<Entity *> &entities) -> void;
 };
 
-auto Engine::createEntities(std::vector<EntityPosition> positions, std::set<Entity *> &entities) -> void
+auto Engine::createEntities(std::vector<EntityPosition> positions, std::unordered_set<Entity *> &entities) -> void
 {
     for (auto position : positions)
     {
@@ -47,12 +46,19 @@ auto Engine::createEntities(std::vector<EntityPosition> positions, std::set<Enti
     }
 }
 
-auto Engine::UpdateState(Hero &hero, std::set<Entity *> &entities) -> void
+auto Engine::UpdateState(Hero &hero, std::unordered_set<Entity *> &entities) -> void
 {
     for (auto entity : entities)
     {
-        entity->Run(_machine.FindNearby(entity->GetShape()));
-        _machine.UpdatePosition(entity);
+        if (entity->isDestroyed)
+        {
+            removeEntity(entity, entities);
+        }
+        else
+        {
+            entity->Run(_machine.FindNearby(entity->GetShape()));
+            _machine.UpdatePosition(entity);
+        }
     }
     hero.Run(_machine.FindNearby(hero.GetShape()));
 
@@ -62,7 +68,7 @@ auto Engine::UpdateState(Hero &hero, std::set<Entity *> &entities) -> void
         auto pattern = opt_pattern.value();
         _machine.Clear();
 
-        entities = std::set<Entity *>();
+        entities = std::unordered_set<Entity *>();
 
         createEntities(pattern.positions, entities);
 
@@ -77,9 +83,9 @@ auto Engine::UpdateState(Hero &hero, std::set<Entity *> &entities) -> void
     }
 }
 
-auto Engine::InitState(Hero &hero, std::set<Entity *> &entities) -> void
+auto Engine::InitState(Hero &hero, std::unordered_set<Entity *> &entities) -> void
 {
-    entities = std::set<Entity *>();
+    entities = std::unordered_set<Entity *>();
     _machine.Clear();
 
     auto opt_pattern = _map.InitDraw(-1);
@@ -100,12 +106,12 @@ auto Engine::InitState(Hero &hero, std::set<Entity *> &entities) -> void
     {
         if (position.entityType == MapEncoding::Hero)
         {
-            hero = Hero(position.position.ix, position.position.iy, 1, 1, HERO_MAX_LIVES, AddHit(_machine, entities), RemoveHit(_machine, entities));
+            hero = Hero(position.position.ix, position.position.iy, 1, 1, HERO_MAX_LIVES, AddHit(_machine, entities));
         }
     }
 }
 
-auto Engine::Draw(Hero &hero, std::set<Entity *> &entities) -> void
+auto Engine::Draw(Hero &hero, std::unordered_set<Entity *> &entities) -> void
 {
     _map.Draw();
 
@@ -117,21 +123,15 @@ auto Engine::Draw(Hero &hero, std::set<Entity *> &entities) -> void
     }
 }
 
-auto RemoveHit(Machine &machine, std::set<Entity *> &entities) -> std::function<void(Hit *)>
+auto Engine::removeEntity(Entity *&entity, std::unordered_set<Entity *> &entities) -> void
 {
+    _machine.RemoveObject(entity);
+    entities.erase(entity);
 
-    auto cb = [&machine, &entities](Hit *hit)
-    {
-        machine.RemoveObject(hit);
-        entities.erase(hit);
-
-        delete hit;
-    };
-
-    return cb;
+    // delete hit;
 }
 
-auto AddHit(Machine &machine, std::set<Entity *> &entities) -> std::function<void(Hit *)>
+auto AddHit(Machine &machine, std::unordered_set<Entity *> &entities) -> std::function<void(Hit *)>
 {
 
     auto cb = [&machine, &entities](Hit *hit)
