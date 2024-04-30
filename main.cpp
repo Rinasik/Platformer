@@ -1,6 +1,8 @@
 #include <GL/glut.h>
 #include <math.h>
 #include <fstream>
+#include <ctime>
+#include <cstdlib>
 
 #include "sources/window/window.hpp"
 #include "sources/map/map.hpp"
@@ -57,6 +59,8 @@ void handleKey(unsigned char key, int x, int y)
 
 int main(int argc, char **argv)
 {
+    std::srand(std::time(nullptr));
+
     auto window = Window(SCREEN_WIDTH, SCREEN_HEIGHT);
     window.Init(argc, argv);
 

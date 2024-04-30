@@ -3,6 +3,8 @@
 #include <GL/glut.h>
 #include "../entity/entity.hpp"
 
+#include "../../texture/texture.hpp"
+
 class Platform : virtual public Entity
 {
 private:
@@ -26,7 +28,7 @@ void CreatePlatforms(Position position, std::vector<Entity *> &entities)
 Platform::Platform(int ix, int iy, int sizeX) : Entity{
                                                     ix,
                                                     iy,
-                                                    sizeX,
+                                                    (double)sizeX,
                                                     1,
                                                     MapEncoding::Platform}
 {

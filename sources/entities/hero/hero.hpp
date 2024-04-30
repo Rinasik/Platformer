@@ -44,8 +44,8 @@ Hero::Hero(){};
 Hero::Hero(int ix, int iy, int sizeX, int sizeY, int lives) : Entity{
                                                                   ix,
                                                                   iy,
-                                                                  sizeX,
-                                                                  sizeY,
+                                                                  (double)sizeX,
+                                                                  (double)sizeY,
                                                                   MapEncoding::Hero},
                                                               _lives(lives)
 {

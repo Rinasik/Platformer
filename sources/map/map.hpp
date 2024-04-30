@@ -6,6 +6,7 @@
 #include <GL/glut.h>
 #include <fstream>
 #include <optional>
+#include <cstdlib>
 
 #include "../entities/object/object.hpp"
 #include "../entities/brick/brick.hpp"
@@ -38,6 +39,7 @@ private:
 
     Texture _wall;
     Texture _magma;
+    Texture _background;
 
 public:
     Map(){};
@@ -54,6 +56,7 @@ Map::Map(int width, int height, const std::string &path)
 
     _wall = Texture("images/Wall.png");
     _magma = Texture("images/Magma.png");
+    _background = Texture("images/Background.png", true);
 
     parseMaps(path);
 }
@@ -140,9 +143,18 @@ auto Map::Draw() -> void
 
             if (block == MapEncoding::Empty)
             {
-                glBindTexture(GL_TEXTURE_2D, _wall.GetTexture());
-                glColor4f(0.3f, 0.3f, 0.3f, 0.3f);
+                // unsigned int texture;
+                // if (std::rand() % 10 >= 8)
+                // {
+                //     texture = _wall.GetTexture();
+                // }
+                // else
+                // {
+                //     texture = _background.GetTexture();
+                // }
 
+                glBindTexture(GL_TEXTURE_2D, _background.GetTexture());
+                glColor4f(0.3f, 0.3f, 0.3f, 0.3f);
             }
             else if (block == MapEncoding::Brick)
             {

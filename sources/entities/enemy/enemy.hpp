@@ -31,8 +31,8 @@ void CreateEnemie(Position position, std::vector<Entity *> &entities)
 Enemy::Enemy(int ix, int iy, int sizeX, int sizeY, int lives) : Entity{
                                                                     ix,
                                                                     iy,
-                                                                    sizeX,
-                                                                    sizeY,
+                                                                    (double)sizeX,
+                                                                    (double)sizeY,
                                                                     MapEncoding::Enemy},
                                                                 _lives(lives)
 {
