@@ -37,6 +37,7 @@ enum class MapEncoding
 
     Hero = 2,
     Hit = -100,
+    Bonus = -10,
 
     Warrior = 3,
     Jumper = 4,
@@ -51,4 +52,12 @@ enum class Direction
     Up = 0,
     Left = 1,
     Right = 2
+};
+
+enum class BonusType
+{
+    MaxLives = 1,
+    OneLife = 2,
+    ThreeLives = 3,
+    DoubleJump = 4,
 };

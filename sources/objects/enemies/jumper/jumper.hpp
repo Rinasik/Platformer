@@ -12,13 +12,15 @@ public:
 
     auto Run(std::unordered_set<Object *> neighbours) -> void;
     auto Draw() -> void;
+
+    auto GetBonus() -> std::optional<Bonus *>;
 };
 
 Jumper::Jumper(int ix, int iy) : Enemy{
                                      ix,
                                      iy,
                                      1, 1, 2,
-                                     std::vector<Direction>({Direction::Left, Direction::Up, Direction::Left, Direction::Right, Direction::Right, Direction::Right, Direction::Up, Direction::Right, Direction::Left, Direction::Left}),
+                                     std::vector<Direction>({Direction::Right, Direction::Up, Direction::Right, Direction::Left, Direction::Left, Direction::Left, Direction::Up, Direction::Left, Direction::Right, Direction::Right}),
                                      MapEncoding::Jumper}
 {
     _velX = ENEMY_X_VELOCITY;
@@ -86,26 +88,21 @@ auto Jumper::Run(std::unordered_set<Object *> neighbours) -> void
 
         int _nextStep = (_currentStep + 1) % _pattern.size();
 
-        if (_pattern[_currentStep] != _pattern[_nextStep])
+        if (_pattern[_nextStep] == Direction::Up)
         {
-
-            if (_pattern[_nextStep] == Direction::Up)
+            _velY = DELTA_Y_VELOCITY;
+            _isFalling = true;
+            _velX = 0;
+        }
+        else
+        {
+            if (_pattern[_nextStep] == Direction::Left)
             {
-                _velY = DELTA_Y_VELOCITY;
-                _isFalling = true;
-                _velX = 0;
+                _velX = -ENEMY_X_VELOCITY;
             }
             else
             {
-                if (_pattern[_nextStep] == Direction::Left)
-                {
-
-                    _velX = -ENEMY_X_VELOCITY;
-                }
-                else
-                {
-                    _velX = ENEMY_X_VELOCITY;
-                }
+                _velX = ENEMY_X_VELOCITY;
             }
         }
 
@@ -116,4 +113,14 @@ auto Jumper::Run(std::unordered_set<Object *> neighbours) -> void
 
     _x += virtualDeltaX;
     _y += virtualDeltaY;
+}
+
+auto Jumper::GetBonus() -> std::optional<Bonus *>
+{
+    if (std::rand() % 10 <= 1)
+    {
+        return new Bonus(_x, _y, BonusType::OneLife);
+    }
+
+    return std::nullopt;
 }

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <GL/glut.h>
 #include "../../entity/entity.hpp"
+#include "../../bonus/bonus.hpp"
 #include "../../hit/hit.hpp"
 
 class Enemy : public Entity
@@ -9,7 +9,6 @@ class Enemy : public Entity
 protected:
     double _prevX = 0;
     double _initialY = 0;
-
 
     std::vector<Direction> _pattern;
     int _currentStep = 0;
@@ -21,6 +20,8 @@ protected:
 
 public:
     Enemy(int ix, int iy, int sizeX, int sizeY, int lives, std::vector<Direction> pattern, MapEncoding type);
+
+    virtual auto GetBonus() -> std::optional<Bonus *> = 0;
 };
 
 Enemy::Enemy(int ix, int iy, int sizeX, int sizeY, int lives, std::vector<Direction> pattern, MapEncoding type) : Entity{
@@ -44,6 +45,7 @@ auto Enemy::collisionLeftDetected(Object *neighbour, Shape nshape, double &virtu
         hit->isDestroyed = true;
     }
 }
+
 auto Enemy::collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void
 {
     if (neighbour->type == MapEncoding::Hit)
@@ -52,4 +54,9 @@ auto Enemy::collisionRightDetected(Object *neighbour, Shape nshape, double &virt
         Hit *hit = dynamic_cast<Hit *>(neighbour);
         hit->isDestroyed = true;
     }
+}
+
+bool IsEnemy(Entity *entity)
+{
+    return entity->type == MapEncoding::Warrior || entity->type == MapEncoding::Archer || entity->type == MapEncoding::Monster || entity->type == MapEncoding::Jumper;
 }

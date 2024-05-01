@@ -18,13 +18,13 @@ public:
     MapEncoding type;
 
     Object(){};
-    Object(double x, double y, double sizeX, double sizeY, MapEncoding type);
+    Object(double ix, double iy, double sizeX, double sizeY, MapEncoding type);
     virtual ~Object() = default;
 
     auto GetShape() -> Shape;
 };
 
-Object::Object(double x, double y, double sizeX, double sizeY, MapEncoding type) : _x(multiply(x, DELTA_X)), _y(multiply(HEIGHT - y - 1, DELTA_Y)), _sizeX(sizeX), _sizeY(sizeY), type(type) {}
+Object::Object(double ix, double iy, double sizeX, double sizeY, MapEncoding type) : _x(multiply(ix, DELTA_X)), _y(multiply(HEIGHT - iy - 1, DELTA_Y)), _sizeX(sizeX), _sizeY(sizeY), type(type) {}
 
 inline auto Object::GetShape() -> Shape
 {

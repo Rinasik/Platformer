@@ -11,6 +11,7 @@
 #include "../objects/enemies/warrior/warrior.hpp"
 #include "../objects/enemies/jumper/jumper.hpp"
 #include "../objects/platform/platform.hpp"
+#include "../objects/bonus/bonus.hpp"
 
 auto AddHit(Machine &machine, std::unordered_set<Entity *> &entities) -> std::function<void(Hit *)>;
 
@@ -57,6 +58,18 @@ auto Engine::UpdateState(Hero &hero, std::unordered_set<Entity *> &entities) -> 
     {
         if (entity->isDestroyed)
         {
+            if (IsEnemy(entity))
+            {
+                Enemy *enemy = dynamic_cast<Enemy *>(entity);
+                std::optional<Bonus *> bonus = enemy->GetBonus();
+
+                if (bonus.has_value())
+                {
+                    _machine.AddObject(bonus.value());
+                    entities.emplace(bonus.value());
+                }
+            }
+
             removeEntity(entity, entities);
         }
         else

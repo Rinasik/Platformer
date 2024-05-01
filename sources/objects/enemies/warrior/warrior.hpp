@@ -10,13 +10,15 @@ public:
 
     auto Run(std::unordered_set<Object *> neighbours) -> void;
     auto Draw() -> void;
+
+    auto GetBonus() -> std::optional<Bonus *>;
 };
 
 Warrior::Warrior(int ix, int iy) : Enemy{
                                        ix,
                                        iy,
                                        1, 1, 2,
-                                       std::vector<Direction>({Direction::Left, Direction::Left, Direction::Right, Direction::Right, Direction::Right, Direction::Right, Direction::Left, Direction::Left}),
+                                       std::vector<Direction>({Direction::Right, Direction::Right, Direction::Left, Direction::Left, Direction::Left, Direction::Left, Direction::Right, Direction::Right}),
                                        MapEncoding::Warrior}
 {
     _velX = ENEMY_X_VELOCITY;
@@ -70,4 +72,14 @@ auto Warrior::Run(std::unordered_set<Object *> neighbours) -> void
     objectsCollisionX(neighbours, _velX);
 
     _x += _velX;
+}
+
+auto Warrior::GetBonus() -> std::optional<Bonus *>
+{
+    if (std::rand() % 10 <= 1)
+    {
+        return new Bonus(_x, _y, BonusType::OneLife);
+    }
+
+    return std::nullopt;
 }
