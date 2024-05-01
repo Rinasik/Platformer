@@ -65,7 +65,6 @@ Hero::Hero(int ix, int iy, int sizeX, int sizeY, int lives, std::function<void(H
     _heart = Texture("images/Heart.png", true);
 }
 
-// auto Hero::Draw(unsigned int textId = 0) -> void
 auto Hero::Draw() -> void
 {
     // Отрисовка жизней
