@@ -6,10 +6,11 @@
 
 #include "../map/map.hpp"
 #include "../machine/machine.hpp"
-#include "../entities/hero/hero.hpp"
-#include "../entities/entity/entity.hpp"
-#include "../entities/enemy/enemy.hpp"
-#include "../entities/platform/platform.hpp"
+#include "../objects/hero/hero.hpp"
+#include "../objects/entity/entity.hpp"
+#include "../objects/enemies/warrior/warrior.hpp"
+#include "../objects/enemies/jumper/jumper.hpp"
+#include "../objects/platform/platform.hpp"
 
 auto AddHit(Machine &machine, std::unordered_set<Entity *> &entities) -> std::function<void(Hit *)>;
 
@@ -35,9 +36,13 @@ auto Engine::createEntities(std::vector<EntityPosition> positions, std::unordere
 {
     for (auto position : positions)
     {
-        if (position.entityType == MapEncoding::Enemy)
+        if (position.entityType == MapEncoding::Warrior)
         {
-            CreateEnemie(position.position, entities);
+            CreateWarrior(position.position, entities);
+        }
+        else if (position.entityType == MapEncoding::Jumper)
+        {
+            CreateJumper(position.position, entities);
         }
         else if (position.entityType == MapEncoding::Platform)
         {

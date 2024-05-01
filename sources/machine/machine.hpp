@@ -7,7 +7,7 @@
 
 #include "../utils/utils.hpp"
 #include "../utils/constants.hpp"
-#include "../entities/object/object.hpp"
+#include "../objects/object/object.hpp"
 
 // Spatial Hashing
 class Machine

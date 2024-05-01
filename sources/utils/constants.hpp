@@ -30,14 +30,20 @@ constexpr double HIT_VELOCITY = 0.005;
 
 enum class MapEncoding
 {
+    Magma = -1,
     Empty = 0,
     Brick = 1,
-    Hero = 2,
-    Enemy = 3,
-    Platform = 4,
     Exit = 100,
-    Magma = -1,
-    Hit = -100
+
+    Hero = 2,
+    Hit = -100,
+
+    Warrior = 3,
+    Jumper = 4,
+    Archer = 5,
+    Monster = 6,
+
+    Platform = 7,
 };
 
 enum class Direction

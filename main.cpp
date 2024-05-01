@@ -8,9 +8,8 @@
 #include "sources/window/window.hpp"
 #include "sources/map/map.hpp"
 #include "sources/utils/constants.hpp"
-#include "sources/entities/enemy/enemy.hpp"
-#include "sources/entities/hero/hero.hpp"
-#include "sources/entities/platform/platform.hpp"
+#include "sources/objects/hero/hero.hpp"
+#include "sources/objects/platform/platform.hpp"
 #include "sources/machine/machine.hpp"
 #include "sources/engine/engine.hpp"
 

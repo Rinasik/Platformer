@@ -8,10 +8,10 @@
 #include <optional>
 #include <cstdlib>
 
-#include "../entities/object/object.hpp"
-#include "../entities/brick/brick.hpp"
-#include "../entities/exit/exit.hpp"
-#include "../entities/magma/magma.hpp"
+#include "../objects/object/object.hpp"
+#include "../objects/brick/brick.hpp"
+#include "../objects/exit/exit.hpp"
+#include "../objects/magma/magma.hpp"
 #include "../utils/constants.hpp"
 #include "../utils/utils.hpp"
 #include "../texture/texture.hpp"
@@ -117,9 +117,21 @@ auto Map::InitDraw(int newMap) -> std::optional<MapPattern>
         }
         else if (point == 3)
         {
-            positions.push_back(EntityPosition{MapEncoding::Enemy, Position{i % _width, i / _width}});
+            positions.push_back(EntityPosition{MapEncoding::Warrior, Position{i % _width, i / _width}});
         }
         else if (point == 4)
+        {
+            positions.push_back(EntityPosition{MapEncoding::Jumper, Position{i % _width, i / _width}});
+        }
+        else if (point == 5)
+        {
+            positions.push_back(EntityPosition{MapEncoding::Archer, Position{i % _width, i / _width}});
+        }
+        else if (point == 6)
+        {
+            positions.push_back(EntityPosition{MapEncoding::Monster, Position{i % _width, i / _width}});
+        }
+        else if (point == 7)
         {
             positions.push_back(EntityPosition{MapEncoding::Platform, Position{i % _width, i / _width}});
             mapPattern.push_back(MapEncoding::Empty);

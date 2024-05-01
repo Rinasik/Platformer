@@ -48,12 +48,12 @@ public:
 
 Hero::Hero(){};
 Hero::Hero(int ix, int iy, int sizeX, int sizeY, int lives, std::function<void(Hit *)> addHit) : Entity{
-                                                                                                                                           (double)ix,
-                                                                                                                                           (double)iy,
-                                                                                                                                           (double)sizeX,
-                                                                                                                                           (double)sizeY,
-                                                                                                                                           MapEncoding::Hero},
-                                                                                                                                       _lives(lives), _addHit(addHit)
+                                                                                                     (double)ix,
+                                                                                                     (double)iy,
+                                                                                                     (double)sizeX,
+                                                                                                     (double)sizeY,
+                                                                                                     MapEncoding::Hero},
+                                                                                                 _lives(lives), _addHit(addHit)
 {
     _heart = Texture("images/Heart.png", true);
 }
@@ -318,7 +318,7 @@ auto Hero::collisionRightDetected(Object *neighbour, Shape nShape, double &virtu
     {
         _lives = 0;
     }
-    else if (!_isInvisible && neighbour->type == MapEncoding::Enemy)
+    else if (!_isInvisible && (neighbour->type == MapEncoding::Warrior || neighbour->type == MapEncoding::Jumper || neighbour->type == MapEncoding::Archer || neighbour->type == MapEncoding::Monster))
     {
         getDamage(Direction::Left);
     }
@@ -342,7 +342,7 @@ auto Hero::collisionLeftDetected(Object *neighbour, Shape nShape, double &virtua
     {
         _lives = 0;
     }
-    else if (!_isInvisible && neighbour->type == MapEncoding::Enemy)
+    else if (!_isInvisible && (neighbour->type == MapEncoding::Warrior || neighbour->type == MapEncoding::Jumper || neighbour->type == MapEncoding::Archer || neighbour->type == MapEncoding::Monster))
     {
         getDamage(Direction::Right);
     }
@@ -379,7 +379,7 @@ auto Hero::collisionBottomDetected(Object *neighbour, Shape nShape, double &virt
     {
         _lives = 0;
     }
-    else if (!_isInvisible && neighbour->type == MapEncoding::Enemy)
+    else if (!_isInvisible && (neighbour->type == MapEncoding::Warrior || neighbour->type == MapEncoding::Jumper || neighbour->type == MapEncoding::Archer || neighbour->type == MapEncoding::Monster))
     {
         getDamage(Direction::Up);
     }
