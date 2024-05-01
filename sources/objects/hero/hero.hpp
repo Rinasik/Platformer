@@ -297,12 +297,12 @@ auto Hero::entitiesAndMapCollisionY(std::unordered_set<Object *> neighbours, dou
         if (!(isEntireLeft || isEntireRight))
         {
             // Летит вниз
-            if (virtualDeltaY < 0 && (nShape.top - (shape.bottom)) <= EPSILON && nShape.top >= (shape.bottom + virtualDeltaY))
+            if (virtualDeltaY <= 0 && (nShape.top - (shape.bottom)) <= EPSILON && nShape.top >= (shape.bottom + virtualDeltaY))
             {
                 collisionBottomDetected(neighbour, nShape, virtualDeltaY);
             }
             // Летит вверх
-            if (virtualDeltaY > 0 && (nShape.bottom >= (shape.top)) && (nShape.bottom <= (shape.top + virtualDeltaY)))
+            if (virtualDeltaY >= 0 && (nShape.bottom >= (shape.top)) && (nShape.bottom <= (shape.top + virtualDeltaY)))
             {
                 collisionTopDetected(neighbour, nShape, virtualDeltaY);
             }

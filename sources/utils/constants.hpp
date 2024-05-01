@@ -13,7 +13,7 @@ constexpr int SCREEN_HEIGHT = 800;
 constexpr double DELTA_X = 2.0 / WIDTH;
 constexpr double DELTA_Y = 2.0 / HEIGHT;
 
-constexpr double MAX_X_VELOCITY = 0.3;
+constexpr double MAX_X_VELOCITY = 0.04;
 constexpr double MAX_Y_VELOCITY = 0.6;
 
 constexpr double DELTA_X_VELOCITY = 0.002;

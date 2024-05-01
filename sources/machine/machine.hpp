@@ -22,7 +22,7 @@ public:
     auto UpdatePosition(Object *object) -> void;
     auto AddObject(Object *object) -> void;
     auto RemoveObject(Object *object) -> void;
-    auto FindNearby(Shape shape) -> std::unordered_set<Object *>;
+    auto FindNearby(Object *object) -> std::unordered_set<Object *>;
     auto Clear() -> void;
 };
 
@@ -31,8 +31,9 @@ auto Machine::key(int x, int y) -> long long int
     return ((x + 1) * 73856093) ^ ((y + 1) * 19349663);
 }
 
-auto Machine::FindNearby(Shape shape) -> std::unordered_set<Object *>
+auto Machine::FindNearby(Object *object) -> std::unordered_set<Object *>
 {
+    Shape shape = object->GetShape();
     auto result = std::unordered_set<Object *>();
 
     int left_i = floor(shape.left / DELTA_X) + decimalPart(shape.left / DELTA_X);
@@ -51,15 +52,13 @@ auto Machine::FindNearby(Shape shape) -> std::unordered_set<Object *>
     {
         for (int j = minY; j <= maxY; ++j)
         {
-            if (left_i == i && top_i == j)
-            {
-                continue;
-            }
-
             auto k = key(i, j);
             for (auto vector : dict[k])
             {
-                result.emplace(vector.first);
+                if (vector.first != object)
+                {
+                    result.emplace(vector.first);
+                }
             }
         }
     }
@@ -118,4 +117,5 @@ auto Machine::UpdatePosition(Object *object) -> void
 auto Machine::Clear() -> void
 {
     dict = std::unordered_map<int, std::unordered_map<Object *, int>>();
+    objects = std::unordered_map<Object *, std::vector<int>>();
 }

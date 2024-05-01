@@ -15,7 +15,7 @@
 
 Engine engine;
 
-Hero hero;
+Hero *hero;
 std::unordered_set<Entity *> entities;
 
 void drawCb()
@@ -39,19 +39,19 @@ void EngineCb(int time)
 
 void specialKeyDown(int key, int x, int y)
 {
-    hero.HandleSpecialClickDown(key);
+    hero->HandleSpecialClickDown(key);
     glutPostRedisplay();
 }
 
 void specialKeyUp(int key, int x, int y)
 {
-    hero.HandleSpecialClickUp(key);
+    hero->HandleSpecialClickUp(key);
     glutPostRedisplay();
 }
 
 void handleKey(unsigned char key, int x, int y)
 {
-    hero.HandleClickDown(key);
+    hero->HandleClickDown(key);
 
     if (key == 'q')
     {
