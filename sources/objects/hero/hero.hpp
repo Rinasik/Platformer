@@ -297,21 +297,22 @@ auto Hero::entitiesAndMapCollisionY(std::unordered_set<Object *> neighbours, dou
         if (!(isEntireLeft || isEntireRight))
         {
             // Летит вниз
-            if (virtualDeltaY <= 0 && nShape.top <= (shape.bottom) && nShape.top >= (shape.bottom + virtualDeltaY))
+            if (virtualDeltaY < 0 && (nShape.top - (shape.bottom)) <= EPSILON && nShape.top >= (shape.bottom + virtualDeltaY))
             {
                 collisionBottomDetected(neighbour, nShape, virtualDeltaY);
             }
             // Летит вверх
-            else if (virtualDeltaY >= 0 && (nShape.bottom >= (shape.top)) && (nShape.bottom <= (shape.top + virtualDeltaY)))
+            if (virtualDeltaY > 0 && (nShape.bottom >= (shape.top)) && (nShape.bottom <= (shape.top + virtualDeltaY)))
             {
                 collisionTopDetected(neighbour, nShape, virtualDeltaY);
             }
-        }
-        auto isBelowThanTop = abs(nShape.bottom - shape.top) <= EPSILON;
-        // На платформе(не за платформой && не падает && не под платформой)
-        if (!(isEntireLeft || isEntireRight) && !_isFalling && !isBelowThanTop)
-        {
-            onPlatform = true;
+
+            auto isOnTop = abs(nShape.top - shape.bottom) <= EPSILON;
+            // На платформе(не за платформой && не падает && не под платформой)
+            if (!_isFalling && isOnTop)
+            {
+                onPlatform = true;
+            }
         }
     }
 
