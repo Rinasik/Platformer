@@ -37,6 +37,7 @@ enum class MapEncoding
 
     Hero = 2,
     Hit = -100,
+    Arrow = -200,
     Bonus = -10,
 
     Warrior = 3,

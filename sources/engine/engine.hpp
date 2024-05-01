@@ -10,10 +10,11 @@
 #include "../objects/entity/entity.hpp"
 #include "../objects/enemies/warrior/warrior.hpp"
 #include "../objects/enemies/jumper/jumper.hpp"
+#include "../objects/enemies/archer/archer.hpp"
 #include "../objects/platform/platform.hpp"
 #include "../objects/bonus/bonus.hpp"
 
-auto AddHit(Machine &machine, std::unordered_set<Entity *> &entities) -> std::function<void(Hit *)>;
+auto AddEntity(Machine &machine, std::unordered_set<Entity *> &entities) -> std::function<void(Entity *)>;
 
 class Engine
 {
@@ -48,6 +49,10 @@ auto Engine::createEntities(std::vector<EntityPosition> positions, std::unordere
         else if (position.entityType == MapEncoding::Platform)
         {
             CreatePlatforms(position.position, entities);
+        }
+        else if (position.entityType == MapEncoding::Archer)
+        {
+            CreateArcher(position.position, entities, AddEntity(_machine, entities));
         }
     }
 }
@@ -124,7 +129,7 @@ auto Engine::InitState(Hero *&hero, std::unordered_set<Entity *> &entities) -> v
     {
         if (position.entityType == MapEncoding::Hero)
         {
-            hero = new Hero(position.position.ix, position.position.iy, 1, 1, HERO_MAX_LIVES, AddHit(_machine, entities));
+            hero = new Hero(position.position.ix, position.position.iy, 1, 1, HERO_MAX_LIVES, AddEntity(_machine, entities));
         }
     }
 }
@@ -147,10 +152,10 @@ auto Engine::removeEntity(Entity *&entity, std::unordered_set<Entity *> &entitie
     entities.erase(entity);
 }
 
-auto AddHit(Machine &machine, std::unordered_set<Entity *> &entities) -> std::function<void(Hit *)>
+auto AddEntity(Machine &machine, std::unordered_set<Entity *> &entities) -> std::function<void(Entity *)>
 {
 
-    auto cb = [&machine, &entities](Hit *hit)
+    auto cb = [&machine, &entities](Entity *hit)
     {
         machine.AddObject(hit);
         entities.emplace(hit);
