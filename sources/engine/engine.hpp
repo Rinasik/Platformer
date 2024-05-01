@@ -147,24 +147,24 @@ auto Engine::removeEntity(Entity *&entity, std::unordered_set<Entity *> &entitie
     entities.erase(entity);
 
 
-    if (entity->type == MapEncoding::Hit)
-    {
-        Hit *hit = dynamic_cast<Hit *>(entity);
+    // if (entity->type == MapEncoding::Hit)
+    // {
+    //     Hit *hit = dynamic_cast<Hit *>(entity);
 
-        delete hit;
-    }
-    else if (entity->type == MapEncoding::Warrior)
-    {
-        Warrior *warrior = dynamic_cast<Warrior *>(entity);
+    //     delete hit;
+    // }
+    // else if (entity->type == MapEncoding::Warrior)
+    // {
+    //     Warrior *warrior = dynamic_cast<Warrior *>(entity);
 
-        delete warrior;
-    }
-    else if (entity->type == MapEncoding::Jumper)
-    {
-        Jumper *jumper = dynamic_cast<Jumper *>(entity);
+    //     delete warrior;
+    // }
+    // else if (entity->type == MapEncoding::Jumper)
+    // {
+    //     Jumper *jumper = dynamic_cast<Jumper *>(entity);
 
-        delete jumper;
-    }
+    //     delete jumper;
+    // }
 }
 
 auto AddHit(Machine &machine, std::unordered_set<Entity *> &entities) -> std::function<void(Hit *)>
