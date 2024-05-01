@@ -24,7 +24,7 @@ Bonus::Bonus(double ix, double iy, BonusType type) : Entity{
                                                          HEIGHT - 1 - iy / DELTA_Y,
                                                          0.3,
                                                          0.5,
-                                                         MapEncoding::Bonus} {};
+                                                         MapEncoding::Bonus}, type(type) {};
 
 auto Bonus::Draw() -> void
 {

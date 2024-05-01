@@ -119,7 +119,7 @@ auto Jumper::GetBonus() -> std::optional<Bonus *>
 {
     if (std::rand() % 10 <= 1)
     {
-        return new Bonus(_x, _y, BonusType::OneLife);
+        return new Bonus(_x, _y, BonusType::DoubleJump);
     }
 
     return std::nullopt;

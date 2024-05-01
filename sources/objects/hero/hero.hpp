@@ -8,6 +8,7 @@
 #include "../exit/exit.hpp"
 #include "../hit/hit.hpp"
 #include "../../texture/texture.hpp"
+#include "../bonus/bonus.hpp"
 
 class Hero : virtual public Entity
 {
@@ -15,7 +16,11 @@ private:
     int _lives;
     bool _isFalling = false;
     bool _isInvisible = false;
+    bool _isDoubleJump = false;
+    bool _isDoubleJumped = false;
     int _invisibleCounter = 0;
+
+    int _maxLives = 0;
 
     std::optional<Hit *> _hit = std::nullopt;
     std::function<void(Hit *)> _addHit;
@@ -32,6 +37,8 @@ private:
     auto collisionTopDetected(Object *neighbour, Shape nShape, double &virtualDeltaY) -> void;
 
     auto getDamage(Direction direction) -> void;
+
+    auto handleBonus(BonusType type) -> void;
 
 public:
     int level = 0;
@@ -53,7 +60,7 @@ Hero::Hero(int ix, int iy, int sizeX, int sizeY, int lives, std::function<void(H
                                                                                                      (double)sizeX,
                                                                                                      (double)sizeY,
                                                                                                      MapEncoding::Hero},
-                                                                                                 _lives(lives), _addHit(addHit)
+                                                                                                 _lives(lives), _maxLives(lives), _addHit(addHit)
 {
     _heart = Texture("images/Heart.png", true);
 }
@@ -137,8 +144,12 @@ auto Hero::HandleSpecialClickDown(int key) -> void
             _velX -= DELTA_X_VELOCITY;
         break;
     case GLUT_KEY_UP:
-        if (!_isFalling)
+        if (!_isFalling || (_isDoubleJump && !_isDoubleJumped))
         {
+            if (_isFalling)
+            {
+                _isDoubleJumped = true;
+            }
             _velY += DELTA_Y_VELOCITY;
             _isFalling = true;
         }
@@ -193,6 +204,34 @@ auto Hero::HandleClickDown(unsigned char key) -> void
         break;
     default:
         break;
+    }
+}
+
+auto Hero::handleBonus(BonusType type) -> void
+{
+    if (type == BonusType::MaxLives)
+    {
+        _maxLives += 1;
+    }
+    else if (type == BonusType::OneLife)
+    {
+        _lives += 1;
+        if (_lives > _maxLives)
+        {
+            _lives = _maxLives;
+        }
+    }
+    else if (type == BonusType::ThreeLives)
+    {
+        _lives += 3;
+        if (_lives > _maxLives)
+        {
+            _lives = _maxLives;
+        }
+    }
+    else if (type == BonusType::DoubleJump)
+    {
+        _isDoubleJump = true;
     }
 }
 
@@ -285,6 +324,7 @@ auto Hero::entitiesAndMapCollisionY(std::unordered_set<Object *> neighbours, dou
     if (shape.bottom + virtualDeltaY <= 0)
     {
         _isFalling = false;
+        _isDoubleJumped = false;
     }
 }
 
@@ -318,6 +358,13 @@ auto Hero::collisionRightDetected(Object *neighbour, Shape nShape, double &virtu
     {
         _lives = 0;
     }
+    else if (neighbour->type == MapEncoding::Bonus)
+    {
+        Bonus *bonus = dynamic_cast<Bonus *>(neighbour);
+        handleBonus(bonus->type);
+
+        bonus->isDestroyed = true;
+    }
     else if (!_isInvisible && (neighbour->type == MapEncoding::Warrior || neighbour->type == MapEncoding::Jumper || neighbour->type == MapEncoding::Archer || neighbour->type == MapEncoding::Monster))
     {
         getDamage(Direction::Left);
@@ -342,6 +389,13 @@ auto Hero::collisionLeftDetected(Object *neighbour, Shape nShape, double &virtua
     {
         _lives = 0;
     }
+    else if (neighbour->type == MapEncoding::Bonus)
+    {
+        Bonus *bonus = dynamic_cast<Bonus *>(neighbour);
+        handleBonus(bonus->type);
+
+        bonus->isDestroyed = true;
+    }
     else if (!_isInvisible && (neighbour->type == MapEncoding::Warrior || neighbour->type == MapEncoding::Jumper || neighbour->type == MapEncoding::Archer || neighbour->type == MapEncoding::Monster))
     {
         getDamage(Direction::Right);
@@ -355,6 +409,7 @@ auto Hero::collisionBottomDetected(Object *neighbour, Shape nShape, double &virt
         _y = nShape.top;
 
         _isFalling = false;
+        _isDoubleJumped = false;
         _velY = 0;
 
         virtualDeltaY = 0;
@@ -371,6 +426,7 @@ auto Hero::collisionBottomDetected(Object *neighbour, Shape nShape, double &virt
         _y = nShape.top;
 
         _isFalling = false;
+        _isDoubleJumped = false;
         _velY = 0;
 
         virtualDeltaY = 0;
@@ -378,6 +434,13 @@ auto Hero::collisionBottomDetected(Object *neighbour, Shape nShape, double &virt
     else if (neighbour->type == MapEncoding::Magma)
     {
         _lives = 0;
+    }
+    else if (neighbour->type == MapEncoding::Bonus)
+    {
+        Bonus *bonus = dynamic_cast<Bonus *>(neighbour);
+        handleBonus(bonus->type);
+
+        bonus->isDestroyed = true;
     }
     else if (!_isInvisible && (neighbour->type == MapEncoding::Warrior || neighbour->type == MapEncoding::Jumper || neighbour->type == MapEncoding::Archer || neighbour->type == MapEncoding::Monster))
     {
@@ -402,6 +465,13 @@ auto Hero::collisionTopDetected(Object *neighbour, Shape nShape, double &virtual
     else if (neighbour->type == MapEncoding::Magma)
     {
         _lives = 0;
+    }
+    else if (neighbour->type == MapEncoding::Bonus)
+    {
+        Bonus *bonus = dynamic_cast<Bonus *>(neighbour);
+        handleBonus(bonus->type);
+
+        bonus->isDestroyed = true;
     }
 }
 
