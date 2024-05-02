@@ -138,6 +138,14 @@ auto Map::InitDraw(int newMap) -> std::optional<MapPattern>
 
             i++;
         }
+        else if (point == 8)
+        {
+            positions.push_back(EntityPosition{MapEncoding::Chest, Position{i % _width, i / _width}});
+        }
+        else if (point == 9)
+        {
+            positions.push_back(EntityPosition{MapEncoding::Box, Position{i % _width, i / _width}});
+        }
     }
 
     _currentMap = mapPattern;

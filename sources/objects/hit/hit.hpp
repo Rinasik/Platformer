@@ -8,6 +8,7 @@ class Hit : virtual public Entity
 private:
     double _velX;
     double _initialX;
+    int _distance;
 
     Direction _direction;
 
@@ -18,19 +19,19 @@ private:
 
 public:
     Hit();
-    Hit(double ix, double iy, Direction direction);
+    Hit(double ix, double iy, Direction direction, int distance);
     auto Draw() -> void;
     auto Run(std::unordered_set<Object *> neighbours) -> void;
 };
 
 Hit::Hit(){};
-Hit::Hit(double ix, double iy, Direction direction) : Entity{
-                                                          ix + ((direction == Direction::Right) ? 0.5 : -0.5),
-                                                          iy - 0.25,
-                                                          1,
-                                                          0.5,
-                                                          MapEncoding::Hit},
-                                                      _direction(direction)
+Hit::Hit(double ix, double iy, Direction direction, int distance) : Entity{
+                                                                        ix + ((direction == Direction::Right) ? 0.5 : -0.5),
+                                                                        iy - 0.25,
+                                                                        1,
+                                                                        0.5,
+                                                                        MapEncoding::Hit},
+                                                                    _distance(distance), _direction(direction)
 {
     if (_direction == Direction::Left)
     {
@@ -95,7 +96,7 @@ auto Hit::Run(std::unordered_set<Object *> neighbours) -> void
 
     _x += virtualDeltaX;
 
-    if (abs((_x - _initialX) / DELTA_X) >= 1)
+    if (abs((_x - _initialX) / DELTA_X) >= _distance)
     {
         isDestroyed = true;
     }
@@ -103,14 +104,14 @@ auto Hit::Run(std::unordered_set<Object *> neighbours) -> void
 
 auto Hit::collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void
 {
-    if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform)
+    if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform || neighbour->type == MapEncoding::Chest || neighbour->type == MapEncoding::Box)
     {
         isDestroyed = true;
     }
 }
 auto Hit::collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void
 {
-    if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform)
+    if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform || neighbour->type == MapEncoding::Chest || neighbour->type == MapEncoding::Box)
     {
         isDestroyed = true;
     }

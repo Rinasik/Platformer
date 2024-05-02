@@ -14,6 +14,7 @@ class Hero : virtual public Entity
 {
 private:
     int _lives;
+    int _keys = 0;
     bool _isFalling = false;
     bool _isInvisible = false;
     bool _isDoubleJump = false;
@@ -21,11 +22,13 @@ private:
     int _invisibleCounter = 0;
 
     int _maxLives = 0;
+    int _atackDistance = 1;
 
     std::optional<Hit *> _hit = std::nullopt;
     std::function<void(Hit *)> _addHit;
 
     Texture _heart;
+    Texture _key;
 
     auto computeCollision(std::unordered_set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
     auto entitiesAndMapCollision(std::unordered_set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
@@ -63,6 +66,7 @@ Hero::Hero(int ix, int iy, int sizeX, int sizeY, int lives, std::function<void(H
                                                                                                  _lives(lives), _maxLives(lives), _addHit(addHit)
 {
     _heart = Texture("images/Heart.png", true);
+    _key = Texture("images/Key.png", true);
 }
 
 auto Hero::Draw() -> void
@@ -89,6 +93,34 @@ auto Hero::Draw() -> void
 
         glTexCoord2f(1, 1);
         glVertex2f(DELTA_X * (1.2 * i + 1.2) / 2 - 1.f, -DELTA_Y * (0.2) / 2 + 1.f);
+
+        glEnd();
+
+        glDisable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    for (int i = 0; i < _keys; ++i)
+    {
+        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+        glBindTexture(GL_TEXTURE_2D, _key.GetTexture());
+        glEnable(GL_TEXTURE_2D);
+
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
+        glBegin(GL_QUADS);
+
+        glTexCoord2f(0, 1);
+        glVertex2f(DELTA_X * (0.6 * i + 0.2) / 2 - 1.f, -DELTA_Y * (1.6) / 2 + 1.f);
+
+        glTexCoord2f(0, 0);
+        glVertex2f(DELTA_X * (0.6 * i + 0.2) / 2 - 1.f, -DELTA_Y * (2.6) / 2 + 1.f);
+
+        glTexCoord2f(1, 0);
+        glVertex2f(DELTA_X * (0.6 * i + 1.2) / 2 - 1.f, -DELTA_Y * (2.6) / 2 + 1.f);
+
+        glTexCoord2f(1, 1);
+        glVertex2f(DELTA_X * (0.6 * i + 1.2) / 2 - 1.f, -DELTA_Y * (1.6) / 2 + 1.f);
 
         glEnd();
 
@@ -190,14 +222,14 @@ auto Hero::HandleClickDown(unsigned char key) -> void
     case 'a':
         if (!_hit.has_value())
         {
-            _hit = std::optional(new Hit(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Left));
+            _hit = std::optional(new Hit(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Left, _atackDistance));
             _addHit(_hit.value());
         }
         break;
     case 'd':
         if (!_hit.has_value())
         {
-            _hit = std::optional(new Hit(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Right));
+            _hit = std::optional(new Hit(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Right, _atackDistance));
             _addHit(_hit.value());
         }
         break;
@@ -231,6 +263,14 @@ auto Hero::handleBonus(BonusType type) -> void
     else if (type == BonusType::DoubleJump)
     {
         _isDoubleJump = true;
+    }
+    else if (type == BonusType::Key)
+    {
+        _keys++;
+    }
+    else if (type == BonusType::BigHit)
+    {
+        _atackDistance = 2;
     }
 }
 
@@ -342,7 +382,7 @@ auto Hero::computeCollision(std::unordered_set<Object *> neighbours, double &vir
 
 auto Hero::collisionRightDetected(Object *neighbour, Shape nShape, double &virtualDeltaX) -> void
 {
-    if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform)
+    if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform || neighbour->type == MapEncoding::Chest || neighbour->type == MapEncoding::Box)
     {
         _x = nShape.left - _sizeX * DELTA_X;
 
@@ -373,7 +413,7 @@ auto Hero::collisionRightDetected(Object *neighbour, Shape nShape, double &virtu
 
 auto Hero::collisionLeftDetected(Object *neighbour, Shape nShape, double &virtualDeltaX) -> void
 {
-    if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform)
+    if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform || neighbour->type == MapEncoding::Chest || neighbour->type == MapEncoding::Box)
     {
         _x = nShape.right;
 
@@ -404,7 +444,7 @@ auto Hero::collisionLeftDetected(Object *neighbour, Shape nShape, double &virtua
 
 auto Hero::collisionBottomDetected(Object *neighbour, Shape nShape, double &virtualDeltaY) -> void
 {
-    if (neighbour->type == MapEncoding::Brick)
+    if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Chest || neighbour->type == MapEncoding::Box)
     {
         _y = nShape.top;
 
@@ -450,7 +490,7 @@ auto Hero::collisionBottomDetected(Object *neighbour, Shape nShape, double &virt
 
 auto Hero::collisionTopDetected(Object *neighbour, Shape nShape, double &virtualDeltaY) -> void
 {
-    if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform)
+    if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform || neighbour->type == MapEncoding::Chest || neighbour->type == MapEncoding::Box)
     {
         _y = nShape.bottom - _sizeY * DELTA_Y;
 

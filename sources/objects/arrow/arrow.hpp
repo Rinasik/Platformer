@@ -88,7 +88,7 @@ auto Arrow::Draw() -> void
 
 auto Arrow::collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void
 {
-    if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform)
+    if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform || neighbour->type == MapEncoding::Chest || neighbour->type == MapEncoding::Box)
     {
         isDestroyed = true;
     }
@@ -96,7 +96,7 @@ auto Arrow::collisionLeftDetected(Object *neighbour, Shape nshape, double &virtu
 
 auto Arrow::collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void
 {
-    if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform)
+    if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform || neighbour->type == MapEncoding::Chest || neighbour->type == MapEncoding::Box)
     {
         isDestroyed = true;
     }
@@ -106,6 +106,11 @@ auto Arrow::Run(std::unordered_set<Object *> neighbours) -> void
 {
     double virtualDeltaX = _velX;
     objectsCollisionX(neighbours, virtualDeltaX);
+
+    if (_x + virtualDeltaX <= 0 || _x + virtualDeltaX >= 2)
+    {
+        isDestroyed = true;
+    }
 
     _x += virtualDeltaX;
 }

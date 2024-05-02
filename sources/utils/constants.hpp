@@ -13,7 +13,7 @@ constexpr int SCREEN_HEIGHT = 800;
 constexpr double DELTA_X = 2.0 / WIDTH;
 constexpr double DELTA_Y = 2.0 / HEIGHT;
 
-constexpr double MAX_X_VELOCITY = 0.04;
+constexpr double MAX_X_VELOCITY = 0.02;
 constexpr double MAX_Y_VELOCITY = 0.6;
 
 constexpr double DELTA_X_VELOCITY = 0.002;
@@ -46,6 +46,9 @@ enum class MapEncoding
     Monster = 6,
 
     Platform = 7,
+
+    Chest = 8,
+    Box = 9,
 };
 
 enum class Direction
@@ -61,4 +64,6 @@ enum class BonusType
     OneLife = 2,
     ThreeLives = 3,
     DoubleJump = 4,
+    Key = 5,
+    BigHit = 6
 };

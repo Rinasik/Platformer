@@ -12,6 +12,8 @@
 #include "../objects/enemies/jumper/jumper.hpp"
 #include "../objects/enemies/archer/archer.hpp"
 #include "../objects/platform/platform.hpp"
+#include "../objects/chest/chest.hpp"
+#include "../objects/box/box.hpp"
 #include "../objects/bonus/bonus.hpp"
 
 auto AddEntity(Machine &machine, std::unordered_set<Entity *> &entities) -> std::function<void(Entity *)>;
@@ -54,6 +56,14 @@ auto Engine::createEntities(std::vector<EntityPosition> positions, std::unordere
         {
             CreateArcher(position.position, entities, AddEntity(_machine, entities));
         }
+        else if (position.entityType == MapEncoding::Chest)
+        {
+            CreateChest(position.position, entities);
+        }
+        else if (position.entityType == MapEncoding::Box)
+        {
+            CreateBox(position.position, entities);
+        }
     }
 }
 
@@ -63,16 +73,28 @@ auto Engine::UpdateState(Hero *&hero, std::unordered_set<Entity *> &entities) ->
     {
         if (entity->isDestroyed)
         {
+            std::optional<Bonus *> bonus = std::nullopt;
+
             if (IsEnemy(entity))
             {
                 Enemy *enemy = dynamic_cast<Enemy *>(entity);
-                std::optional<Bonus *> bonus = enemy->GetBonus();
+                bonus = enemy->GetBonus();
+            }
+            else if (entity->type == MapEncoding::Chest)
+            {
+                Chest *chest = dynamic_cast<Chest *>(entity);
+                bonus = chest->GetBonus();
+            }
+            else if (entity->type == MapEncoding::Box)
+            {
+                Box *box = dynamic_cast<Box *>(entity);
+                bonus = box->GetBonus();
+            }
 
-                if (bonus.has_value())
-                {
-                    _machine.AddObject(bonus.value());
-                    entities.emplace(bonus.value());
-                }
+            if (bonus.has_value())
+            {
+                _machine.AddObject(bonus.value());
+                entities.emplace(bonus.value());
             }
 
             removeEntity(entity, entities);

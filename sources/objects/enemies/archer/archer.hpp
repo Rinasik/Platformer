@@ -68,7 +68,7 @@ auto Archer::Run(std::unordered_set<Object *> neighbours) -> void
         isDestroyed = true;
         return;
     }
-    
+
     if (!_arrow.has_value())
     {
         if (std::rand() % 2)
@@ -96,7 +96,7 @@ auto Archer::GetBonus() -> std::optional<Bonus *>
     }
     else if (probability >= 2 && probability <= 4)
     {
-        return new Bonus(_x, _y, BonusType::MaxLives);
+        return new Bonus(_x, _y, BonusType::BigHit);
     }
 
     return std::nullopt;
