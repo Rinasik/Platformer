@@ -100,6 +100,8 @@ auto Hero::Draw() -> void
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
+    double padding = (1.2 * _maxLives + 0.2) * DELTA_X/2;
+
     for (int i = 0; i < _keys; ++i)
     {
         glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -111,16 +113,16 @@ auto Hero::Draw() -> void
         glBegin(GL_QUADS);
 
         glTexCoord2f(0, 1);
-        glVertex2f(DELTA_X * (0.6 * i + 0.2) / 2 - 1.f, -DELTA_Y * (1.6) / 2 + 1.f);
+        glVertex2f(padding + DELTA_X * (0.6 * i + 0.2) / 2 - 1.f, -DELTA_Y * (0.2) / 2 + 1.f);
 
         glTexCoord2f(0, 0);
-        glVertex2f(DELTA_X * (0.6 * i + 0.2) / 2 - 1.f, -DELTA_Y * (2.6) / 2 + 1.f);
+        glVertex2f(padding + DELTA_X * (0.6 * i + 0.2) / 2 - 1.f, -DELTA_Y * (1.2) / 2 + 1.f);
 
         glTexCoord2f(1, 0);
-        glVertex2f(DELTA_X * (0.6 * i + 1.2) / 2 - 1.f, -DELTA_Y * (2.6) / 2 + 1.f);
+        glVertex2f(padding + DELTA_X * (0.6 * i + 1.2) / 2 - 1.f, -DELTA_Y * (1.2) / 2 + 1.f);
 
         glTexCoord2f(1, 1);
-        glVertex2f(DELTA_X * (0.6 * i + 1.2) / 2 - 1.f, -DELTA_Y * (1.6) / 2 + 1.f);
+        glVertex2f(padding + DELTA_X * (0.6 * i + 1.2) / 2 - 1.f, -DELTA_Y * (0.2) / 2 + 1.f);
 
         glEnd();
 
