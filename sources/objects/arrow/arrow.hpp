@@ -10,7 +10,7 @@ private:
 
     Direction _direction;
 
-    Texture _arrow;
+    Texture *_arrow;
 
     auto collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
     auto collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
@@ -40,12 +40,12 @@ Arrow::Arrow(double ix, double iy, Direction direction) : Entity{
         _velX = HIT_VELOCITY;
     }
 
-    _arrow = Texture("images/Arrow.png", true);
+    _arrow = ARROW;
 };
 
 auto Arrow::Draw() -> void
 {
-    glBindTexture(GL_TEXTURE_2D, _arrow.GetTexture());
+    glBindTexture(GL_TEXTURE_2D, _arrow->GetTexture());
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
     glEnable(GL_TEXTURE_2D);

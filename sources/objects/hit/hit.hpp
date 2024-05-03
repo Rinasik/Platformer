@@ -12,7 +12,7 @@ private:
 
     Direction _direction;
 
-    Texture _fireball;
+    Texture *_fireball;
 
     auto collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
     auto collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
@@ -43,12 +43,12 @@ Hit::Hit(double ix, double iy, Direction direction, int distance) : Entity{
     }
     _initialX = _x;
 
-    _fireball = Texture("images/Fireball.png", true);
+    _fireball = FIREBALL;
 };
 
 auto Hit::Draw() -> void
 {
-    glBindTexture(GL_TEXTURE_2D, _fireball.GetTexture());
+    glBindTexture(GL_TEXTURE_2D, _fireball->GetTexture());
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
     glEnable(GL_TEXTURE_2D);

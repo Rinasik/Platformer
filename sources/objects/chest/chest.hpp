@@ -6,7 +6,7 @@
 class Chest : virtual public Entity
 {
 private:
-    Texture _chest;
+    Texture *_chest;
 
     auto collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
     auto collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
@@ -27,7 +27,7 @@ Chest::Chest(double ix, double iy) : Entity{
                                          1,
                                          MapEncoding::Chest}
 {
-    _chest = Texture("images/Chest.png", true);
+    _chest = CHEST;
 };
 
 auto CreateChest(Position position, std::unordered_set<Entity *> &entities) -> void
@@ -37,7 +37,7 @@ auto CreateChest(Position position, std::unordered_set<Entity *> &entities) -> v
 
 auto Chest::Draw() -> void
 {
-    glBindTexture(GL_TEXTURE_2D, _chest.GetTexture());
+    glBindTexture(GL_TEXTURE_2D, _chest->GetTexture());
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
     glEnable(GL_TEXTURE_2D);

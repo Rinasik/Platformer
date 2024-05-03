@@ -51,12 +51,25 @@ void specialKeyUp(int key, int x, int y)
 
 void handleKey(unsigned char key, int x, int y)
 {
-    hero->HandleClickDown(key);
+    hero->HandleClickDown(key, entities);
 
     if (key == 'q')
     {
         engine.InitState(hero, entities);
     }
+}
+
+void initTextures()
+{
+    WALL = new Texture("images/Wall.png");
+    MAGMA = new Texture("images/Magma.png");
+    BACKGROUND = new Texture("images/Background.png", true);
+    FIREBALL = new Texture("images/Fireball.png", true);
+    ARROW = new Texture("images/Arrow.png", true);
+    BOX = new Texture("images/Box.png", true);
+    CHEST = new Texture("images/Chest.png", true);
+    HEART = new Texture("images/Heart.png", true);
+    KEY = new Texture("images/Key.png", true);
 }
 
 int main(int argc, char **argv)
@@ -65,6 +78,7 @@ int main(int argc, char **argv)
 
     auto window = Window(SCREEN_WIDTH, SCREEN_HEIGHT);
     window.Init(argc, argv);
+    initTextures();
 
     engine = Engine("./resources");
     engine.InitState(hero, entities);

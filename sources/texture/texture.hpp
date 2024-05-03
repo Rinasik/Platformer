@@ -1,8 +1,5 @@
 #pragma once
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "../../deps/include/stb/stb_image.h"
-
 #include <GL/glut.h>
 
 class Texture
@@ -20,6 +17,9 @@ public:
 
     auto GetTexture() -> unsigned int;
 };
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "../../deps/include/stb/stb_image.h"
 
 Texture::Texture(const char *path, bool alpha = false)
 {
@@ -56,3 +56,13 @@ auto Texture::GetTexture() -> unsigned int
 {
     return _textureId;
 }
+
+Texture *ARROW;
+Texture *BACKGROUND;
+Texture *BOX;
+Texture *CHEST;
+Texture *FIREBALL;
+Texture *HEART;
+Texture *KEY;
+Texture *MAGMA;
+Texture *WALL;

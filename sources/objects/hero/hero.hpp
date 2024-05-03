@@ -14,7 +14,7 @@ class Hero : virtual public Entity
 {
 private:
     int _lives;
-    int _keys = 0;
+    int _keys = 2;
     bool _isFalling = false;
     bool _isInvisible = false;
     bool _isDoubleJump = false;
@@ -27,8 +27,8 @@ private:
     std::optional<Hit *> _hit = std::nullopt;
     std::function<void(Hit *)> _addHit;
 
-    Texture _heart;
-    Texture _key;
+    Texture *_heart;
+    Texture *_key;
 
     auto computeCollision(std::unordered_set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
     auto entitiesAndMapCollision(std::unordered_set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
@@ -53,7 +53,7 @@ public:
     auto Draw() -> void;
     auto HandleSpecialClickDown(int key) -> void;
     auto HandleSpecialClickUp(int key) -> void;
-    auto HandleClickDown(unsigned char key) -> void;
+    auto HandleClickDown(unsigned char key, std::unordered_set<Entity *> neighbours) -> void;
 };
 
 Hero::Hero(){};
@@ -65,8 +65,8 @@ Hero::Hero(int ix, int iy, int sizeX, int sizeY, int lives, std::function<void(H
                                                                                                      MapEncoding::Hero},
                                                                                                  _lives(lives), _maxLives(lives), _addHit(addHit)
 {
-    _heart = Texture("images/Heart.png", true);
-    _key = Texture("images/Key.png", true);
+    _heart = HEART;
+    _key = KEY;
 }
 
 auto Hero::Draw() -> void
@@ -75,7 +75,7 @@ auto Hero::Draw() -> void
     for (int i = 0; i < _lives; ++i)
     {
         glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-        glBindTexture(GL_TEXTURE_2D, _heart.GetTexture());
+        glBindTexture(GL_TEXTURE_2D, _heart->GetTexture());
         glEnable(GL_TEXTURE_2D);
 
         glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -100,12 +100,12 @@ auto Hero::Draw() -> void
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    double padding = (1.2 * _maxLives + 0.2) * DELTA_X/2;
+    double padding = (1.2 * _maxLives + 0.2) * DELTA_X / 2;
 
     for (int i = 0; i < _keys; ++i)
     {
         glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-        glBindTexture(GL_TEXTURE_2D, _key.GetTexture());
+        glBindTexture(GL_TEXTURE_2D, _key->GetTexture());
         glEnable(GL_TEXTURE_2D);
 
         glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -212,7 +212,7 @@ auto Hero::HandleSpecialClickUp(int key) -> void
     }
 }
 
-auto Hero::HandleClickDown(unsigned char key) -> void
+auto Hero::HandleClickDown(unsigned char key, std::unordered_set<Entity *> neighbours) -> void
 {
     if (!_lives)
     {
@@ -221,6 +221,37 @@ auto Hero::HandleClickDown(unsigned char key) -> void
 
     switch (key)
     {
+    case 'e':
+        if (!_keys)
+        {
+            break;
+        }
+        {
+            auto shape = GetShape();
+            for (auto neighbour : neighbours)
+            {
+                if (neighbour->type != MapEncoding::Chest)
+                {
+                    continue;
+                }
+
+                auto nShape = neighbour->GetShape();
+
+                bool isRight = shape.left - nShape.right <= EPSILON && shape.right >= nShape.right;
+                bool isLeft = nShape.left - shape.right <= EPSILON && nShape.left >= shape.left;
+                bool isAboveThanBottom = shape.top - nShape.bottom >= -EPSILON;
+                bool isBelowThanTop = shape.bottom - nShape.top <= EPSILON;
+
+                if ((isRight || isLeft) && isAboveThanBottom && isBelowThanTop)
+                {
+                    neighbour->isDestroyed = true;
+                    _keys--;
+
+                    break;
+                }
+            }
+        }
+        break;
     case 'a':
         if (!_hit.has_value())
         {

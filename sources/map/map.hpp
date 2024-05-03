@@ -37,9 +37,9 @@ private:
 
     auto parseMaps(const std::string &path) -> void;
 
-    Texture _wall;
-    Texture _magma;
-    Texture _background;
+    Texture *_wall;
+    Texture *_magma;
+    Texture *_background;
 
 public:
     Map(){};
@@ -54,9 +54,9 @@ Map::Map(int width, int height, const std::string &path)
     _height = height;
     _width = width;
 
-    _wall = Texture("images/Wall.png");
-    _magma = Texture("images/Magma.png");
-    _background = Texture("images/Background.png", true);
+    _wall = WALL;
+    _magma = MAGMA;
+    _background = BACKGROUND;
 
     parseMaps(path);
 }
@@ -173,12 +173,12 @@ auto Map::Draw() -> void
                 //     texture = _background.GetTexture();
                 // }
 
-                glBindTexture(GL_TEXTURE_2D, _background.GetTexture());
+                glBindTexture(GL_TEXTURE_2D, _background->GetTexture());
                 glColor4f(0.3f, 0.3f, 0.3f, 1.0f);
             }
             else if (block == MapEncoding::Brick)
             {
-                glBindTexture(GL_TEXTURE_2D, _wall.GetTexture());
+                glBindTexture(GL_TEXTURE_2D, _wall->GetTexture());
                 glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
             }
             else if (block == MapEncoding::Exit)
@@ -196,7 +196,7 @@ auto Map::Draw() -> void
             }
             else if (block == MapEncoding::Magma)
             {
-                glBindTexture(GL_TEXTURE_2D, _magma.GetTexture());
+                glBindTexture(GL_TEXTURE_2D, _magma->GetTexture());
                 glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
             }
 

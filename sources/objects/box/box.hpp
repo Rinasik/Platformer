@@ -6,7 +6,7 @@
 class Box : virtual public Entity
 {
 private:
-    Texture _box;
+    Texture *_box;
 
     auto collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
     auto collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
@@ -27,7 +27,7 @@ Box::Box(double ix, double iy) : Entity{
                                      1,
                                      MapEncoding::Box}
 {
-    _box = Texture("images/Box.png", true);
+    _box = BOX;
 };
 
 auto CreateBox(Position position, std::unordered_set<Entity *> &entities) -> void
@@ -37,7 +37,7 @@ auto CreateBox(Position position, std::unordered_set<Entity *> &entities) -> voi
 
 auto Box::Draw() -> void
 {
-    glBindTexture(GL_TEXTURE_2D, _box.GetTexture());
+    glBindTexture(GL_TEXTURE_2D, _box->GetTexture());
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
     glEnable(GL_TEXTURE_2D);
