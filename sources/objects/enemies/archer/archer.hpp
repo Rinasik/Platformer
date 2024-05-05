@@ -19,8 +19,8 @@ public:
 };
 
 Archer::Archer(int ix, int iy, std::function<void(Arrow *)> addArrow) : Enemy{
-                                                                            ix,
-                                                                            iy,
+                                                                            (double)ix,
+                                                                            (double)iy,
                                                                             1, 1, 2,
                                                                             std::vector<Direction>(),
                                                                             MapEncoding::Archer},

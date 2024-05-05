@@ -17,8 +17,8 @@ public:
 };
 
 Jumper::Jumper(int ix, int iy) : Enemy{
-                                     ix,
-                                     iy,
+                                     (double)ix,
+                                     (double)iy,
                                      1, 1, 2,
                                      std::vector<Direction>({Direction::Right, Direction::Up, Direction::Right, Direction::Left, Direction::Left, Direction::Left, Direction::Up, Direction::Left, Direction::Right, Direction::Right}),
                                      MapEncoding::Jumper}

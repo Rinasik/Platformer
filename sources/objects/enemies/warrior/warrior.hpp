@@ -6,7 +6,7 @@ class Warrior : virtual public Enemy
 {
 private:
 public:
-    Warrior(int ix, int iy);
+    Warrior(double ix, double iy);
 
     auto Run(std::unordered_set<Object *> neighbours) -> void;
     auto Draw() -> void;
@@ -14,7 +14,7 @@ public:
     auto GetBonus() -> std::optional<Bonus *>;
 };
 
-Warrior::Warrior(int ix, int iy) : Enemy{
+Warrior::Warrior(double ix, double iy) : Enemy{
                                        ix,
                                        iy,
                                        1, 1, 2,

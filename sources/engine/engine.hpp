@@ -89,6 +89,15 @@ auto Engine::UpdateState(Hero *&hero, std::unordered_set<Entity *> &entities) ->
             {
                 Box *box = dynamic_cast<Box *>(entity);
                 bonus = box->GetBonus();
+
+                if (!bonus.has_value())
+                {
+                    auto shape = box->GetShape();
+                    Warrior *warrior = new Warrior(shape.left / DELTA_X, HEIGHT - 1 - shape.bottom / DELTA_Y);
+
+                    _machine.AddObject(warrior);
+                    entities.emplace(warrior);
+                }
             }
 
             if (bonus.has_value())

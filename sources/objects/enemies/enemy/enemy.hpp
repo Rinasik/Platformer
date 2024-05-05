@@ -5,7 +5,6 @@
 #include "../../hit/hit.hpp"
 #include "../../arrow/arrow.hpp"
 
-
 class Enemy : public Entity
 {
 protected:
@@ -21,18 +20,18 @@ protected:
     auto collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
 
 public:
-    Enemy(int ix, int iy, int sizeX, int sizeY, int lives, std::vector<Direction> pattern, MapEncoding type);
+    Enemy(double ix, double iy, int sizeX, int sizeY, int lives, std::vector<Direction> pattern, MapEncoding type);
 
     virtual auto GetBonus() -> std::optional<Bonus *> = 0;
 };
 
-Enemy::Enemy(int ix, int iy, int sizeX, int sizeY, int lives, std::vector<Direction> pattern, MapEncoding type) : Entity{
-                                                                                                                      (double)ix,
-                                                                                                                      (double)iy,
-                                                                                                                      (double)sizeX,
-                                                                                                                      (double)sizeY,
-                                                                                                                      type},
-                                                                                                                  _pattern(pattern), _lives(lives)
+Enemy::Enemy(double ix, double iy, int sizeX, int sizeY, int lives, std::vector<Direction> pattern, MapEncoding type) : Entity{
+                                                                                                                            ix,
+                                                                                                                            iy,
+                                                                                                                            (double)sizeX,
+                                                                                                                            (double)sizeY,
+                                                                                                                            type},
+                                                                                                                        _pattern(pattern), _lives(lives)
 {
     _prevX = _x;
     _initialY = _y;
