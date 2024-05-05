@@ -74,6 +74,14 @@ auto Box::GetBonus() -> std::optional<Bonus *>
     {
         return new Bonus(_x, _y, BonusType::ThreeLives);
     }
+    else if (probability >= 5 && probability <= 7)
+    {
+        return new Bonus(_x, _y, BonusType::Arrows);
+    }
+    else if (probability == 8)
+    {
+        return new Bonus(_x, _y, BonusType::MaxLives);
+    }
 
     return std::nullopt;
 }

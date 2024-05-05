@@ -16,20 +16,22 @@ private:
     auto collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
 
 public:
+    Entity *owner;
+
     Arrow();
-    Arrow(double ix, double iy, Direction direction);
+    Arrow(double ix, double iy, Direction direction, Entity *owner);
     auto Draw() -> void;
     auto Run(std::unordered_set<Object *> neighbours) -> void;
 };
 
 Arrow::Arrow(){};
-Arrow::Arrow(double ix, double iy, Direction direction) : Entity{
-                                                              ix + ((direction == Direction::Right) ? 0.5 : -0.5),
-                                                              iy - 0.25,
-                                                              1,
-                                                              0.5,
-                                                              MapEncoding::Arrow},
-                                                          _direction(direction)
+Arrow::Arrow(double ix, double iy, Direction direction, Entity *owner) : Entity{
+                                                                             ix + ((direction == Direction::Right) ? 0.5 : -0.5),
+                                                                             iy - 0.25,
+                                                                             1,
+                                                                             0.5,
+                                                                             MapEncoding::Arrow},
+                                                                         _direction(direction), owner(owner)
 {
     if (_direction == Direction::Left)
     {

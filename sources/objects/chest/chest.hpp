@@ -64,13 +64,23 @@ auto Chest::Draw() -> void
 
 auto Chest::GetBonus() -> std::optional<Bonus *>
 {
-    if (std::rand() <= 2)
+    int probability = std::rand() % 10;
+
+    if (probability <= 2)
     {
         return new Bonus(_x, _y, BonusType::DoubleJump);
     }
-    else
+    else if (probability >= 3 && probability <= 5)
     {
         return new Bonus(_x, _y, BonusType::BigHit);
+    }
+    else if (probability >= 6 && probability <= 8)
+    {
+        return new Bonus(_x, _y, BonusType::Bow);
+    }
+    else
+    {
+        return new Bonus(_x, _y, BonusType::Arrows);
     }
 }
 

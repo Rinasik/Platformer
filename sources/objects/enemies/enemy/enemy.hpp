@@ -3,6 +3,8 @@
 #include "../../entity/entity.hpp"
 #include "../../bonus/bonus.hpp"
 #include "../../hit/hit.hpp"
+#include "../../arrow/arrow.hpp"
+
 
 class Enemy : public Entity
 {
@@ -44,6 +46,15 @@ auto Enemy::collisionLeftDetected(Object *neighbour, Shape nshape, double &virtu
         Hit *hit = dynamic_cast<Hit *>(neighbour);
         hit->isDestroyed = true;
     }
+    else if (neighbour->type == MapEncoding::Arrow)
+    {
+        Arrow *arrow = dynamic_cast<Arrow *>(neighbour);
+        if (this != arrow->owner)
+        {
+            _lives--;
+            arrow->isDestroyed = true;
+        }
+    }
 }
 
 auto Enemy::collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void
@@ -53,6 +64,15 @@ auto Enemy::collisionRightDetected(Object *neighbour, Shape nshape, double &virt
         _lives--;
         Hit *hit = dynamic_cast<Hit *>(neighbour);
         hit->isDestroyed = true;
+    }
+    else if (neighbour->type == MapEncoding::Arrow)
+    {
+        Arrow *arrow = dynamic_cast<Arrow *>(neighbour);
+        if (this != arrow->owner)
+        {
+            _lives--;
+            arrow->isDestroyed = true;
+        }
     }
 }
 

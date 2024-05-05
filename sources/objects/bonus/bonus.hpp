@@ -7,6 +7,8 @@
 class Bonus : virtual public Entity
 {
 private:
+    Texture *_texture;
+
     auto collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
     auto collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
 
@@ -20,24 +22,64 @@ public:
 };
 
 Bonus::Bonus(double ix, double iy, BonusType type) : Entity{
-                                                         ix / DELTA_X + 0.5,
+                                                         ix / DELTA_X + 0.1,
                                                          HEIGHT - 1 - iy / DELTA_Y,
-                                                         0.3,
-                                                         0.5,
-                                                         MapEncoding::Bonus}, type(type) {};
+                                                         0.8,
+                                                         1,
+                                                         MapEncoding::Bonus},
+                                                     type(type)
+{
+    if (type == BonusType::BigHit)
+    {
+        _texture = FIREBALL;
+    }
+    else if (type == BonusType::OneLife)
+    {
+        _texture = HEART;
+    }
+    else if (type == BonusType::Bow)
+    {
+        _texture = BOW;
+    }
+    else if (type == BonusType::Arrows)
+    {
+        _texture = QUIVER;
+    }
+    else if (type == BonusType::Key)
+    {
+        _texture = KEY;
+    }
+    else
+    {
+        _texture = HEART;
+    }
+};
 
 auto Bonus::Draw() -> void
 {
-    glColor4f(0.32f, 0.8f, 0.87f, 1.0f);
+    glBindTexture(GL_TEXTURE_2D, _texture->GetTexture());
+    glEnable(GL_TEXTURE_2D);
+
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
     glBegin(GL_QUADS);
 
+    glTexCoord2f(0, 0);
     glVertex2f(_x - 1.f, _y - 1.f);
+
+    glTexCoord2f(0, 1);
     glVertex2f(_x - 1.f, _y + DELTA_Y * _sizeY - 1.f);
+
+    glTexCoord2f(1, 1);
     glVertex2f(_x + DELTA_X * _sizeX - 1.f, _y + DELTA_Y * _sizeY - 1.f);
+
+    glTexCoord2f(1, 0);
     glVertex2f(_x + DELTA_X * _sizeX - 1.f, _y - 1.f);
 
     glEnd();
+
+    glDisable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
 };
 auto Bonus::Run(std::unordered_set<Object *> neighbours) -> void {};
 

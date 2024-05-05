@@ -9,23 +9,31 @@
 #include "../hit/hit.hpp"
 #include "../../texture/texture.hpp"
 #include "../bonus/bonus.hpp"
+#include "../arrow/arrow.hpp"
 
 class Hero : virtual public Entity
 {
 private:
     int _lives;
-    int _keys = 2;
+    int _keys = 1;
+    int _arrows = 0;
+
     bool _isFalling = false;
     bool _isInvisible = false;
     bool _isDoubleJump = false;
     bool _isDoubleJumped = false;
+    bool _isHasBow = false;
+
     int _invisibleCounter = 0;
 
     int _maxLives = 0;
     int _atackDistance = 1;
 
+    Weapon _weapon = Weapon::Hit;
+
     std::optional<Hit *> _hit = std::nullopt;
-    std::function<void(Hit *)> _addHit;
+
+    std::function<void(Entity *)> _addHit;
 
     Texture *_heart;
     Texture *_key;
@@ -47,7 +55,7 @@ public:
     int level = 0;
 
     Hero();
-    Hero(int ix, int iy, int sizeX, int sizeY, int lives, std::function<void(Hit *)> addHit);
+    Hero(int ix, int iy, int sizeX, int sizeY, int lives, std::function<void(Entity *)> addHit);
 
     auto Run(std::unordered_set<Object *> neighbours) -> void;
     auto Draw() -> void;
@@ -57,13 +65,13 @@ public:
 };
 
 Hero::Hero(){};
-Hero::Hero(int ix, int iy, int sizeX, int sizeY, int lives, std::function<void(Hit *)> addHit) : Entity{
-                                                                                                     (double)ix,
-                                                                                                     (double)iy,
-                                                                                                     (double)sizeX,
-                                                                                                     (double)sizeY,
-                                                                                                     MapEncoding::Hero},
-                                                                                                 _lives(lives), _maxLives(lives), _addHit(addHit)
+Hero::Hero(int ix, int iy, int sizeX, int sizeY, int lives, std::function<void(Entity *)> addHit) : Entity{
+                                                                                                        (double)ix,
+                                                                                                        (double)iy,
+                                                                                                        (double)sizeX,
+                                                                                                        (double)sizeY,
+                                                                                                        MapEncoding::Hero},
+                                                                                                    _lives(lives), _maxLives(lives), _addHit(addHit)
 {
     _heart = HEART;
     _key = KEY;
@@ -222,6 +230,18 @@ auto Hero::HandleClickDown(unsigned char key, std::unordered_set<Entity *> neigh
     switch (key)
     {
     case 'e':
+        if (_isHasBow)
+        {
+            if (_weapon == Weapon::Bow)
+            {
+                _weapon = Weapon::Hit;
+            }
+            else if (_weapon == Weapon::Hit)
+            {
+                _weapon = Weapon::Bow;
+            }
+        }
+    case 'r':
         if (!_keys)
         {
             break;
@@ -253,17 +273,37 @@ auto Hero::HandleClickDown(unsigned char key, std::unordered_set<Entity *> neigh
         }
         break;
     case 'a':
-        if (!_hit.has_value())
+        if (_weapon == Weapon::Hit)
         {
-            _hit = std::optional(new Hit(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Left, _atackDistance));
-            _addHit(_hit.value());
+            if (!_hit.has_value())
+            {
+                _hit = std::optional(new Hit(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Left, _atackDistance));
+                _addHit(_hit.value());
+            }
+        }
+        else if (_weapon == Weapon::Bow && _arrows > 0)
+        {
+            Arrow *arrow = new Arrow(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Left, this);
+            _addHit(arrow);
+
+            _arrows--;
         }
         break;
     case 'd':
-        if (!_hit.has_value())
+        if (_weapon == Weapon::Hit)
         {
-            _hit = std::optional(new Hit(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Right, _atackDistance));
-            _addHit(_hit.value());
+            if (!_hit.has_value())
+            {
+                _hit = std::optional(new Hit(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Right, _atackDistance));
+                _addHit(_hit.value());
+            }
+        }
+        else if (_weapon == Weapon::Bow && _arrows > 0)
+        {
+            Arrow *arrow = new Arrow(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Right, this);
+            _addHit(arrow);
+
+            _arrows--;
         }
         break;
     default:
@@ -305,6 +345,14 @@ auto Hero::handleBonus(BonusType type) -> void
     {
         _atackDistance = 2;
     }
+    else if (type == BonusType::Arrows)
+    {
+        _arrows += 3;
+    }
+    else if (type == BonusType::Bow)
+    {
+        _isHasBow = true;
+    }
 }
 
 auto Hero::Run(std::unordered_set<Object *> neighbours) -> void
@@ -316,6 +364,7 @@ auto Hero::Run(std::unordered_set<Object *> neighbours) -> void
             _hit = std::nullopt;
         }
     }
+
     if (!_lives)
     {
         return;
@@ -442,6 +491,15 @@ auto Hero::collisionRightDetected(Object *neighbour, Shape nShape, double &virtu
     {
         getDamage(Direction::Left);
     }
+    else if (!_isInvisible && neighbour->type == MapEncoding::Arrow)
+    {
+        Arrow *arrow = dynamic_cast<Arrow *>(neighbour);
+        if (this != arrow->owner)
+        {
+            getDamage(Direction::Left);
+            arrow->isDestroyed = true;
+        }
+    }
 }
 
 auto Hero::collisionLeftDetected(Object *neighbour, Shape nShape, double &virtualDeltaX) -> void
@@ -472,6 +530,15 @@ auto Hero::collisionLeftDetected(Object *neighbour, Shape nShape, double &virtua
     else if (!_isInvisible && (neighbour->type == MapEncoding::Warrior || neighbour->type == MapEncoding::Jumper || neighbour->type == MapEncoding::Archer || neighbour->type == MapEncoding::Monster))
     {
         getDamage(Direction::Right);
+    }
+    else if (!_isInvisible && neighbour->type == MapEncoding::Arrow)
+    {
+        Arrow *arrow = dynamic_cast<Arrow *>(neighbour);
+        if (this != arrow->owner)
+        {
+            getDamage(Direction::Right);
+            arrow->isDestroyed = true;
+        }
     }
 }
 
@@ -519,6 +586,15 @@ auto Hero::collisionBottomDetected(Object *neighbour, Shape nShape, double &virt
     {
         getDamage(Direction::Up);
     }
+    else if (!_isInvisible && neighbour->type == MapEncoding::Arrow)
+    {
+        Arrow *arrow = dynamic_cast<Arrow *>(neighbour);
+        if (this != arrow->owner)
+        {
+            getDamage(Direction::Up);
+            arrow->isDestroyed = true;
+        }
+    }
 }
 
 auto Hero::collisionTopDetected(Object *neighbour, Shape nShape, double &virtualDeltaY) -> void
@@ -545,6 +621,15 @@ auto Hero::collisionTopDetected(Object *neighbour, Shape nShape, double &virtual
         handleBonus(bonus->type);
 
         bonus->isDestroyed = true;
+    }
+    else if (!_isInvisible && neighbour->type == MapEncoding::Arrow)
+    {
+        Arrow *arrow = dynamic_cast<Arrow *>(neighbour);
+        if (this != arrow->owner)
+        {
+            getDamage(Direction::Up);
+            arrow->isDestroyed = true;
+        }
     }
 }
 

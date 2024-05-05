@@ -13,7 +13,7 @@ constexpr int SCREEN_HEIGHT = 800;
 constexpr double DELTA_X = 2.0 / WIDTH;
 constexpr double DELTA_Y = 2.0 / HEIGHT;
 
-constexpr double MAX_X_VELOCITY = 0.02;
+constexpr double MAX_X_VELOCITY = 0.012;
 constexpr double MAX_Y_VELOCITY = 0.6;
 
 constexpr double DELTA_X_VELOCITY = 0.002;
@@ -65,5 +65,13 @@ enum class BonusType
     ThreeLives = 3,
     DoubleJump = 4,
     Key = 5,
-    BigHit = 6
+    BigHit = 6,
+    Bow = 7,
+    Arrows = 8
+};
+
+enum class Weapon
+{
+    Hit = 1,
+    Bow = 2,
 };

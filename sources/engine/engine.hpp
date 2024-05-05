@@ -106,6 +106,7 @@ auto Engine::UpdateState(Hero *&hero, std::unordered_set<Entity *> &entities) ->
         }
     }
     hero->Run(_machine.FindNearby(hero));
+    _machine.UpdatePosition(hero);
 
     auto opt_pattern = _map.InitDraw(hero->level);
     if (opt_pattern.has_value())
@@ -152,6 +153,7 @@ auto Engine::InitState(Hero *&hero, std::unordered_set<Entity *> &entities) -> v
         if (position.entityType == MapEncoding::Hero)
         {
             hero = new Hero(position.position.ix, position.position.iy, 1, 1, HERO_MAX_LIVES, AddEntity(_machine, entities));
+            _machine.AddObject(hero);
         }
     }
 }
@@ -176,7 +178,6 @@ auto Engine::removeEntity(Entity *&entity, std::unordered_set<Entity *> &entitie
 
 auto AddEntity(Machine &machine, std::unordered_set<Entity *> &entities) -> std::function<void(Entity *)>
 {
-
     auto cb = [&machine, &entities](Entity *hit)
     {
         machine.AddObject(hit);

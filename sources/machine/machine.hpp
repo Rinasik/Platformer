@@ -55,6 +55,7 @@ auto Machine::FindNearby(Object *object) -> std::unordered_set<Object *>
             auto k = key(i, j);
             for (auto vector : dict[k])
             {
+                // Взаимодействие с самим собой
                 if (vector.first != object)
                 {
                     result.emplace(vector.first);

@@ -66,3 +66,7 @@ Texture *HEART;
 Texture *KEY;
 Texture *MAGMA;
 Texture *WALL;
+Texture *BOW;
+Texture *QUIVER;
+
+

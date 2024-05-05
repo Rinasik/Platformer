@@ -73,11 +73,11 @@ auto Archer::Run(std::unordered_set<Object *> neighbours) -> void
     {
         if (std::rand() % 2)
         {
-            _arrow = std::optional(new Arrow(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Left));
+            _arrow = std::optional(new Arrow(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Left, this));
         }
         else
         {
-            _arrow = std::optional(new Arrow(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Right));
+            _arrow = std::optional(new Arrow(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Right, this));
         }
         _addArrow(_arrow.value());
     }
@@ -96,7 +96,7 @@ auto Archer::GetBonus() -> std::optional<Bonus *>
     }
     else if (probability >= 2 && probability <= 4)
     {
-        return new Bonus(_x, _y, BonusType::BigHit);
+        return new Bonus(_x, _y, BonusType::Arrows);
     }
 
     return std::nullopt;
