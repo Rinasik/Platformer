@@ -2,6 +2,7 @@
 
 #include <GL/glut.h>
 #include <optional>
+#include <functional>
 
 #include "../entity/entity.hpp"
 #include "../platform/platform.hpp"
