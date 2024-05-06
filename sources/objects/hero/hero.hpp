@@ -7,10 +7,10 @@
 #include "../entity/entity.hpp"
 #include "../platform/platform.hpp"
 #include "../exit/exit.hpp"
-#include "../hit/hit.hpp"
+#include "../weapon/hit/hit.hpp"
 #include "../../texture/texture.hpp"
 #include "../bonus/bonus.hpp"
-#include "../arrow/arrow.hpp"
+#include "../weapon/arrow/arrow.hpp"
 
 class Hero : virtual public Entity
 {
@@ -187,11 +187,29 @@ auto Hero::HandleSpecialClickDown(int key) -> void
     {
     case GLUT_KEY_RIGHT:
         if (abs(_velX) < MAX_X_VELOCITY)
-            _velX += DELTA_X_VELOCITY;
+        {
+            if (_isFalling)
+            {
+                _velX += DELTA_X_VELOCITY / 2;
+            }
+            else
+            {
+                _velX += DELTA_X_VELOCITY;
+            }
+        }
         break;
     case GLUT_KEY_LEFT:
         if (abs(_velX) < MAX_X_VELOCITY)
-            _velX -= DELTA_X_VELOCITY;
+        {
+            if (_isFalling)
+            {
+                _velX -= DELTA_X_VELOCITY / 2;
+            }
+            else
+            {
+                _velX -= DELTA_X_VELOCITY;
+            }
+        }
         break;
     case GLUT_KEY_UP:
         if (!_isFalling || (_isDoubleJump && !_isDoubleJumped))
@@ -286,7 +304,7 @@ auto Hero::HandleClickDown(unsigned char key, std::unordered_set<Entity *> neigh
         {
             if (!_hit.has_value())
             {
-                _hit = std::optional(new Hit(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Left, _atackDistance));
+                _hit = std::optional(new Hit(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Left, _atackDistance, this));
                 _addHit(_hit.value());
             }
         }
@@ -303,7 +321,7 @@ auto Hero::HandleClickDown(unsigned char key, std::unordered_set<Entity *> neigh
         {
             if (!_hit.has_value())
             {
-                _hit = std::optional(new Hit(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Right, _atackDistance));
+                _hit = std::optional(new Hit(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Right, _atackDistance, this));
                 _addHit(_hit.value());
             }
         }
@@ -382,16 +400,18 @@ auto Hero::Run(std::unordered_set<Object *> neighbours) -> void
     auto initialVelX = _velX;
     auto initialVelY = _velY;
 
-    if (abs(_velX - Sign(_velX) * X_ACC) <= X_ACC + EPSILON)
+    if (!_isFalling)
     {
-        _velX = 0;
+        if (abs(_velX - Sign(_velX) * X_ACC) <= X_ACC + EPSILON)
+        {
+            _velX = 0;
+        }
+        else
+        {
+            _velX -= Sign(_velX) * X_ACC;
+        }
     }
     else
-    {
-        _velX -= Sign(_velX) * X_ACC;
-    }
-
-    if (_isFalling)
     {
         if ((_velY + Y_ACC) >= -MAX_Y_VELOCITY)
         {
@@ -500,13 +520,13 @@ auto Hero::collisionRightDetected(Object *neighbour, Shape nShape, double &virtu
     {
         getDamage(Direction::Left);
     }
-    else if (!_isInvisible && neighbour->type == MapEncoding::Arrow)
+    else if (!_isInvisible && (neighbour->type == MapEncoding::Arrow || neighbour->type == MapEncoding::Hit))
     {
-        Arrow *arrow = dynamic_cast<Arrow *>(neighbour);
-        if (this != arrow->owner)
+        Munition *munition = dynamic_cast<Munition *>(neighbour);
+        if (this != munition->owner)
         {
             getDamage(Direction::Left);
-            arrow->isDestroyed = true;
+            munition->isDestroyed = true;
         }
     }
 }
@@ -540,13 +560,13 @@ auto Hero::collisionLeftDetected(Object *neighbour, Shape nShape, double &virtua
     {
         getDamage(Direction::Right);
     }
-    else if (!_isInvisible && neighbour->type == MapEncoding::Arrow)
+    else if (!_isInvisible && (neighbour->type == MapEncoding::Arrow || neighbour->type == MapEncoding::Hit))
     {
-        Arrow *arrow = dynamic_cast<Arrow *>(neighbour);
-        if (this != arrow->owner)
+        Munition *munition = dynamic_cast<Munition *>(neighbour);
+        if (this != munition->owner)
         {
             getDamage(Direction::Right);
-            arrow->isDestroyed = true;
+            munition->isDestroyed = true;
         }
     }
 }
@@ -595,13 +615,13 @@ auto Hero::collisionBottomDetected(Object *neighbour, Shape nShape, double &virt
     {
         getDamage(Direction::Up);
     }
-    else if (!_isInvisible && neighbour->type == MapEncoding::Arrow)
+    else if (!_isInvisible && (neighbour->type == MapEncoding::Arrow || neighbour->type == MapEncoding::Hit))
     {
-        Arrow *arrow = dynamic_cast<Arrow *>(neighbour);
-        if (this != arrow->owner)
+        Munition *munition = dynamic_cast<Munition *>(neighbour);
+        if (this != munition->owner)
         {
             getDamage(Direction::Up);
-            arrow->isDestroyed = true;
+            munition->isDestroyed = true;
         }
     }
 }
@@ -631,13 +651,13 @@ auto Hero::collisionTopDetected(Object *neighbour, Shape nShape, double &virtual
 
         bonus->isDestroyed = true;
     }
-    else if (!_isInvisible && neighbour->type == MapEncoding::Arrow)
+    else if (!_isInvisible && (neighbour->type == MapEncoding::Arrow || neighbour->type == MapEncoding::Hit))
     {
-        Arrow *arrow = dynamic_cast<Arrow *>(neighbour);
-        if (this != arrow->owner)
+        Munition *munition = dynamic_cast<Munition *>(neighbour);
+        if (this != munition->owner)
         {
             getDamage(Direction::Up);
-            arrow->isDestroyed = true;
+            munition->isDestroyed = true;
         }
     }
 }

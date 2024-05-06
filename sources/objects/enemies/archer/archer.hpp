@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../enemy/enemy.hpp"
-#include "../../arrow/arrow.hpp"
+#include "../../weapon/arrow/arrow.hpp"
 
 class Archer : virtual public Enemy
 {
@@ -90,6 +90,7 @@ auto Archer::Run(std::unordered_set<Object *> neighbours) -> void
 auto Archer::GetBonus() -> std::optional<Bonus *>
 {
     int probability = std::rand() % 10;
+
     if (probability <= 1)
     {
         return new Bonus(_x, _y, BonusType::OneLife);

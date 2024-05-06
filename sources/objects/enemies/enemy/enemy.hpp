@@ -2,8 +2,8 @@
 
 #include "../../entity/entity.hpp"
 #include "../../bonus/bonus.hpp"
-#include "../../hit/hit.hpp"
-#include "../../arrow/arrow.hpp"
+#include "../../weapon/hit/hit.hpp"
+#include "../../weapon/arrow/arrow.hpp"
 
 class Enemy : public Entity
 {
@@ -41,9 +41,13 @@ auto Enemy::collisionLeftDetected(Object *neighbour, Shape nshape, double &virtu
 {
     if (neighbour->type == MapEncoding::Hit)
     {
-        _lives--;
         Hit *hit = dynamic_cast<Hit *>(neighbour);
-        hit->isDestroyed = true;
+
+        if (this != hit->owner)
+        {
+            _lives--;
+            hit->isDestroyed = true;
+        }
     }
     else if (neighbour->type == MapEncoding::Arrow)
     {
@@ -60,9 +64,13 @@ auto Enemy::collisionRightDetected(Object *neighbour, Shape nshape, double &virt
 {
     if (neighbour->type == MapEncoding::Hit)
     {
-        _lives--;
         Hit *hit = dynamic_cast<Hit *>(neighbour);
-        hit->isDestroyed = true;
+
+        if (this != hit->owner)
+        {
+            _lives--;
+            hit->isDestroyed = true;
+        }
     }
     else if (neighbour->type == MapEncoding::Arrow)
     {

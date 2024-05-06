@@ -11,6 +11,7 @@
 #include "../objects/enemies/warrior/warrior.hpp"
 #include "../objects/enemies/jumper/jumper.hpp"
 #include "../objects/enemies/archer/archer.hpp"
+#include "../objects/enemies/monster/monster.hpp"
 #include "../objects/platform/platform.hpp"
 #include "../objects/chest/chest.hpp"
 #include "../objects/box/box.hpp"
@@ -55,6 +56,10 @@ auto Engine::createEntities(std::vector<EntityPosition> positions, std::unordere
         else if (position.entityType == MapEncoding::Archer)
         {
             CreateArcher(position.position, entities, AddEntity(_machine, entities));
+        }
+        else if (position.entityType == MapEncoding::Monster)
+        {
+            CreateMonster(position.position, entities, AddEntity(_machine, entities));
         }
         else if (position.entityType == MapEncoding::Chest)
         {

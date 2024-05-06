@@ -1,23 +1,16 @@
 #pragma once
 
-#include "../entity/entity.hpp"
+#include "../munition/munition.hpp"
 #include <GL/glut.h>
 
-class Arrow : virtual public Entity
+class Arrow : virtual public Munition
 {
 private:
     double _velX;
 
-    Direction _direction;
-
     Texture *_arrow;
 
-    auto collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
-    auto collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
-
 public:
-    Entity *owner;
-
     Arrow();
     Arrow(double ix, double iy, Direction direction, Entity *owner);
     auto Draw() -> void;
@@ -25,13 +18,14 @@ public:
 };
 
 Arrow::Arrow(){};
-Arrow::Arrow(double ix, double iy, Direction direction, Entity *owner) : Entity{
-                                                                             ix + ((direction == Direction::Right) ? 0.5 : -0.5),
-                                                                             iy - 0.25,
+Arrow::Arrow(double ix, double iy, Direction direction, Entity *owner) : Munition{
+                                                                             ix,
+                                                                             iy,
                                                                              1,
                                                                              0.5,
-                                                                             MapEncoding::Arrow},
-                                                                         _direction(direction), owner(owner)
+                                                                             direction,
+                                                                             owner,
+                                                                             MapEncoding::Arrow}
 {
     if (_direction == Direction::Left)
     {
@@ -86,22 +80,6 @@ auto Arrow::Draw() -> void
 
     glDisable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, 0);
-}
-
-auto Arrow::collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void
-{
-    if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform || neighbour->type == MapEncoding::Chest || neighbour->type == MapEncoding::Box)
-    {
-        isDestroyed = true;
-    }
-}
-
-auto Arrow::collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void
-{
-    if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform || neighbour->type == MapEncoding::Chest || neighbour->type == MapEncoding::Box)
-    {
-        isDestroyed = true;
-    }
 }
 
 auto Arrow::Run(std::unordered_set<Object *> neighbours) -> void
