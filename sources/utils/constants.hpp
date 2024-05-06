@@ -17,16 +17,18 @@ constexpr double MAX_X_VELOCITY = 0.012;
 constexpr double MAX_Y_VELOCITY = 0.6;
 
 constexpr double DELTA_X_VELOCITY = 0.002;
-constexpr double X_ACC = 0.00025;
+constexpr double X_ACC = 0.0003;
 
-constexpr double DELTA_Y_VELOCITY = 0.52;
-constexpr double Y_ACC = 0.04;
+constexpr double DELTA_Y_VELOCITY = 0.42;
+constexpr double Y_ACC = 0.03;
 
 constexpr int HERO_MAX_LIVES = 3;
 constexpr int INVISIBLE_TICKS_COUNT = 74;
 
 constexpr double ENEMY_X_VELOCITY = 0.0025;
 constexpr double HIT_VELOCITY = 0.005;
+
+constexpr double ARROW_VELOCITY= 0.01;
 
 enum class MapEncoding
 {

@@ -35,11 +35,11 @@ Arrow::Arrow(double ix, double iy, Direction direction, Entity *owner) : Entity{
 {
     if (_direction == Direction::Left)
     {
-        _velX = -HIT_VELOCITY;
+        _velX = -ARROW_VELOCITY;
     }
     else
     {
-        _velX = HIT_VELOCITY;
+        _velX = ARROW_VELOCITY;
     }
 
     _arrow = ARROW;

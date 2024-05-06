@@ -85,3 +85,8 @@ auto Bonus::Run(std::unordered_set<Object *> neighbours) -> void {};
 
 auto Bonus::collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void {};
 auto Bonus::collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void {};
+
+auto CreateKey(Position position, std::unordered_set<Entity *> &entities) -> void
+{
+    entities.emplace(new Bonus(position.ix * DELTA_X, (HEIGHT - 1 - position.iy) * DELTA_Y, BonusType::Key));
+}

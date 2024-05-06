@@ -64,6 +64,10 @@ auto Engine::createEntities(std::vector<EntityPosition> positions, std::unordere
         {
             CreateBox(position.position, entities);
         }
+        else if (position.entityType == MapEncoding::Bonus)
+        {
+            CreateKey(position.position, entities);
+        }
     }
 }
 

@@ -382,7 +382,7 @@ auto Hero::Run(std::unordered_set<Object *> neighbours) -> void
     auto initialVelX = _velX;
     auto initialVelY = _velY;
 
-    if (abs(_velX - Sign(_velX) * X_ACC) <= EPSILON)
+    if (abs(_velX - Sign(_velX) * X_ACC) <= X_ACC + EPSILON)
     {
         _velX = 0;
     }

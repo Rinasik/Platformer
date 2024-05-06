@@ -146,6 +146,10 @@ auto Map::InitDraw(int newMap) -> std::optional<MapPattern>
         {
             positions.push_back(EntityPosition{MapEncoding::Box, Position{i % _width, i / _width}});
         }
+        else if (point == -10)
+        {
+            positions.push_back(EntityPosition{MapEncoding::Bonus, Position{i % _width, i / _width}});
+        }
     }
 
     _currentMap = mapPattern;
