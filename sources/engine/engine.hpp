@@ -140,6 +140,10 @@ auto Engine::UpdateState(Hero *&hero, std::unordered_set<Entity *> &entities) ->
 
 auto Engine::InitState(Hero *&hero, std::unordered_set<Entity *> &entities) -> void
 {
+    for (auto &entity : entities)
+    {
+        removeEntity(entity, entities);
+    }
     entities = std::unordered_set<Entity *>();
     _machine.Clear();
 
