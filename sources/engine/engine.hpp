@@ -135,6 +135,14 @@ auto Engine::UpdateState(Hero *&hero, std::unordered_set<Entity *> &entities) ->
         {
             _machine.AddObject(entity);
         }
+
+        for (auto &position : pattern.positions)
+        {
+            if (position.entityType == MapEncoding::Hero)
+            {
+                hero->UpdatePosition(position.position.ix, position.position.iy);
+            }
+        }
     }
 }
 

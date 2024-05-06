@@ -63,6 +63,8 @@ public:
     auto HandleSpecialClickDown(int key) -> void;
     auto HandleSpecialClickUp(int key) -> void;
     auto HandleClickDown(unsigned char key, std::unordered_set<Entity *> neighbours) -> void;
+
+    auto UpdatePosition(int ix, int iy) -> void;
 };
 
 Hero::Hero(){};
@@ -76,6 +78,12 @@ Hero::Hero(int ix, int iy, int sizeX, int sizeY, int lives, std::function<void(E
 {
     _heart = HEART;
     _key = KEY;
+}
+
+auto Hero::UpdatePosition(int ix, int iy) -> void
+{
+    _x = ix * DELTA_X;
+    _y = (HEIGHT - 1 - iy) * DELTA_Y;
 }
 
 auto Hero::Draw() -> void
