@@ -41,3 +41,7 @@ inline int Sign(double x)
     return 0;
 }
 
+long long int ParseHash(long int i, long long int j, long long int value)
+{
+    return (((value) ^ (j * 83492791)) ^ (i * 19349663)) / 73856093;
+}

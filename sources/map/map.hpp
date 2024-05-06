@@ -231,14 +231,15 @@ auto Map::parseMaps(const std::string &path) -> void
         auto stream = std::ifstream(entry.path());
 
         auto empty = std::vector<int>();
-        for (int i = 0; i < _height; ++i)
+
+        for (long long int i = 0; i < _height; ++i)
         {
-            for (int j = 0; j < _width; ++j)
+            for (long long int j = 0; j < _width; ++j)
             {
-                int tmp;
+                long long int tmp;
                 stream >> tmp;
 
-                empty.push_back(tmp);
+                empty.push_back(ParseHash(i, j, tmp));
             }
         }
 
