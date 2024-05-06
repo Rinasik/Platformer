@@ -15,7 +15,7 @@ class Hero : virtual public Entity
 {
 private:
     int _lives;
-    int _keys = 1;
+    int _keys = 0;
     int _arrows = 0;
 
     bool _isFalling = false;
