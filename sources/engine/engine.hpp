@@ -25,7 +25,7 @@ private:
     Machine _machine;
 
     auto createEntities(std::vector<EntityPosition> positions, std::unordered_set<Entity *> &entities) -> void;
-    auto removeEntity(Entity *&entity, std::unordered_set<Entity *> &entities) -> void;
+    auto removeEntity(Entity *entity, std::unordered_set<Entity *> &entities) -> void;
 
 public:
     Engine(){};
@@ -38,7 +38,7 @@ public:
 
 auto Engine::createEntities(std::vector<EntityPosition> positions, std::unordered_set<Entity *> &entities) -> void
 {
-    for (auto position : positions)
+    for (auto &position : positions)
     {
         if (position.entityType == MapEncoding::Warrior)
         {
@@ -69,7 +69,7 @@ auto Engine::createEntities(std::vector<EntityPosition> positions, std::unordere
 
 auto Engine::UpdateState(Hero *&hero, std::unordered_set<Entity *> &entities) -> void
 {
-    for (auto entity : entities)
+    for (auto &entity : entities)
     {
         if (entity->isDestroyed)
         {
@@ -148,16 +148,16 @@ auto Engine::InitState(Hero *&hero, std::unordered_set<Entity *> &entities) -> v
 
     createEntities(pattern.positions, entities);
 
-    for (auto brick : pattern.bricks)
+    for (auto &brick : pattern.bricks)
     {
         _machine.AddObject(brick);
     }
-    for (auto entity : entities)
+    for (auto &entity : entities)
     {
         _machine.AddObject(entity);
     }
 
-    for (auto position : pattern.positions)
+    for (auto &position : pattern.positions)
     {
         if (position.entityType == MapEncoding::Hero)
         {
@@ -179,10 +179,26 @@ auto Engine::Draw(Hero *&hero, std::unordered_set<Entity *> &entities) -> void
     }
 }
 
-auto Engine::removeEntity(Entity *&entity, std::unordered_set<Entity *> &entities) -> void
+auto Engine::removeEntity(Entity *entity, std::unordered_set<Entity *> &entities) -> void
 {
     _machine.RemoveObject(entity);
     entities.erase(entity);
+
+    if (entity->type == MapEncoding::Archer)
+    {
+        Archer *enemy = dynamic_cast<Archer *>(entity);
+        delete enemy;
+    }
+    else if (entity->type == MapEncoding::Jumper)
+    {
+        Jumper *enemy = dynamic_cast<Jumper *>(entity);
+        delete enemy;
+    }
+    else if (entity->type == MapEncoding::Warrior)
+    {
+        Warrior *enemy = dynamic_cast<Warrior *>(entity);
+        delete enemy;
+    }
 }
 
 auto AddEntity(Machine &machine, std::unordered_set<Entity *> &entities) -> std::function<void(Entity *)>
