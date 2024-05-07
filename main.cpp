@@ -15,7 +15,7 @@
 
 Engine engine;
 
-Hero *hero;
+std::unique_ptr<Hero> hero;
 std::optional<Boss *> boss;
 std::unordered_set<Entity *> entities;
 

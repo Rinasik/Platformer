@@ -28,14 +28,15 @@ private:
 
     auto createEntities(std::vector<EntityPosition> positions, std::unordered_set<Entity *> &entities) -> void;
     auto removeEntity(Entity *entity, std::unordered_set<Entity *> &entities) -> void;
+    auto fillState(std::unique_ptr<Hero> &hero, std::optional<Boss *> &boss, std::unordered_set<Entity *> &entities, MapPattern &pattern) -> void;
 
 public:
     Engine(){};
     Engine(std::string path) : _map(Map(WIDTH, HEIGHT, path)), _machine(Machine()){};
 
-    auto InitState(Hero *&hero, std::optional<Boss *> &boss, std::unordered_set<Entity *> &entities) -> void;
-    auto UpdateState(Hero *&hero, std::optional<Boss *> &boss, std::unordered_set<Entity *> &entities) -> void;
-    auto Draw(Hero *&hero, std::optional<Boss *> &boss, std::unordered_set<Entity *> &entities) -> void;
+    auto InitState(std::unique_ptr<Hero> &hero, std::optional<Boss *> &boss, std::unordered_set<Entity *> &entities) -> void;
+    auto UpdateState(std::unique_ptr<Hero> &hero, std::optional<Boss *> &boss, std::unordered_set<Entity *> &entities) -> void;
+    auto Draw(std::unique_ptr<Hero> &hero, std::optional<Boss *> &boss, std::unordered_set<Entity *> &entities) -> void;
 };
 
 auto Engine::createEntities(std::vector<EntityPosition> positions, std::unordered_set<Entity *> &entities) -> void
@@ -77,8 +78,9 @@ auto Engine::createEntities(std::vector<EntityPosition> positions, std::unordere
     }
 }
 
-auto Engine::UpdateState(Hero *&hero, std::optional<Boss *> &boss, std::unordered_set<Entity *> &entities) -> void
+auto Engine::UpdateState(std::unique_ptr<Hero> &heroPtr, std::optional<Boss *> &boss, std::unordered_set<Entity *> &entities) -> void
 {
+    Hero *hero = heroPtr.get();
     for (auto &entity : entities)
     {
         if (entity->isDestroyed)
@@ -149,45 +151,34 @@ auto Engine::UpdateState(Hero *&hero, std::optional<Boss *> &boss, std::unordere
     }
 
     auto opt_pattern = _map.InitDraw(hero->level);
+
     if (opt_pattern.has_value())
     {
         auto pattern = opt_pattern.value();
-        _machine.Clear();
 
-        entities = std::unordered_set<Entity *>();
-
-        createEntities(pattern.positions, entities);
-
-        for (auto brick : pattern.bricks)
-        {
-            _machine.AddObject(brick);
-        }
-        for (auto entity : entities)
-        {
-            _machine.AddObject(entity);
-        }
-
-        for (auto &position : pattern.positions)
-        {
-            if (position.entityType == MapEncoding::Hero)
-            {
-                hero->UpdatePosition(position.position.ix, position.position.iy);
-            }
-        }
+        fillState(heroPtr, boss, entities, pattern);
     }
 }
 
-auto Engine::InitState(Hero *&hero, std::optional<Boss *> &boss, std::unordered_set<Entity *> &entities) -> void
+auto Engine::InitState(std::unique_ptr<Hero> &hero, std::optional<Boss *> &boss, std::unordered_set<Entity *> &entities) -> void
+{
+    hero = nullptr;
+
+    auto opt_pattern = _map.InitDraw(-1);
+    auto pattern = opt_pattern.value();
+
+    fillState(hero, boss, entities, pattern);
+}
+
+auto Engine::fillState(std::unique_ptr<Hero> &hero, std::optional<Boss *> &boss, std::unordered_set<Entity *> &entities, MapPattern &pattern) -> void
 {
     for (auto &entity : entities)
     {
         removeEntity(entity, entities);
     }
+    boss = std::nullopt;
     entities = std::unordered_set<Entity *>();
     _machine.Clear();
-
-    auto opt_pattern = _map.InitDraw(-1);
-    auto pattern = opt_pattern.value();
 
     createEntities(pattern.positions, entities);
 
@@ -202,20 +193,24 @@ auto Engine::InitState(Hero *&hero, std::optional<Boss *> &boss, std::unordered_
 
     for (auto &position : pattern.positions)
     {
-        if (position.entityType == MapEncoding::Hero)
+        if (!hero && position.entityType == MapEncoding::Hero)
         {
-            hero = new Hero(position.position.ix, position.position.iy, 1, 1, HERO_MAX_LIVES, AddEntity(_machine, entities));
-            _machine.AddObject(hero);
+            hero = std::unique_ptr<Hero>(new Hero(position.position.ix, position.position.iy, 1, 1, HERO_MAX_LIVES, AddEntity(_machine, entities)));
+            _machine.AddObject(hero.get());
+        }
+        else if (hero && position.entityType == MapEncoding::Hero)
+        {
+            hero->UpdatePosition(position.position.ix, position.position.iy);
         }
         else if (position.entityType == MapEncoding::Boss)
         {
             boss = new Boss(position.position.ix, position.position.iy);
-            _machine.AddObject(hero);
+            _machine.AddObject(hero.get());
         }
     }
 }
 
-auto Engine::Draw(Hero *&hero, std::optional<Boss *> &boss, std::unordered_set<Entity *> &entities) -> void
+auto Engine::Draw(std::unique_ptr<Hero> &hero, std::optional<Boss *> &boss, std::unordered_set<Entity *> &entities) -> void
 {
     _map.Draw();
 
