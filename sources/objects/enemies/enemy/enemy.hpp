@@ -8,6 +8,8 @@
 class Enemy : public Entity
 {
 protected:
+    bool _isInvisible = false;
+
     double _prevX = 0;
     double _initialY = 0;
 
@@ -39,7 +41,7 @@ Enemy::Enemy(double ix, double iy, int sizeX, int sizeY, int lives, std::vector<
 
 auto Enemy::collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void
 {
-    if (neighbour->type == MapEncoding::Hit)
+    if (!_isInvisible && neighbour->type == MapEncoding::Hit)
     {
         Hit *hit = dynamic_cast<Hit *>(neighbour);
 
@@ -49,7 +51,7 @@ auto Enemy::collisionLeftDetected(Object *neighbour, Shape nshape, double &virtu
             hit->isDestroyed = true;
         }
     }
-    else if (neighbour->type == MapEncoding::Arrow)
+    else if (!_isInvisible && neighbour->type == MapEncoding::Arrow)
     {
         Arrow *arrow = dynamic_cast<Arrow *>(neighbour);
         if (this != arrow->owner)
@@ -62,7 +64,7 @@ auto Enemy::collisionLeftDetected(Object *neighbour, Shape nshape, double &virtu
 
 auto Enemy::collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void
 {
-    if (neighbour->type == MapEncoding::Hit)
+    if (!_isInvisible && neighbour->type == MapEncoding::Hit)
     {
         Hit *hit = dynamic_cast<Hit *>(neighbour);
 
@@ -72,7 +74,7 @@ auto Enemy::collisionRightDetected(Object *neighbour, Shape nshape, double &virt
             hit->isDestroyed = true;
         }
     }
-    else if (neighbour->type == MapEncoding::Arrow)
+    else if (!_isInvisible && neighbour->type == MapEncoding::Arrow)
     {
         Arrow *arrow = dynamic_cast<Arrow *>(neighbour);
         if (this != arrow->owner)
@@ -83,7 +85,7 @@ auto Enemy::collisionRightDetected(Object *neighbour, Shape nshape, double &virt
     }
 }
 
-bool IsEnemy(Entity *entity)
+bool IsEnemy(Object *object)
 {
-    return entity->type == MapEncoding::Warrior || entity->type == MapEncoding::Archer || entity->type == MapEncoding::Monster || entity->type == MapEncoding::Jumper;
+    return object->type == MapEncoding::Warrior || object->type == MapEncoding::Archer || object->type == MapEncoding::Monster || object->type == MapEncoding::Jumper || object->type == MapEncoding::Boss;
 }

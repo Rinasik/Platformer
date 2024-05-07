@@ -16,6 +16,7 @@
 Engine engine;
 
 Hero *hero;
+std::optional<Boss *> boss;
 std::unordered_set<Entity *> entities;
 
 void drawCb()
@@ -24,14 +25,14 @@ void drawCb()
     glClearColor(1, 1, 1, 1);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    engine.Draw(hero, entities);
+    engine.Draw(hero, boss, entities);
 
     glutSwapBuffers();
 }
 
 void EngineCb(int time)
 {
-    engine.UpdateState(hero, entities);
+    engine.UpdateState(hero, boss, entities);
 
     glutPostRedisplay();
     glutTimerFunc(1000 / FRAME_FREQUENCY, EngineCb, 0);
@@ -55,7 +56,7 @@ void handleKey(unsigned char key, int x, int y)
 
     if (key == 'q')
     {
-        engine.InitState(hero, entities);
+        engine.InitState(hero, boss, entities);
     }
 }
 
@@ -83,7 +84,7 @@ int main(int argc, char **argv)
     initTextures();
 
     engine = Engine("./resources");
-    engine.InitState(hero, entities);
+    engine.InitState(hero, boss, entities);
 
     glutTimerFunc(1000 / FRAME_FREQUENCY, EngineCb, 0);
 

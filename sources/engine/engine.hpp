@@ -11,6 +11,7 @@
 #include "../objects/enemies/warrior/warrior.hpp"
 #include "../objects/enemies/jumper/jumper.hpp"
 #include "../objects/enemies/archer/archer.hpp"
+#include "../objects/enemies/boss/boss.hpp"
 #include "../objects/enemies/monster/monster.hpp"
 #include "../objects/platform/platform.hpp"
 #include "../objects/chest/chest.hpp"
@@ -32,9 +33,9 @@ public:
     Engine(){};
     Engine(std::string path) : _map(Map(WIDTH, HEIGHT, path)), _machine(Machine()){};
 
-    auto InitState(Hero *&hero, std::unordered_set<Entity *> &entities) -> void;
-    auto UpdateState(Hero *&hero, std::unordered_set<Entity *> &entities) -> void;
-    auto Draw(Hero *&hero, std::unordered_set<Entity *> &entities) -> void;
+    auto InitState(Hero *&hero, std::optional<Boss *> &boss, std::unordered_set<Entity *> &entities) -> void;
+    auto UpdateState(Hero *&hero, std::optional<Boss *> &boss, std::unordered_set<Entity *> &entities) -> void;
+    auto Draw(Hero *&hero, std::optional<Boss *> &boss, std::unordered_set<Entity *> &entities) -> void;
 };
 
 auto Engine::createEntities(std::vector<EntityPosition> positions, std::unordered_set<Entity *> &entities) -> void
@@ -76,7 +77,7 @@ auto Engine::createEntities(std::vector<EntityPosition> positions, std::unordere
     }
 }
 
-auto Engine::UpdateState(Hero *&hero, std::unordered_set<Entity *> &entities) -> void
+auto Engine::UpdateState(Hero *&hero, std::optional<Boss *> &boss, std::unordered_set<Entity *> &entities) -> void
 {
     for (auto &entity : entities)
     {
@@ -126,6 +127,27 @@ auto Engine::UpdateState(Hero *&hero, std::unordered_set<Entity *> &entities) ->
     hero->Run(_machine.FindNearby(hero));
     _machine.UpdatePosition(hero);
 
+    if (boss.has_value())
+    {
+        Boss *bossValue = boss.value();
+
+        if (bossValue->isDestroyed)
+        {
+            removeEntity(bossValue, entities);
+            delete bossValue;
+
+            boss = std::nullopt;
+        }
+        else
+        {
+            std::unordered_set<Object *> additionalObjects = std::unordered_set<Object *>();
+            additionalObjects.emplace(hero);
+
+            bossValue->Run(_machine.FindNearby(bossValue, additionalObjects));
+            _machine.UpdatePosition(bossValue);
+        }
+    }
+
     auto opt_pattern = _map.InitDraw(hero->level);
     if (opt_pattern.has_value())
     {
@@ -155,7 +177,7 @@ auto Engine::UpdateState(Hero *&hero, std::unordered_set<Entity *> &entities) ->
     }
 }
 
-auto Engine::InitState(Hero *&hero, std::unordered_set<Entity *> &entities) -> void
+auto Engine::InitState(Hero *&hero, std::optional<Boss *> &boss, std::unordered_set<Entity *> &entities) -> void
 {
     for (auto &entity : entities)
     {
@@ -185,14 +207,23 @@ auto Engine::InitState(Hero *&hero, std::unordered_set<Entity *> &entities) -> v
             hero = new Hero(position.position.ix, position.position.iy, 1, 1, HERO_MAX_LIVES, AddEntity(_machine, entities));
             _machine.AddObject(hero);
         }
+        else if (position.entityType == MapEncoding::Boss)
+        {
+            boss = new Boss(position.position.ix, position.position.iy);
+            _machine.AddObject(hero);
+        }
     }
 }
 
-auto Engine::Draw(Hero *&hero, std::unordered_set<Entity *> &entities) -> void
+auto Engine::Draw(Hero *&hero, std::optional<Boss *> &boss, std::unordered_set<Entity *> &entities) -> void
 {
     _map.Draw();
 
     hero->Draw();
+    if (boss.has_value())
+    {
+        boss.value()->Draw();
+    }
 
     for (auto entity : entities)
     {

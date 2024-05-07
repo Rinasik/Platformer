@@ -22,7 +22,7 @@ public:
     auto UpdatePosition(Object *object) -> void;
     auto AddObject(Object *object) -> void;
     auto RemoveObject(Object *object) -> void;
-    auto FindNearby(Object *object) -> std::unordered_set<Object *>;
+    auto FindNearby(Object *object, std::unordered_set<Object *> additionalObjects) -> std::unordered_set<Object *>;
     auto Clear() -> void;
 };
 
@@ -31,7 +31,7 @@ auto Machine::key(int x, int y) -> long long int
     return ((x + 1) * 73856093) ^ ((y + 1) * 19349663);
 }
 
-auto Machine::FindNearby(Object *object) -> std::unordered_set<Object *>
+auto Machine::FindNearby(Object *object, std::unordered_set<Object *> additionalObjects = std::unordered_set<Object *>()) -> std::unordered_set<Object *>
 {
     Shape shape = object->GetShape();
     auto result = std::unordered_set<Object *>();
@@ -63,6 +63,12 @@ auto Machine::FindNearby(Object *object) -> std::unordered_set<Object *>
             }
         }
     }
+
+    for (auto &additional : additionalObjects)
+    {
+        result.emplace(additional);
+    }
+
     return result;
 }
 

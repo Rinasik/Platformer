@@ -131,6 +131,10 @@ auto Map::InitDraw(int newMap) -> std::optional<MapPattern>
         {
             positions.push_back(EntityPosition{MapEncoding::Monster, Position{i % _width, i / _width}});
         }
+        else if (point == 10)
+        {
+            positions.push_back(EntityPosition{MapEncoding::Boss, Position{i % _width, i / _width}});
+        }
         else if (point == 7)
         {
             positions.push_back(EntityPosition{MapEncoding::Platform, Position{i % _width, i / _width}});
@@ -167,15 +171,6 @@ auto Map::Draw() -> void
 
             if (block == MapEncoding::Empty)
             {
-                // unsigned int texture;
-                // if (std::rand() % 10 >= 8)
-                // {
-                //     texture = _wall.GetTexture();
-                // }
-                // else
-                // {
-                //     texture = _background.GetTexture();
-                // }
 
                 glBindTexture(GL_TEXTURE_2D, _background->GetTexture());
                 glColor4f(0.3f, 0.3f, 0.3f, 1.0f);

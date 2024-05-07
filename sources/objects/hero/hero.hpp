@@ -5,6 +5,7 @@
 #include <functional>
 
 #include "../entity/entity.hpp"
+#include "../enemies/enemy/enemy.hpp"
 #include "../platform/platform.hpp"
 #include "../exit/exit.hpp"
 #include "../weapon/hit/hit.hpp"
@@ -164,15 +165,6 @@ auto Hero::Draw() -> void
         glVertex2f(_x + DELTA_X * _sizeX - 1.f, _y - 1.f);
 
         glEnd();
-    }
-    if (_isInvisible)
-    {
-        _invisibleCounter++;
-        if (_invisibleCounter == INVISIBLE_TICKS_COUNT)
-        {
-            _invisibleCounter = 0;
-            _isInvisible = false;
-        }
     }
 }
 
@@ -397,21 +389,31 @@ auto Hero::Run(std::unordered_set<Object *> neighbours) -> void
         return;
     }
 
+    if (_isInvisible)
+    {
+        _invisibleCounter++;
+        if (_invisibleCounter == INVISIBLE_TICKS_COUNT)
+        {
+            _invisibleCounter = 0;
+            _isInvisible = false;
+        }
+    }
+
     auto initialVelX = _velX;
     auto initialVelY = _velY;
 
-    if (!_isFalling)
+    auto x_acc = _isFalling ? X_ACC / 2 : X_ACC;
+
+    if (abs(_velX - Sign(_velX) * x_acc) <= x_acc + EPSILON)
     {
-        if (abs(_velX - Sign(_velX) * X_ACC) <= X_ACC + EPSILON)
-        {
-            _velX = 0;
-        }
-        else
-        {
-            _velX -= Sign(_velX) * X_ACC;
-        }
+        _velX = 0;
     }
     else
+    {
+        _velX -= Sign(_velX) * x_acc;
+    }
+
+    if (_isFalling)
     {
         if ((_velY + Y_ACC) >= -MAX_Y_VELOCITY)
         {
@@ -516,7 +518,7 @@ auto Hero::collisionRightDetected(Object *neighbour, Shape nShape, double &virtu
 
         bonus->isDestroyed = true;
     }
-    else if (!_isInvisible && (neighbour->type == MapEncoding::Warrior || neighbour->type == MapEncoding::Jumper || neighbour->type == MapEncoding::Archer || neighbour->type == MapEncoding::Monster))
+    else if (!_isInvisible && IsEnemy(neighbour))
     {
         getDamage(Direction::Left);
     }
@@ -556,7 +558,7 @@ auto Hero::collisionLeftDetected(Object *neighbour, Shape nShape, double &virtua
 
         bonus->isDestroyed = true;
     }
-    else if (!_isInvisible && (neighbour->type == MapEncoding::Warrior || neighbour->type == MapEncoding::Jumper || neighbour->type == MapEncoding::Archer || neighbour->type == MapEncoding::Monster))
+    else if (!_isInvisible && IsEnemy(neighbour))
     {
         getDamage(Direction::Right);
     }
@@ -611,7 +613,7 @@ auto Hero::collisionBottomDetected(Object *neighbour, Shape nShape, double &virt
 
         bonus->isDestroyed = true;
     }
-    else if (!_isInvisible && (neighbour->type == MapEncoding::Warrior || neighbour->type == MapEncoding::Jumper || neighbour->type == MapEncoding::Archer || neighbour->type == MapEncoding::Monster))
+    else if (!_isInvisible && IsEnemy(neighbour))
     {
         getDamage(Direction::Up);
     }
