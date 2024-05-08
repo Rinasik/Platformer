@@ -11,10 +11,10 @@ protected:
     double _velY = 0;
 
     auto windowBoundsCollision(double &virtualDeltaX, double &virtualDeltaY) -> void;
-    auto objectsCollisionX(std::unordered_set<Object *> neighbours, double &virtualDeltaX) -> void;
+    auto objectsCollisionX(std::unordered_set<std::shared_ptr<Object>> neighbours, double &virtualDeltaX) -> void;
 
-    virtual auto collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void = 0;
-    virtual auto collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void = 0;
+    virtual auto collisionLeftDetected(std::shared_ptr<Object> neighbour, Shape nshape, double &virtualDeltaX) -> void = 0;
+    virtual auto collisionRightDetected(std::shared_ptr<Object> neighbour, Shape nshape, double &virtualDeltaX) -> void = 0;
 
 public:
     bool isDestroyed = false;
@@ -23,7 +23,7 @@ public:
     Entity(double x, double y, double sizeX, double sizeY, MapEncoding type);
 
     virtual auto Draw() -> void = 0;
-    virtual auto Run(std::unordered_set<Object *> neighbours) -> void = 0;
+    virtual auto Run(std::unordered_set<std::shared_ptr<Object>> neighbours) -> void = 0;
 };
 
 Entity::Entity(double x, double y, double sizeX, double sizeY, MapEncoding type) : Object{x,
@@ -68,7 +68,7 @@ auto Entity::windowBoundsCollision(double &virtualDeltaX, double &virtualDeltaY)
     }
 }
 
-auto Entity::objectsCollisionX(std::unordered_set<Object *> neighbours, double &virtualDeltaX) -> void
+auto Entity::objectsCollisionX(std::unordered_set<std::shared_ptr<Object>> neighbours, double &virtualDeltaX) -> void
 {
     auto shape = GetShape();
 

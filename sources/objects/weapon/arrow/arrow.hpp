@@ -14,7 +14,7 @@ public:
     Arrow();
     Arrow(double ix, double iy, Direction direction, Entity *owner);
     auto Draw() -> void;
-    auto Run(std::unordered_set<Object *> neighbours) -> void;
+    auto Run(std::unordered_set<std::shared_ptr<Object>> neighbours) -> void;
 };
 
 Arrow::Arrow(){};
@@ -82,7 +82,7 @@ auto Arrow::Draw() -> void
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-auto Arrow::Run(std::unordered_set<Object *> neighbours) -> void
+auto Arrow::Run(std::unordered_set<std::shared_ptr<Object>> neighbours) -> void
 {
     double virtualDeltaX = _velX;
     objectsCollisionX(neighbours, virtualDeltaX);

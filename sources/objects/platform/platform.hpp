@@ -8,8 +8,8 @@
 class Platform : virtual public Entity
 {
 private:
-    auto collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
-    auto collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
+    auto collisionLeftDetected(std::shared_ptr<Object> neighbour, Shape nshape, double &virtualDeltaX) -> void;
+    auto collisionRightDetected(std::shared_ptr<Object> neighbour, Shape nshape, double &virtualDeltaX) -> void;
 
 public:
     Platform(int ix, int iy, int sizeX);
@@ -17,10 +17,10 @@ public:
     double lastDeltaX;
 
     auto Draw() -> void;
-    auto Run(std::unordered_set<Object *> neighbours) -> void;
+    auto Run(std::unordered_set<std::shared_ptr<Object>> neighbours) -> void;
 };
 
-void CreatePlatforms(Position position, std::unordered_set<Entity *> &entities)
+void CreatePlatforms(Position position, std::unordered_set<std::shared_ptr<Entity>> &entities)
 {
     entities.emplace(new Platform(position.ix, position.iy, 2));
 }
@@ -35,7 +35,7 @@ Platform::Platform(int ix, int iy, int sizeX) : Entity{
     _velX = 0.0025f;
 }
 
-auto Platform::Run(std::unordered_set<Object *> neighbours) -> void
+auto Platform::Run(std::unordered_set<std::shared_ptr<Object>> neighbours) -> void
 {
     auto deltaX = _velX;
     objectsCollisionX(neighbours, deltaX);
@@ -58,7 +58,7 @@ auto Platform::Draw() -> void
     glEnd();
 }
 
-auto Platform::collisionLeftDetected(Object *neighbour, Shape nShape, double &virtualDeltaX) -> void
+auto Platform::collisionLeftDetected(std::shared_ptr<Object> neighbour, Shape nShape, double &virtualDeltaX) -> void
 {
     if (neighbour->type == MapEncoding::Brick)
     {
@@ -66,7 +66,7 @@ auto Platform::collisionLeftDetected(Object *neighbour, Shape nShape, double &vi
         virtualDeltaX = 0;
     }
 }
-auto Platform::collisionRightDetected(Object *neighbour, Shape nShape, double &virtualDeltaX) -> void
+auto Platform::collisionRightDetected(std::shared_ptr<Object> neighbour, Shape nShape, double &virtualDeltaX) -> void
 {
     if (neighbour->type == MapEncoding::Brick)
     {

@@ -6,30 +6,30 @@
 class Archer : virtual public Enemy
 {
 private:
-    std::optional<Arrow *> _arrow = std::nullopt;
-    std::function<void(Arrow *)> _addArrow;
+    std::optional<std::shared_ptr<Arrow>> _arrow = std::nullopt;
+    std::function<void(std::shared_ptr<Arrow>)> _addArrow;
 
 public:
-    Archer(int ix, int iy, std::function<void(Arrow *)> addArrow);
+    Archer(int ix, int iy, std::function<void(std::shared_ptr<Arrow>)> addArrow);
 
-    auto Run(std::unordered_set<Object *> neighbours) -> void;
+    auto Run(std::unordered_set<std::shared_ptr<Object>> neighbours) -> void;
     auto Draw() -> void;
 
-    auto GetBonus() -> std::optional<Bonus *>;
+    auto GetBonus() -> std::optional<std::shared_ptr<Bonus>>;
 };
 
-Archer::Archer(int ix, int iy, std::function<void(Arrow *)> addArrow) : Enemy{
-                                                                            (double)ix,
-                                                                            (double)iy,
-                                                                            1, 1, 2,
-                                                                            std::vector<Direction>(),
-                                                                            MapEncoding::Archer},
-                                                                        _addArrow(addArrow)
+Archer::Archer(int ix, int iy, std::function<void(std::shared_ptr<Arrow>)> addArrow) : Enemy{
+                                                                                           (double)ix,
+                                                                                           (double)iy,
+                                                                                           1, 1, 2,
+                                                                                           std::vector<Direction>(),
+                                                                                           MapEncoding::Archer},
+                                                                                       _addArrow(addArrow)
 {
     _velX = 0;
 }
 
-void CreateArcher(Position position, std::unordered_set<Entity *> &entities, std::function<void(Arrow *)> addArrow)
+void CreateArcher(Position position, std::unordered_set<std::shared_ptr<Entity>> &entities, std::function<void(std::shared_ptr<Arrow>)> addArrow)
 {
     entities.emplace(new Archer(position.ix, position.iy, addArrow));
 }
@@ -53,7 +53,7 @@ auto Archer::Draw() -> void
     glEnd();
 }
 
-auto Archer::Run(std::unordered_set<Object *> neighbours) -> void
+auto Archer::Run(std::unordered_set<std::shared_ptr<Object>> neighbours) -> void
 {
     if (_arrow.has_value())
     {
@@ -73,11 +73,11 @@ auto Archer::Run(std::unordered_set<Object *> neighbours) -> void
     {
         if (std::rand() % 2)
         {
-            _arrow = std::optional(new Arrow(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Left, this));
+            _arrow = std::shared_ptr<Arrow>(new Arrow(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Left, this));
         }
         else
         {
-            _arrow = std::optional(new Arrow(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Right, this));
+            _arrow = std::shared_ptr<Arrow>(new Arrow(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Right, this));
         }
         _addArrow(_arrow.value());
     }
@@ -87,17 +87,17 @@ auto Archer::Run(std::unordered_set<Object *> neighbours) -> void
     objectsCollisionX(neighbours, virtualDeltaX);
 }
 
-auto Archer::GetBonus() -> std::optional<Bonus *>
+auto Archer::GetBonus() -> std::optional<std::shared_ptr<Bonus>>
 {
     int probability = std::rand() % 10;
 
     if (probability <= 1)
     {
-        return new Bonus(_x, _y, BonusType::OneLife);
+        return std::shared_ptr<Bonus>(new Bonus(_x, _y, BonusType::OneLife));
     }
     else if (probability >= 2 && probability <= 4)
     {
-        return new Bonus(_x, _y, BonusType::Arrows);
+        return std::shared_ptr<Bonus>(new Bonus(_x, _y, BonusType::Arrows));
     }
 
     return std::nullopt;

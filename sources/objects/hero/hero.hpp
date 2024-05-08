@@ -33,21 +33,21 @@ private:
 
     Weapon _weapon = Weapon::Hit;
 
-    std::optional<Hit *> _hit = std::nullopt;
+    std::optional<std::shared_ptr<Hit>> _hit = std::nullopt;
 
-    std::function<void(Entity *)> _addHit;
+    std::function<void(std::shared_ptr<Entity>)> _addHit;
 
     Texture *_heart;
     Texture *_key;
 
-    auto computeCollision(std::unordered_set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
-    auto entitiesAndMapCollision(std::unordered_set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
-    auto entitiesAndMapCollisionY(std::unordered_set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
+    auto computeCollision(std::unordered_set<std::shared_ptr<Object>> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
+    auto entitiesAndMapCollision(std::unordered_set<std::shared_ptr<Object>> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
+    auto entitiesAndMapCollisionY(std::unordered_set<std::shared_ptr<Object>> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
 
-    auto collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
-    auto collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
-    auto collisionBottomDetected(Object *neighbour, Shape nShape, double &virtualDeltaY) -> void;
-    auto collisionTopDetected(Object *neighbour, Shape nShape, double &virtualDeltaY) -> void;
+    auto collisionLeftDetected(std::shared_ptr<Object> neighbour, Shape nshape, double &virtualDeltaX) -> void;
+    auto collisionRightDetected(std::shared_ptr<Object> neighbour, Shape nshape, double &virtualDeltaX) -> void;
+    auto collisionBottomDetected(std::shared_ptr<Object> neighbour, Shape nShape, double &virtualDeltaY) -> void;
+    auto collisionTopDetected(std::shared_ptr<Object> neighbour, Shape nShape, double &virtualDeltaY) -> void;
 
     auto getDamage(Direction direction) -> void;
 
@@ -57,25 +57,25 @@ public:
     int level = 0;
 
     Hero();
-    Hero(int ix, int iy, int sizeX, int sizeY, int lives, std::function<void(Entity *)> addHit);
+    Hero(int ix, int iy, int sizeX, int sizeY, int lives, std::function<void(std::shared_ptr<Entity>)> addHit);
 
-    auto Run(std::unordered_set<Object *> neighbours) -> void;
+    auto Run(std::unordered_set<std::shared_ptr<Object>> neighbours) -> void;
     auto Draw() -> void;
     auto HandleSpecialClickDown(int key) -> void;
     auto HandleSpecialClickUp(int key) -> void;
-    auto HandleClickDown(unsigned char key, std::unordered_set<Entity *> neighbours) -> void;
+    auto HandleClickDown(unsigned char key, std::unordered_set<std::shared_ptr<Entity>> neighbours) -> void;
 
     auto UpdatePosition(int ix, int iy) -> void;
 };
 
 Hero::Hero(){};
-Hero::Hero(int ix, int iy, int sizeX, int sizeY, int lives, std::function<void(Entity *)> addHit) : Entity{
-                                                                                                        (double)ix,
-                                                                                                        (double)iy,
-                                                                                                        (double)sizeX,
-                                                                                                        (double)sizeY,
-                                                                                                        MapEncoding::Hero},
-                                                                                                    _lives(lives), _maxLives(lives), _addHit(addHit)
+Hero::Hero(int ix, int iy, int sizeX, int sizeY, int lives, std::function<void(std::shared_ptr<Entity>)> addHit) : Entity{
+                                                                                                                       (double)ix,
+                                                                                                                       (double)iy,
+                                                                                                                       (double)sizeX,
+                                                                                                                       (double)sizeY,
+                                                                                                                       MapEncoding::Hero},
+                                                                                                                   _lives(lives), _maxLives(lives), _addHit(addHit)
 {
     _heart = HEART;
     _key = KEY;
@@ -239,7 +239,7 @@ auto Hero::HandleSpecialClickUp(int key) -> void
     }
 }
 
-auto Hero::HandleClickDown(unsigned char key, std::unordered_set<Entity *> neighbours) -> void
+auto Hero::HandleClickDown(unsigned char key, std::unordered_set<std::shared_ptr<Entity>> neighbours) -> void
 {
     if (!_lives)
     {
@@ -296,13 +296,13 @@ auto Hero::HandleClickDown(unsigned char key, std::unordered_set<Entity *> neigh
         {
             if (!_hit.has_value())
             {
-                _hit = std::optional(new Hit(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Left, _atackDistance, this));
+                _hit = std::shared_ptr<Hit>(new Hit(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Left, _atackDistance, this));
                 _addHit(_hit.value());
             }
         }
         else if (_weapon == Weapon::Bow && _arrows > 0)
         {
-            Arrow *arrow = new Arrow(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Left, this);
+            auto arrow = std::shared_ptr<Arrow>(new Arrow(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Left, this));
             _addHit(arrow);
 
             _arrows--;
@@ -313,13 +313,13 @@ auto Hero::HandleClickDown(unsigned char key, std::unordered_set<Entity *> neigh
         {
             if (!_hit.has_value())
             {
-                _hit = std::optional(new Hit(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Right, _atackDistance, this));
+                _hit = std::shared_ptr<Hit>(new Hit(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Right, _atackDistance, this));
                 _addHit(_hit.value());
             }
         }
         else if (_weapon == Weapon::Bow && _arrows > 0)
         {
-            Arrow *arrow = new Arrow(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Right, this);
+            auto arrow = std::shared_ptr<Arrow>(new Arrow(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Right, this));
             _addHit(arrow);
 
             _arrows--;
@@ -374,7 +374,7 @@ auto Hero::handleBonus(BonusType type) -> void
     }
 }
 
-auto Hero::Run(std::unordered_set<Object *> neighbours) -> void
+auto Hero::Run(std::unordered_set<std::shared_ptr<Object>> neighbours) -> void
 {
     if (_hit.has_value())
     {
@@ -434,7 +434,7 @@ auto Hero::Run(std::unordered_set<Object *> neighbours) -> void
     _y += virtualDeltaY;
 }
 
-auto Hero::entitiesAndMapCollisionY(std::unordered_set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
+auto Hero::entitiesAndMapCollisionY(std::unordered_set<std::shared_ptr<Object>> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
 {
     auto shape = GetShape();
     auto onPlatform = false;
@@ -481,19 +481,19 @@ auto Hero::entitiesAndMapCollisionY(std::unordered_set<Object *> neighbours, dou
     }
 }
 
-auto Hero::entitiesAndMapCollision(std::unordered_set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
+auto Hero::entitiesAndMapCollision(std::unordered_set<std::shared_ptr<Object>> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
 {
     objectsCollisionX(neighbours, virtualDeltaX);
     entitiesAndMapCollisionY(neighbours, virtualDeltaX, virtualDeltaY);
 }
 
-auto Hero::computeCollision(std::unordered_set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
+auto Hero::computeCollision(std::unordered_set<std::shared_ptr<Object>> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
 {
     windowBoundsCollision(virtualDeltaX, virtualDeltaY);
     entitiesAndMapCollision(neighbours, virtualDeltaX, virtualDeltaY);
 }
 
-auto Hero::collisionRightDetected(Object *neighbour, Shape nShape, double &virtualDeltaX) -> void
+auto Hero::collisionRightDetected(std::shared_ptr<Object> neighbour, Shape nShape, double &virtualDeltaX) -> void
 {
     if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform || neighbour->type == MapEncoding::Chest || neighbour->type == MapEncoding::Box)
     {
@@ -504,7 +504,7 @@ auto Hero::collisionRightDetected(Object *neighbour, Shape nShape, double &virtu
     }
     else if (neighbour->type == MapEncoding::Exit)
     {
-        Exit *exit = dynamic_cast<Exit *>(neighbour);
+        auto exit = std::dynamic_pointer_cast<Exit>(neighbour);
         level = exit->mapNumber;
     }
     else if (neighbour->type == MapEncoding::Magma)
@@ -513,7 +513,7 @@ auto Hero::collisionRightDetected(Object *neighbour, Shape nShape, double &virtu
     }
     else if (neighbour->type == MapEncoding::Bonus)
     {
-        Bonus *bonus = dynamic_cast<Bonus *>(neighbour);
+        auto bonus = std::dynamic_pointer_cast<Bonus>(neighbour);
         handleBonus(bonus->type);
 
         bonus->isDestroyed = true;
@@ -524,7 +524,7 @@ auto Hero::collisionRightDetected(Object *neighbour, Shape nShape, double &virtu
     }
     else if (!_isInvisible && (neighbour->type == MapEncoding::Arrow || neighbour->type == MapEncoding::Hit))
     {
-        Munition *munition = dynamic_cast<Munition *>(neighbour);
+        auto munition = std::dynamic_pointer_cast<Munition>(neighbour);
         if (this != munition->owner)
         {
             getDamage(Direction::Left);
@@ -533,7 +533,7 @@ auto Hero::collisionRightDetected(Object *neighbour, Shape nShape, double &virtu
     }
 }
 
-auto Hero::collisionLeftDetected(Object *neighbour, Shape nShape, double &virtualDeltaX) -> void
+auto Hero::collisionLeftDetected(std::shared_ptr<Object> neighbour, Shape nShape, double &virtualDeltaX) -> void
 {
     if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform || neighbour->type == MapEncoding::Chest || neighbour->type == MapEncoding::Box)
     {
@@ -544,7 +544,7 @@ auto Hero::collisionLeftDetected(Object *neighbour, Shape nShape, double &virtua
     }
     else if (neighbour->type == MapEncoding::Exit)
     {
-        Exit *exit = dynamic_cast<Exit *>(neighbour);
+        auto exit = std::dynamic_pointer_cast<Exit>(neighbour);
         level = exit->mapNumber;
     }
     else if (neighbour->type == MapEncoding::Magma)
@@ -553,7 +553,7 @@ auto Hero::collisionLeftDetected(Object *neighbour, Shape nShape, double &virtua
     }
     else if (neighbour->type == MapEncoding::Bonus)
     {
-        Bonus *bonus = dynamic_cast<Bonus *>(neighbour);
+        auto bonus = std::dynamic_pointer_cast<Bonus>(neighbour);
         handleBonus(bonus->type);
 
         bonus->isDestroyed = true;
@@ -564,7 +564,7 @@ auto Hero::collisionLeftDetected(Object *neighbour, Shape nShape, double &virtua
     }
     else if (!_isInvisible && (neighbour->type == MapEncoding::Arrow || neighbour->type == MapEncoding::Hit))
     {
-        Munition *munition = dynamic_cast<Munition *>(neighbour);
+        auto munition = std::dynamic_pointer_cast<Munition>(neighbour);
         if (this != munition->owner)
         {
             getDamage(Direction::Right);
@@ -573,7 +573,7 @@ auto Hero::collisionLeftDetected(Object *neighbour, Shape nShape, double &virtua
     }
 }
 
-auto Hero::collisionBottomDetected(Object *neighbour, Shape nShape, double &virtualDeltaY) -> void
+auto Hero::collisionBottomDetected(std::shared_ptr<Object> neighbour, Shape nShape, double &virtualDeltaY) -> void
 {
     if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Chest || neighbour->type == MapEncoding::Box)
     {
@@ -587,12 +587,12 @@ auto Hero::collisionBottomDetected(Object *neighbour, Shape nShape, double &virt
     }
     else if (neighbour->type == MapEncoding::Exit)
     {
-        Exit *exit = dynamic_cast<Exit *>(neighbour);
+        auto exit = std::dynamic_pointer_cast<Exit>(neighbour);
         level = exit->mapNumber;
     }
     else if (neighbour->type == MapEncoding::Platform)
     {
-        Platform *platform = dynamic_cast<Platform *>(neighbour);
+        auto platform = std::dynamic_pointer_cast<Platform>(neighbour);
         _x += platform->lastDeltaX;
         _y = nShape.top;
 
@@ -608,7 +608,7 @@ auto Hero::collisionBottomDetected(Object *neighbour, Shape nShape, double &virt
     }
     else if (neighbour->type == MapEncoding::Bonus)
     {
-        Bonus *bonus = dynamic_cast<Bonus *>(neighbour);
+        auto bonus = std::dynamic_pointer_cast<Bonus>(neighbour);
         handleBonus(bonus->type);
 
         bonus->isDestroyed = true;
@@ -619,7 +619,7 @@ auto Hero::collisionBottomDetected(Object *neighbour, Shape nShape, double &virt
     }
     else if (!_isInvisible && (neighbour->type == MapEncoding::Arrow || neighbour->type == MapEncoding::Hit))
     {
-        Munition *munition = dynamic_cast<Munition *>(neighbour);
+        auto munition = std::dynamic_pointer_cast<Munition>(neighbour);
         if (this != munition->owner)
         {
             getDamage(Direction::Up);
@@ -628,7 +628,7 @@ auto Hero::collisionBottomDetected(Object *neighbour, Shape nShape, double &virt
     }
 }
 
-auto Hero::collisionTopDetected(Object *neighbour, Shape nShape, double &virtualDeltaY) -> void
+auto Hero::collisionTopDetected(std::shared_ptr<Object> neighbour, Shape nShape, double &virtualDeltaY) -> void
 {
     if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform || neighbour->type == MapEncoding::Chest || neighbour->type == MapEncoding::Box)
     {
@@ -639,7 +639,7 @@ auto Hero::collisionTopDetected(Object *neighbour, Shape nShape, double &virtual
     }
     else if (neighbour->type == MapEncoding::Exit)
     {
-        Exit *exit = dynamic_cast<Exit *>(neighbour);
+        auto exit = std::dynamic_pointer_cast<Exit>(neighbour);
         level = exit->mapNumber;
     }
     else if (neighbour->type == MapEncoding::Magma)
@@ -648,14 +648,14 @@ auto Hero::collisionTopDetected(Object *neighbour, Shape nShape, double &virtual
     }
     else if (neighbour->type == MapEncoding::Bonus)
     {
-        Bonus *bonus = dynamic_cast<Bonus *>(neighbour);
+        auto bonus = std::dynamic_pointer_cast<Bonus>(neighbour);
         handleBonus(bonus->type);
 
         bonus->isDestroyed = true;
     }
     else if (!_isInvisible && (neighbour->type == MapEncoding::Arrow || neighbour->type == MapEncoding::Hit))
     {
-        Munition *munition = dynamic_cast<Munition *>(neighbour);
+        auto munition = std::dynamic_pointer_cast<Munition>(neighbour);
         if (this != munition->owner)
         {
             getDamage(Direction::Up);

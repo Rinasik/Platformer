@@ -18,20 +18,20 @@ private:
 
     BossPhase _phase;
 
-    auto entitiesAndMapCollisionY(std::unordered_set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
+    auto entitiesAndMapCollisionY(std::unordered_set<std::shared_ptr<Object>> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
 
-    auto collisionBottomDetected(Object *neighbour, Shape nShape, double &virtualDeltaY) -> void;
-    auto collisionTopDetected(Object *neighbour, Shape nShape, double &virtualDeltaY) -> void;
-    auto collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
-    auto collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
+    auto collisionBottomDetected(std::shared_ptr<Object> neighbour, Shape nShape, double &virtualDeltaY) -> void;
+    auto collisionTopDetected(std::shared_ptr<Object> neighbour, Shape nShape, double &virtualDeltaY) -> void;
+    auto collisionLeftDetected(std::shared_ptr<Object> neighbour, Shape nshape, double &virtualDeltaX) -> void;
+    auto collisionRightDetected(std::shared_ptr<Object> neighbour, Shape nshape, double &virtualDeltaX) -> void;
 
 public:
     Boss(int ix, int iy);
 
-    auto Run(std::unordered_set<Object *> neighbours) -> void;
+    auto Run(std::unordered_set<std::shared_ptr<Object>> neighbours) -> void;
     auto Draw() -> void;
 
-    auto GetBonus() -> std::optional<Bonus *>;
+    auto GetBonus() -> std::optional<std::shared_ptr<Bonus>>;
 };
 
 Boss::Boss(int ix, int iy) : Enemy{
@@ -46,7 +46,7 @@ Boss::Boss(int ix, int iy) : Enemy{
     _prevLives = 10;
 }
 
-auto Boss::Run(std::unordered_set<Object *> neighbours) -> void
+auto Boss::Run(std::unordered_set<std::shared_ptr<Object>> neighbours) -> void
 {
     if (!_lives)
     {
@@ -133,7 +133,7 @@ auto Boss::Run(std::unordered_set<Object *> neighbours) -> void
     _y += virtualDeltaY;
 }
 
-auto Boss::entitiesAndMapCollisionY(std::unordered_set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
+auto Boss::entitiesAndMapCollisionY(std::unordered_set<std::shared_ptr<Object>> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void
 {
     auto shape = GetShape();
     auto onPlatform = false;
@@ -179,7 +179,7 @@ auto Boss::entitiesAndMapCollisionY(std::unordered_set<Object *> neighbours, dou
     }
 }
 
-auto Boss::collisionBottomDetected(Object *neighbour, Shape nShape, double &virtualDeltaY) -> void
+auto Boss::collisionBottomDetected(std::shared_ptr<Object> neighbour, Shape nShape, double &virtualDeltaY) -> void
 {
     if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Chest || neighbour->type == MapEncoding::Box)
     {
@@ -192,7 +192,7 @@ auto Boss::collisionBottomDetected(Object *neighbour, Shape nShape, double &virt
     }
     else if (neighbour->type == MapEncoding::Platform)
     {
-        Platform *platform = dynamic_cast<Platform *>(neighbour);
+        auto platform = std::dynamic_pointer_cast<Platform>(neighbour);
         _x += platform->lastDeltaX;
         _y = nShape.top;
 
@@ -207,7 +207,7 @@ auto Boss::collisionBottomDetected(Object *neighbour, Shape nShape, double &virt
     }
     else if (!_isInvisible && (neighbour->type == MapEncoding::Arrow || neighbour->type == MapEncoding::Hit))
     {
-        Munition *munition = dynamic_cast<Munition *>(neighbour);
+        auto munition = std::dynamic_pointer_cast<Munition>(neighbour);
         if (this != munition->owner)
         {
             _lives--;
@@ -216,7 +216,7 @@ auto Boss::collisionBottomDetected(Object *neighbour, Shape nShape, double &virt
     }
 }
 
-auto Boss::collisionTopDetected(Object *neighbour, Shape nShape, double &virtualDeltaY) -> void
+auto Boss::collisionTopDetected(std::shared_ptr<Object> neighbour, Shape nShape, double &virtualDeltaY) -> void
 {
     if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform || neighbour->type == MapEncoding::Chest || neighbour->type == MapEncoding::Box)
     {
@@ -231,7 +231,7 @@ auto Boss::collisionTopDetected(Object *neighbour, Shape nShape, double &virtual
     }
     else if (!_isInvisible && (neighbour->type == MapEncoding::Arrow || neighbour->type == MapEncoding::Hit))
     {
-        Munition *munition = dynamic_cast<Munition *>(neighbour);
+        auto munition = std::dynamic_pointer_cast<Munition>(neighbour);
         if (this != munition->owner)
         {
             _lives--;
@@ -240,7 +240,7 @@ auto Boss::collisionTopDetected(Object *neighbour, Shape nShape, double &virtual
     }
 }
 
-auto Boss::collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void
+auto Boss::collisionLeftDetected(std::shared_ptr<Object> neighbour, Shape nshape, double &virtualDeltaX) -> void
 {
     if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform || neighbour->type == MapEncoding::Chest || neighbour->type == MapEncoding::Box)
     {
@@ -248,28 +248,18 @@ auto Boss::collisionLeftDetected(Object *neighbour, Shape nshape, double &virtua
 
         virtualDeltaX = 0;
     }
-    else if (!_isInvisible && neighbour->type == MapEncoding::Hit)
+    else if (!_isInvisible && (neighbour->type == MapEncoding::Arrow || neighbour->type == MapEncoding::Hit))
     {
-        Hit *hit = dynamic_cast<Hit *>(neighbour);
-
-        if (this != hit->owner)
+        auto munition = std::dynamic_pointer_cast<Munition>(neighbour);
+        if (this != munition->owner)
         {
             _lives--;
-            hit->isDestroyed = true;
-        }
-    }
-    else if (!_isInvisible && neighbour->type == MapEncoding::Arrow)
-    {
-        Arrow *arrow = dynamic_cast<Arrow *>(neighbour);
-        if (this != arrow->owner)
-        {
-            _lives--;
-            arrow->isDestroyed = true;
+            munition->isDestroyed = true;
         }
     }
 }
 
-auto Boss::collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void
+auto Boss::collisionRightDetected(std::shared_ptr<Object> neighbour, Shape nshape, double &virtualDeltaX) -> void
 {
     if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform || neighbour->type == MapEncoding::Chest || neighbour->type == MapEncoding::Box)
     {
@@ -277,28 +267,18 @@ auto Boss::collisionRightDetected(Object *neighbour, Shape nshape, double &virtu
 
         virtualDeltaX = 0;
     }
-    else if (!_isInvisible && neighbour->type == MapEncoding::Hit)
+    else if (!_isInvisible && (neighbour->type == MapEncoding::Arrow || neighbour->type == MapEncoding::Hit))
     {
-        Hit *hit = dynamic_cast<Hit *>(neighbour);
-
-        if (this != hit->owner)
+        auto munition = std::dynamic_pointer_cast<Munition>(neighbour);
+        if (this != munition->owner)
         {
             _lives--;
-            hit->isDestroyed = true;
-        }
-    }
-    else if (!_isInvisible && neighbour->type == MapEncoding::Arrow)
-    {
-        Arrow *arrow = dynamic_cast<Arrow *>(neighbour);
-        if (this != arrow->owner)
-        {
-            _lives--;
-            arrow->isDestroyed = true;
+            munition->isDestroyed = true;
         }
     }
 }
 
-auto Boss::GetBonus() -> std::optional<Bonus *>
+auto Boss::GetBonus() -> std::optional<std::shared_ptr<Bonus>>
 {
     return std::nullopt;
 }

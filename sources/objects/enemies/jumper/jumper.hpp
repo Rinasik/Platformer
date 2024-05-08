@@ -10,10 +10,10 @@ private:
 public:
     Jumper(int ix, int iy);
 
-    auto Run(std::unordered_set<Object *> neighbours) -> void;
+    auto Run(std::unordered_set<std::shared_ptr<Object>> neighbours) -> void;
     auto Draw() -> void;
 
-    auto GetBonus() -> std::optional<Bonus *>;
+    auto GetBonus() -> std::optional<std::shared_ptr<Bonus>>;
 };
 
 Jumper::Jumper(int ix, int iy) : Enemy{
@@ -26,7 +26,7 @@ Jumper::Jumper(int ix, int iy) : Enemy{
     _velX = ENEMY_X_VELOCITY;
 }
 
-void CreateJumper(Position position, std::unordered_set<Entity *> &entities)
+void CreateJumper(Position position, std::unordered_set<std::shared_ptr<Entity>> &entities)
 {
     entities.emplace(new Jumper(position.ix, position.iy));
 }
@@ -50,7 +50,7 @@ auto Jumper::Draw() -> void
     glEnd();
 }
 
-auto Jumper::Run(std::unordered_set<Object *> neighbours) -> void
+auto Jumper::Run(std::unordered_set<std::shared_ptr<Object>> neighbours) -> void
 {
     if (!_lives)
     {
@@ -115,11 +115,11 @@ auto Jumper::Run(std::unordered_set<Object *> neighbours) -> void
     _y += virtualDeltaY;
 }
 
-auto Jumper::GetBonus() -> std::optional<Bonus *>
+auto Jumper::GetBonus() -> std::optional<std::shared_ptr<Bonus>>
 {
     if (std::rand() % 10 <= 1)
     {
-        return new Bonus(_x, _y, BonusType::OneLife);
+        return std::shared_ptr<Bonus>(new Bonus(_x, _y, BonusType::OneLife));
     }
 
     return std::nullopt;

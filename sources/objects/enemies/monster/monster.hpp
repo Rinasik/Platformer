@@ -8,42 +8,42 @@ class Monster : virtual public Enemy
 private:
     bool _isFalling = false;
 
-    std::optional<Hit *> _hit = std::nullopt;
-    std::function<void(Hit *)> _addHit;
+    std::optional<std::shared_ptr<Hit>> _hit = std::nullopt;
+    std::function<void(std::shared_ptr<Entity>)> _addHit;
 
 public:
-    Monster(double ix, double iy, std::function<void(Hit *)> addHit);
+    Monster(double ix, double iy, std::function<void(std::shared_ptr<Entity>)> addHit);
 
-    auto Run(std::unordered_set<Object *> neighbours) -> void;
+    auto Run(std::unordered_set<std::shared_ptr<Object>> neighbours) -> void;
     auto Draw() -> void;
 
-    auto GetBonus() -> std::optional<Bonus *>;
+    auto GetBonus() -> std::optional<std::shared_ptr<Bonus>>;
 };
 
-Monster::Monster(double ix, double iy, std::function<void(Hit *)> addHit) : Enemy{
-                                                                                ix,
-                                                                                iy,
-                                                                                1, 1, 5,
-                                                                                std::vector<Direction>({
-                                                                                    Direction::Right,
-                                                                                    Direction::Up,
-                                                                                    Direction::Right,
-                                                                                    Direction::Left,
-                                                                                    Direction::Left,
-                                                                                    Direction::Left,
-                                                                                    Direction::Up,
-                                                                                    Direction::Left,
-                                                                                    Direction::Right,
-                                                                                    Direction::Right,
-                                                                                    Direction::Up,
-                                                                                }),
-                                                                                MapEncoding::Monster}
+Monster::Monster(double ix, double iy, std::function<void(std::shared_ptr<Entity>)> addHit) : Enemy{
+                                                                                                  ix,
+                                                                                                  iy,
+                                                                                                  1, 1, 5,
+                                                                                                  std::vector<Direction>({
+                                                                                                      Direction::Right,
+                                                                                                      Direction::Up,
+                                                                                                      Direction::Right,
+                                                                                                      Direction::Left,
+                                                                                                      Direction::Left,
+                                                                                                      Direction::Left,
+                                                                                                      Direction::Up,
+                                                                                                      Direction::Left,
+                                                                                                      Direction::Right,
+                                                                                                      Direction::Right,
+                                                                                                      Direction::Up,
+                                                                                                  }),
+                                                                                                  MapEncoding::Monster}
 {
     _velX = ENEMY_X_VELOCITY;
     _addHit = addHit;
 }
 
-void CreateMonster(Position position, std::unordered_set<Entity *> &entities, std::function<void(Hit *)> addHit)
+void CreateMonster(Position position, std::unordered_set<std::shared_ptr<Entity>> &entities, std::function<void(std::shared_ptr<Entity>)> addHit)
 {
     entities.emplace(new Monster(position.ix, position.iy, addHit));
 }
@@ -67,7 +67,7 @@ auto Monster::Draw() -> void
     glEnd();
 }
 
-auto Monster::Run(std::unordered_set<Object *> neighbours) -> void
+auto Monster::Run(std::unordered_set<std::shared_ptr<Object>> neighbours) -> void
 {
     if (_hit.has_value())
     {
@@ -93,12 +93,12 @@ auto Monster::Run(std::unordered_set<Object *> neighbours) -> void
                 Shape nShape = neighbour->GetShape();
                 if (shape.right - nShape.right >= 0 && _velX <= 0)
                 {
-                    _hit = std::optional(new Hit(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Left, 2, this));
+                    _hit = std::shared_ptr<Hit>(new Hit(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Left, 2, this));
                     _addHit(_hit.value());
                 }
                 else if (nShape.left - shape.left >= 0 && _velX >= 0)
                 {
-                    _hit = std::optional(new Hit(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Right, 2, this));
+                    _hit = std::shared_ptr<Hit>(new Hit(_x / DELTA_X, HEIGHT - 1 - _y / DELTA_Y, Direction::Right, 2, this));
                     _addHit(_hit.value());
                 }
             }
@@ -161,17 +161,17 @@ auto Monster::Run(std::unordered_set<Object *> neighbours) -> void
     _y += virtualDeltaY;
 }
 
-auto Monster::GetBonus() -> std::optional<Bonus *>
+auto Monster::GetBonus() -> std::optional<std::shared_ptr<Bonus>>
 {
     int probability = std::rand() % 10;
 
     if (probability <= 2)
     {
-        return new Bonus(_x, _y, BonusType::OneLife);
+        return std::shared_ptr<Bonus>(new Bonus(_x, _y, BonusType::OneLife));
     }
     else if (probability >= 2 && probability <= 4)
     {
-        return new Bonus(_x, _y, BonusType::MaxLives);
+        return std::shared_ptr<Bonus>(new Bonus(_x, _y, BonusType::MaxLives));
     }
 
     return std::nullopt;

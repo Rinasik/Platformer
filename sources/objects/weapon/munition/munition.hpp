@@ -7,8 +7,8 @@ class Munition : public Entity
 protected:
     Direction _direction;
 
-    auto collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
-    auto collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
+    auto collisionLeftDetected(std::shared_ptr<Object> neighbour, Shape nshape, double &virtualDeltaX) -> void;
+    auto collisionRightDetected(std::shared_ptr<Object> neighbour, Shape nshape, double &virtualDeltaX) -> void;
 
 public:
     Entity *owner;
@@ -29,14 +29,14 @@ Munition::Munition(double ix, double iy, double sizeX, double sizeY, Direction d
 {
 }
 
-auto Munition::collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void
+auto Munition::collisionLeftDetected(std::shared_ptr<Object> neighbour, Shape nshape, double &virtualDeltaX) -> void
 {
     if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform || neighbour->type == MapEncoding::Chest || neighbour->type == MapEncoding::Box)
     {
         isDestroyed = true;
     }
 }
-auto Munition::collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void
+auto Munition::collisionRightDetected(std::shared_ptr<Object> neighbour, Shape nshape, double &virtualDeltaX) -> void
 {
     if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform || neighbour->type == MapEncoding::Chest || neighbour->type == MapEncoding::Box)
     {

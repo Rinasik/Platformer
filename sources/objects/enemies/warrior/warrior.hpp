@@ -8,23 +8,23 @@ private:
 public:
     Warrior(double ix, double iy);
 
-    auto Run(std::unordered_set<Object *> neighbours) -> void;
+    auto Run(std::unordered_set<std::shared_ptr<Object>> neighbours) -> void;
     auto Draw() -> void;
 
-    auto GetBonus() -> std::optional<Bonus *>;
+    auto GetBonus() -> std::optional<std::shared_ptr<Bonus>>;
 };
 
 Warrior::Warrior(double ix, double iy) : Enemy{
-                                       ix,
-                                       iy,
-                                       1, 1, 2,
-                                       std::vector<Direction>({Direction::Right, Direction::Right, Direction::Left, Direction::Left, Direction::Left, Direction::Left, Direction::Right, Direction::Right}),
-                                       MapEncoding::Warrior}
+                                             ix,
+                                             iy,
+                                             1, 1, 2,
+                                             std::vector<Direction>({Direction::Right, Direction::Right, Direction::Left, Direction::Left, Direction::Left, Direction::Left, Direction::Right, Direction::Right}),
+                                             MapEncoding::Warrior}
 {
     _velX = ENEMY_X_VELOCITY;
 }
 
-void CreateWarrior(Position position, std::unordered_set<Entity *> &entities)
+void CreateWarrior(Position position, std::unordered_set<std::shared_ptr<Entity>> &entities)
 {
     entities.emplace(new Warrior(position.ix, position.iy));
 }
@@ -48,7 +48,7 @@ auto Warrior::Draw() -> void
     glEnd();
 }
 
-auto Warrior::Run(std::unordered_set<Object *> neighbours) -> void
+auto Warrior::Run(std::unordered_set<std::shared_ptr<Object>> neighbours) -> void
 {
     if (!_lives)
     {
@@ -74,11 +74,11 @@ auto Warrior::Run(std::unordered_set<Object *> neighbours) -> void
     _x += _velX;
 }
 
-auto Warrior::GetBonus() -> std::optional<Bonus *>
+auto Warrior::GetBonus() -> std::optional<std::shared_ptr<Bonus>>
 {
     if (std::rand() % 10 <= 1)
     {
-        return new Bonus(_x, _y, BonusType::OneLife);
+        return std::shared_ptr<Bonus>(new Bonus(_x, _y, BonusType::OneLife));
     }
 
     return std::nullopt;

@@ -13,16 +13,16 @@
 class Machine
 {
 private:
-    std::unordered_map<int, std::unordered_map<Object *, int>> dict;
-    std::unordered_map<Object *, std::vector<int>> objects;
+    std::unordered_map<int, std::unordered_map<std::shared_ptr<Object>, int>> dict;
+    std::unordered_map<std::shared_ptr<Object>, std::vector<int>> objects;
 
     auto key(int x, int y) -> long long int;
 
 public:
-    auto UpdatePosition(Object *object) -> void;
-    auto AddObject(Object *object) -> void;
-    auto RemoveObject(Object *object) -> void;
-    auto FindNearby(Object *object, std::unordered_set<Object *> additionalObjects) -> std::unordered_set<Object *>;
+    auto UpdatePosition(const std::shared_ptr<Object> &object) -> void;
+    auto AddObject(const std::shared_ptr<Object> &object) -> void;
+    auto RemoveObject(const std::shared_ptr<Object> &object) -> void;
+    auto FindNearby(const std::shared_ptr<Object> &object, std::unordered_set<std::shared_ptr<Object>> additionalObjects) -> std::unordered_set<std::shared_ptr<Object>>;
     auto Clear() -> void;
 };
 
@@ -31,10 +31,10 @@ auto Machine::key(int x, int y) -> long long int
     return ((x + 1) * 73856093) ^ ((y + 1) * 19349663);
 }
 
-auto Machine::FindNearby(Object *object, std::unordered_set<Object *> additionalObjects = std::unordered_set<Object *>()) -> std::unordered_set<Object *>
+auto Machine::FindNearby(const std::shared_ptr<Object> &object, std::unordered_set<std::shared_ptr<Object>> additionalObjects = std::unordered_set<std::shared_ptr<Object>>()) -> std::unordered_set<std::shared_ptr<Object>>
 {
     Shape shape = object->GetShape();
-    auto result = std::unordered_set<Object *>();
+    auto result = std::unordered_set<std::shared_ptr<Object>>();
 
     int left_i = floor(shape.left / DELTA_X) + decimalPart(shape.left / DELTA_X);
     int right_i = ceil(shape.right / DELTA_X) - 1;
@@ -72,7 +72,7 @@ auto Machine::FindNearby(Object *object, std::unordered_set<Object *> additional
     return result;
 }
 
-auto Machine::AddObject(Object *object) -> void
+auto Machine::AddObject(const std::shared_ptr<Object> &object) -> void
 {
     auto shape = object->GetShape();
 
@@ -91,7 +91,7 @@ auto Machine::AddObject(Object *object) -> void
 
             if (dict.find(k) == dict.end())
             {
-                dict.emplace(k, std::unordered_map<Object *, int>());
+                dict.emplace(k, std::unordered_map<std::shared_ptr<Object>, int>());
             }
             dict[k].emplace(object, 1);
 
@@ -104,7 +104,7 @@ auto Machine::AddObject(Object *object) -> void
     }
 }
 
-auto Machine::RemoveObject(Object *object) -> void
+auto Machine::RemoveObject(const std::shared_ptr<Object> &object) -> void
 {
     auto ks = objects[object];
 
@@ -115,7 +115,7 @@ auto Machine::RemoveObject(Object *object) -> void
     objects.erase(object);
 }
 
-auto Machine::UpdatePosition(Object *object) -> void
+auto Machine::UpdatePosition(const std::shared_ptr<Object> &object) -> void
 {
     RemoveObject(object);
     AddObject(object);
@@ -123,6 +123,6 @@ auto Machine::UpdatePosition(Object *object) -> void
 
 auto Machine::Clear() -> void
 {
-    dict = std::unordered_map<int, std::unordered_map<Object *, int>>();
-    objects = std::unordered_map<Object *, std::vector<int>>();
+    dict = std::unordered_map<int, std::unordered_map<std::shared_ptr<Object>, int>>();
+    objects = std::unordered_map<std::shared_ptr<Object>, std::vector<int>>();
 }

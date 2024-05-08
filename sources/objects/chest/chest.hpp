@@ -8,16 +8,16 @@ class Chest : virtual public Entity
 private:
     Texture *_chest;
 
-    auto collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
-    auto collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
+    auto collisionLeftDetected(std::shared_ptr<Object> neighbour, Shape nshape, double &virtualDeltaX) -> void;
+    auto collisionRightDetected(std::shared_ptr<Object> neighbour, Shape nshape, double &virtualDeltaX) -> void;
 
 public:
     Chest(double ix, double iy);
 
     auto Draw() -> void;
-    auto Run(std::unordered_set<Object *> neighbours) -> void;
+    auto Run(std::unordered_set<std::shared_ptr<Object>> neighbours) -> void;
 
-    auto GetBonus() -> std::optional<Bonus *>;
+    auto GetBonus() -> std::optional<std::shared_ptr<Bonus>>;
 };
 
 Chest::Chest(double ix, double iy) : Entity{
@@ -30,7 +30,7 @@ Chest::Chest(double ix, double iy) : Entity{
     _chest = CHEST;
 };
 
-auto CreateChest(Position position, std::unordered_set<Entity *> &entities) -> void
+auto CreateChest(Position position, std::unordered_set<std::shared_ptr<Entity>> &entities) -> void
 {
     entities.emplace(new Chest(position.ix, position.iy));
 }
@@ -62,29 +62,29 @@ auto Chest::Draw() -> void
     glBindTexture(GL_TEXTURE_2D, 0);
 };
 
-auto Chest::GetBonus() -> std::optional<Bonus *>
+auto Chest::GetBonus() -> std::optional<std::shared_ptr<Bonus>>
 {
     int probability = std::rand() % 10;
 
     if (probability <= 2)
     {
-        return new Bonus(_x, _y, BonusType::DoubleJump);
+        return std::shared_ptr<Bonus>(new Bonus(_x, _y, BonusType::DoubleJump));
     }
     else if (probability >= 3 && probability <= 5)
     {
-        return new Bonus(_x, _y, BonusType::BigHit);
+        return std::shared_ptr<Bonus>(new Bonus(_x, _y, BonusType::BigHit));
     }
     else if (probability >= 6 && probability <= 8)
     {
-        return new Bonus(_x, _y, BonusType::Bow);
+        return std::shared_ptr<Bonus>(new Bonus(_x, _y, BonusType::Bow));
     }
     else
     {
-        return new Bonus(_x, _y, BonusType::Arrows);
+        return std::shared_ptr<Bonus>(new Bonus(_x, _y, BonusType::Arrows));
     }
 }
 
-auto Chest::Run(std::unordered_set<Object *> neighbours) -> void {};
+auto Chest::Run(std::unordered_set<std::shared_ptr<Object>> neighbours) -> void {};
 
-auto Chest::collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void {};
-auto Chest::collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void {};
+auto Chest::collisionLeftDetected(std::shared_ptr<Object> neighbour, Shape nshape, double &virtualDeltaX) -> void {};
+auto Chest::collisionRightDetected(std::shared_ptr<Object> neighbour, Shape nshape, double &virtualDeltaX) -> void {};

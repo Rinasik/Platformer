@@ -8,16 +8,16 @@ class Box : virtual public Entity
 private:
     Texture *_box;
 
-    auto collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
-    auto collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
+    auto collisionLeftDetected(std::shared_ptr<Object> neighbour, Shape nshape, double &virtualDeltaX) -> void;
+    auto collisionRightDetected(std::shared_ptr<Object> neighbour, Shape nshape, double &virtualDeltaX) -> void;
 
 public:
     Box(double ix, double iy);
 
     auto Draw() -> void;
-    auto Run(std::unordered_set<Object *> neighbours) -> void;
+    auto Run(std::unordered_set<std::shared_ptr<Object>> neighbours) -> void;
 
-    auto GetBonus() -> std::optional<Bonus *>;
+    auto GetBonus() -> std::optional<std::shared_ptr<Bonus>>;
 };
 
 Box::Box(double ix, double iy) : Entity{
@@ -30,7 +30,7 @@ Box::Box(double ix, double iy) : Entity{
     _box = BOX;
 };
 
-auto CreateBox(Position position, std::unordered_set<Entity *> &entities) -> void
+auto CreateBox(Position position, std::unordered_set<std::shared_ptr<Entity>> &entities) -> void
 {
     entities.emplace(new Box(position.ix, position.iy));
 }
@@ -62,44 +62,44 @@ auto Box::Draw() -> void
     glBindTexture(GL_TEXTURE_2D, 0);
 };
 
-auto Box::GetBonus() -> std::optional<Bonus *>
+auto Box::GetBonus() -> std::optional<std::shared_ptr<Bonus>>
 {
     int probability = std::rand() % 10;
 
     if (probability <= 2)
     {
-        return new Bonus(_x, _y, BonusType::OneLife);
+        return std::shared_ptr<Bonus>(new Bonus(_x, _y, BonusType::OneLife));
     }
     else if (probability >= 3 && probability <= 4)
     {
-        return new Bonus(_x, _y, BonusType::ThreeLives);
+        return std::shared_ptr<Bonus>(new Bonus(_x, _y, BonusType::ThreeLives));
     }
     else if (probability >= 5 && probability <= 7)
     {
-        return new Bonus(_x, _y, BonusType::Arrows);
+        return std::shared_ptr<Bonus>(new Bonus(_x, _y, BonusType::Arrows));
     }
     else if (probability == 8)
     {
-        return new Bonus(_x, _y, BonusType::MaxLives);
+        return std::shared_ptr<Bonus>(new Bonus(_x, _y, BonusType::MaxLives));
     }
 
     return std::nullopt;
 }
 
-auto Box::Run(std::unordered_set<Object *> neighbours) -> void
+auto Box::Run(std::unordered_set<std::shared_ptr<Object>> neighbours) -> void
 {
     double virtualDeltaX = 0;
     objectsCollisionX(neighbours, virtualDeltaX);
 };
 
-auto Box::collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void
+auto Box::collisionLeftDetected(std::shared_ptr<Object> neighbour, Shape nshape, double &virtualDeltaX) -> void
 {
     if (neighbour->type == MapEncoding::Hit)
     {
         isDestroyed = true;
     }
 };
-auto Box::collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void
+auto Box::collisionRightDetected(std::shared_ptr<Object> neighbour, Shape nshape, double &virtualDeltaX) -> void
 {
     if (neighbour->type == MapEncoding::Hit)
     {

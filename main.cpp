@@ -15,9 +15,9 @@
 
 Engine engine;
 
-std::unique_ptr<Hero> hero;
-std::unique_ptr<Boss> boss;
-std::unordered_set<Entity *> entities;
+std::shared_ptr<Hero> hero;
+std::shared_ptr<Boss> boss;
+std::unordered_set<std::shared_ptr<Entity>> entities;
 
 void drawCb()
 {

@@ -18,13 +18,13 @@ protected:
 
     int _lives;
 
-    auto collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
-    auto collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
+    auto collisionLeftDetected(std::shared_ptr<Object> neighbour, Shape nshape, double &virtualDeltaX) -> void;
+    auto collisionRightDetected(std::shared_ptr<Object> neighbour, Shape nshape, double &virtualDeltaX) -> void;
 
 public:
     Enemy(double ix, double iy, int sizeX, int sizeY, int lives, std::vector<Direction> pattern, MapEncoding type);
 
-    virtual auto GetBonus() -> std::optional<Bonus *> = 0;
+    virtual auto GetBonus() -> std::optional<std::shared_ptr<Bonus>> = 0;
 };
 
 Enemy::Enemy(double ix, double iy, int sizeX, int sizeY, int lives, std::vector<Direction> pattern, MapEncoding type) : Entity{
@@ -39,11 +39,11 @@ Enemy::Enemy(double ix, double iy, int sizeX, int sizeY, int lives, std::vector<
     _initialY = _y;
 }
 
-auto Enemy::collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void
+auto Enemy::collisionLeftDetected(std::shared_ptr<Object> neighbour, Shape nshape, double &virtualDeltaX) -> void
 {
     if (!_isInvisible && neighbour->type == MapEncoding::Hit)
     {
-        Hit *hit = dynamic_cast<Hit *>(neighbour);
+        auto hit = std::dynamic_pointer_cast<Hit>(neighbour);
 
         if (this != hit->owner)
         {
@@ -53,7 +53,7 @@ auto Enemy::collisionLeftDetected(Object *neighbour, Shape nshape, double &virtu
     }
     else if (!_isInvisible && neighbour->type == MapEncoding::Arrow)
     {
-        Arrow *arrow = dynamic_cast<Arrow *>(neighbour);
+        auto arrow = std::dynamic_pointer_cast<Arrow>(neighbour);
         if (this != arrow->owner)
         {
             _lives--;
@@ -62,11 +62,11 @@ auto Enemy::collisionLeftDetected(Object *neighbour, Shape nshape, double &virtu
     }
 }
 
-auto Enemy::collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void
+auto Enemy::collisionRightDetected(std::shared_ptr<Object> neighbour, Shape nshape, double &virtualDeltaX) -> void
 {
     if (!_isInvisible && neighbour->type == MapEncoding::Hit)
     {
-        Hit *hit = dynamic_cast<Hit *>(neighbour);
+        auto hit = std::dynamic_pointer_cast<Hit>(neighbour);
 
         if (this != hit->owner)
         {
@@ -76,7 +76,7 @@ auto Enemy::collisionRightDetected(Object *neighbour, Shape nshape, double &virt
     }
     else if (!_isInvisible && neighbour->type == MapEncoding::Arrow)
     {
-        Arrow *arrow = dynamic_cast<Arrow *>(neighbour);
+        auto arrow = std::dynamic_pointer_cast<Arrow>(neighbour);
         if (this != arrow->owner)
         {
             _lives--;
@@ -85,7 +85,7 @@ auto Enemy::collisionRightDetected(Object *neighbour, Shape nshape, double &virt
     }
 }
 
-bool IsEnemy(Object *object)
+bool IsEnemy(std::shared_ptr<Object> object)
 {
     return object->type == MapEncoding::Warrior || object->type == MapEncoding::Archer || object->type == MapEncoding::Monster || object->type == MapEncoding::Jumper || object->type == MapEncoding::Boss;
 }

@@ -15,7 +15,7 @@ public:
     Hit();
     Hit(double ix, double iy, Direction direction, int distance, Entity *owner);
     auto Draw() -> void;
-    auto Run(std::unordered_set<Object *> neighbours) -> void;
+    auto Run(std::unordered_set<std::shared_ptr<Object>> neighbours) -> void;
 };
 
 Hit::Hit(){};
@@ -85,7 +85,7 @@ auto Hit::Draw() -> void
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-auto Hit::Run(std::unordered_set<Object *> neighbours) -> void
+auto Hit::Run(std::unordered_set<std::shared_ptr<Object>> neighbours) -> void
 {
     double virtualDeltaX = _velX;
     objectsCollisionX(neighbours, virtualDeltaX);

@@ -21,7 +21,7 @@ namespace fs = std::filesystem;
 struct MapPattern
 {
     std::vector<EntityPosition> positions;
-    std::vector<Object *> bricks;
+    std::vector<std::shared_ptr<Object>> bricks;
 };
 
 class Map
@@ -79,7 +79,7 @@ auto Map::InitDraw(int newMap) -> std::optional<MapPattern>
     auto map = _maps[newMap];
     std::vector<MapEncoding> mapPattern;
 
-    std::vector<Object *> bricks;
+    std::vector<std::shared_ptr<Object>> bricks;
     std::vector<EntityPosition> positions;
 
     for (int i = 0; i < map.size(); ++i)
@@ -89,21 +89,21 @@ auto Map::InitDraw(int newMap) -> std::optional<MapPattern>
         if (point == -1)
         {
             mapPattern.push_back(MapEncoding::Magma);
-            Object *magma = new Magma(i % _width, i / _width);
+            auto magma = std::shared_ptr<Magma>( new Magma(i % _width, i / _width));
 
             bricks.push_back(magma);
         }
         else if (point == 1)
         {
             mapPattern.push_back(MapEncoding::Brick);
-            Object *brick = new Brick(i % _width, i / _width);
+            auto brick = std::shared_ptr<Brick>(new Brick(i % _width, i / _width));
 
             bricks.push_back(brick);
         }
         else if (point >= 100)
         {
             mapPattern.push_back(MapEncoding::Exit);
-            Object *exit = new Exit(i % _width, i / _width, point - 101);
+            auto exit = std::shared_ptr<Exit>(new Exit(i % _width, i / _width, point - 101));
 
             bricks.push_back(exit);
         }

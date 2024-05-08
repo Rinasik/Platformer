@@ -9,8 +9,8 @@ class Bonus : virtual public Entity
 private:
     Texture *_texture;
 
-    auto collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
-    auto collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
+    auto collisionLeftDetected(std::shared_ptr<Object> neighbour, Shape nshape, double &virtualDeltaX) -> void;
+    auto collisionRightDetected(std::shared_ptr<Object> neighbour, Shape nshape, double &virtualDeltaX) -> void;
 
 public:
     BonusType type;
@@ -18,7 +18,7 @@ public:
     Bonus(double ix, double iy, BonusType type);
 
     auto Draw() -> void;
-    auto Run(std::unordered_set<Object *> neighbours) -> void;
+    auto Run(std::unordered_set<std::shared_ptr<Object>> neighbours) -> void;
 };
 
 Bonus::Bonus(double ix, double iy, BonusType type) : Entity{
@@ -57,7 +57,7 @@ Bonus::Bonus(double ix, double iy, BonusType type) : Entity{
     {
         _texture = THREEHEART;
     }
-    else if(type == BonusType::DoubleJump)
+    else if (type == BonusType::DoubleJump)
     {
         _texture = DOUBLEJUMP;
     }
@@ -89,12 +89,12 @@ auto Bonus::Draw() -> void
     glDisable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, 0);
 };
-auto Bonus::Run(std::unordered_set<Object *> neighbours) -> void {};
+auto Bonus::Run(std::unordered_set<std::shared_ptr<Object>> neighbours) -> void {};
 
-auto Bonus::collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void {};
-auto Bonus::collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void {};
+auto Bonus::collisionLeftDetected(std::shared_ptr<Object> neighbour, Shape nshape, double &virtualDeltaX) -> void {};
+auto Bonus::collisionRightDetected(std::shared_ptr<Object> neighbour, Shape nshape, double &virtualDeltaX) -> void {};
 
-auto CreateKey(Position position, std::unordered_set<Entity *> &entities) -> void
+auto CreateKey(Position position, std::unordered_set<std::shared_ptr<Entity>> &entities) -> void
 {
     entities.emplace(new Bonus(position.ix * DELTA_X, (HEIGHT - 1 - position.iy) * DELTA_Y, BonusType::Key));
 }
