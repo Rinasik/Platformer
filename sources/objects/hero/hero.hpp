@@ -210,7 +210,7 @@ auto Hero::HandleSpecialClickDown(int key) -> void
             {
                 _isDoubleJumped = true;
             }
-            _velY += DELTA_Y_VELOCITY;
+            _velY = DELTA_Y_VELOCITY;
             _isFalling = true;
         }
         break;
@@ -402,7 +402,7 @@ auto Hero::Run(std::unordered_set<Object *> neighbours) -> void
     auto initialVelX = _velX;
     auto initialVelY = _velY;
 
-    auto x_acc = _isFalling ? X_ACC / 2 : X_ACC;
+    auto x_acc = _isFalling ? X_ACC / 4 : X_ACC;
 
     if (abs(_velX - Sign(_velX) * x_acc) <= x_acc + EPSILON)
     {

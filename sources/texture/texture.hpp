@@ -65,5 +65,6 @@ Texture *MAGMA;
 Texture *WALL;
 Texture *BOW;
 Texture *QUIVER;
+Texture *DOUBLEJUMP;
 
 

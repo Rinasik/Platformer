@@ -75,6 +75,7 @@ void initTextures()
     KEY = new Texture("images/Key.png", true);
     BOW = new Texture("images/Bow.png", true);
     QUIVER = new Texture("images/Quiver.png", true);
+    DOUBLEJUMP = new Texture("images/DoubleJump.png", true);
 }
 
 int main(int argc, char **argv)

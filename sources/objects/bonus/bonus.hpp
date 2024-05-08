@@ -57,9 +57,9 @@ Bonus::Bonus(double ix, double iy, BonusType type) : Entity{
     {
         _texture = THREEHEART;
     }
-    else
+    else if(type == BonusType::DoubleJump)
     {
-        _texture = HEART;
+        _texture = DOUBLEJUMP;
     }
 };
 
