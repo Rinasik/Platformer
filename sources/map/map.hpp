@@ -30,6 +30,7 @@ private:
     int _currentMapIndex = -1;
     int _height;
     int _width;
+    bool _isBossFight;
 
     std::vector<MapEncoding> _currentMap;
 
@@ -73,6 +74,7 @@ auto Map::InitDraw(int newMap) -> std::optional<MapPattern>
     }
 
     _currentMapIndex = newMap;
+    _isBossFight = false;
 
     auto map = _maps[newMap];
     std::vector<MapEncoding> mapPattern;
@@ -134,6 +136,7 @@ auto Map::InitDraw(int newMap) -> std::optional<MapPattern>
         else if (point == 10)
         {
             positions.push_back(EntityPosition{MapEncoding::Boss, Position{i % _width, i / _width}});
+            _isBossFight = true;
         }
         else if (point == 7)
         {
@@ -171,8 +174,16 @@ auto Map::Draw() -> void
 
             if (block == MapEncoding::Empty)
             {
+                unsigned int texture = _background->GetTexture();
+                if (_isBossFight)
+                {
+                    if (std::rand() % 10 >= 8)
+                    {
+                        texture = _wall->GetTexture();
+                    }
+                }
 
-                glBindTexture(GL_TEXTURE_2D, _background->GetTexture());
+                glBindTexture(GL_TEXTURE_2D, texture);
                 glColor4f(0.3f, 0.3f, 0.3f, 1.0f);
             }
             else if (block == MapEncoding::Brick)

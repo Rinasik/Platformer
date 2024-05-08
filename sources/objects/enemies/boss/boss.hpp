@@ -2,6 +2,12 @@
 
 #include "../enemy/enemy.hpp"
 
+enum class BossPhase
+{
+    First = 1,
+    Second = 2
+};
+
 class Boss : virtual public Enemy
 {
 private:
@@ -10,9 +16,14 @@ private:
     int _prevLives;
     int _invisibleCounter = 0;
 
+    BossPhase _phase;
+
     auto entitiesAndMapCollisionY(std::unordered_set<Object *> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
+
     auto collisionBottomDetected(Object *neighbour, Shape nShape, double &virtualDeltaY) -> void;
     auto collisionTopDetected(Object *neighbour, Shape nShape, double &virtualDeltaY) -> void;
+    auto collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
+    auto collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void;
 
 public:
     Boss(int ix, int iy);
@@ -28,9 +39,10 @@ Boss::Boss(int ix, int iy) : Enemy{
                                  (double)iy,
                                  2, 2, 10,
                                  std::vector<Direction>({Direction::Right, Direction::Up, Direction::Right, Direction::Left, Direction::Left, Direction::Left, Direction::Up, Direction::Left, Direction::Right, Direction::Right}),
-                                 MapEncoding::Boss}
+                                 MapEncoding::Boss},
+                             _phase(BossPhase::First)
 {
-    _velX = 0.6 * MAX_X_VELOCITY;
+    _velX = 0.8 * MAX_X_VELOCITY;
     _prevLives = 10;
 }
 
@@ -46,12 +58,17 @@ auto Boss::Run(std::unordered_set<Object *> neighbours) -> void
     {
         _isInvisible = true;
         _prevLives = _lives;
+
+        if (_lives == 5)
+        {
+            _phase = BossPhase::Second;
+        }
     }
 
     if (_isInvisible)
     {
         _invisibleCounter++;
-        if (_invisibleCounter == 2 * INVISIBLE_TICKS_COUNT)
+        if (_invisibleCounter == INVISIBLE_TICKS_COUNT)
         {
             _invisibleCounter = 0;
             _isInvisible = false;
@@ -59,21 +76,7 @@ auto Boss::Run(std::unordered_set<Object *> neighbours) -> void
     }
 
     auto initialVelY = _velY;
-
-    if (_isFalling)
-    {
-        if ((_velY + Y_ACC) >= -MAX_Y_VELOCITY)
-        {
-            _velY -= Y_ACC;
-        }
-        else
-        {
-            _velY = -MAX_Y_VELOCITY;
-        }
-    }
-
     double virtualDeltaX = 0;
-    auto virtualDeltaY = (_velY + initialVelY) / 20;
 
     for (auto &neighbour : neighbours)
     {
@@ -95,9 +98,33 @@ auto Boss::Run(std::unordered_set<Object *> neighbours) -> void
                 {
                     virtualDeltaX = _velX;
                 }
+
+                if (_phase == BossPhase::Second)
+                {
+                    double distance = abs(std::min(shape.left - nShape.left, shape.right - nShape.right));
+                    if (nShape.bottom - shape.bottom >= 0 && distance <= 2 * DELTA_X && !_isFalling)
+                    {
+                        _velY += DELTA_Y_VELOCITY;
+                        _isFalling = true;
+                    }
+                }
             }
         }
     }
+
+    if (_isFalling)
+    {
+        if ((_velY + Y_ACC) >= -MAX_Y_VELOCITY)
+        {
+            _velY -= Y_ACC;
+        }
+        else
+        {
+            _velY = -MAX_Y_VELOCITY;
+        }
+    }
+
+    auto virtualDeltaY = (_velY + initialVelY) / 20;
 
     objectsCollisionX(neighbours, virtualDeltaX);
     entitiesAndMapCollisionY(neighbours, virtualDeltaX, virtualDeltaY);
@@ -209,6 +236,64 @@ auto Boss::collisionTopDetected(Object *neighbour, Shape nShape, double &virtual
         {
             _lives--;
             munition->isDestroyed = true;
+        }
+    }
+}
+
+auto Boss::collisionLeftDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void
+{
+    if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform || neighbour->type == MapEncoding::Chest || neighbour->type == MapEncoding::Box)
+    {
+        _x = nshape.right;
+
+        virtualDeltaX = 0;
+    }
+    else if (!_isInvisible && neighbour->type == MapEncoding::Hit)
+    {
+        Hit *hit = dynamic_cast<Hit *>(neighbour);
+
+        if (this != hit->owner)
+        {
+            _lives--;
+            hit->isDestroyed = true;
+        }
+    }
+    else if (!_isInvisible && neighbour->type == MapEncoding::Arrow)
+    {
+        Arrow *arrow = dynamic_cast<Arrow *>(neighbour);
+        if (this != arrow->owner)
+        {
+            _lives--;
+            arrow->isDestroyed = true;
+        }
+    }
+}
+
+auto Boss::collisionRightDetected(Object *neighbour, Shape nshape, double &virtualDeltaX) -> void
+{
+    if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform || neighbour->type == MapEncoding::Chest || neighbour->type == MapEncoding::Box)
+    {
+        _x = nshape.left - _sizeX * DELTA_X;
+
+        virtualDeltaX = 0;
+    }
+    else if (!_isInvisible && neighbour->type == MapEncoding::Hit)
+    {
+        Hit *hit = dynamic_cast<Hit *>(neighbour);
+
+        if (this != hit->owner)
+        {
+            _lives--;
+            hit->isDestroyed = true;
+        }
+    }
+    else if (!_isInvisible && neighbour->type == MapEncoding::Arrow)
+    {
+        Arrow *arrow = dynamic_cast<Arrow *>(neighbour);
+        if (this != arrow->owner)
+        {
+            _lives--;
+            arrow->isDestroyed = true;
         }
     }
 }
