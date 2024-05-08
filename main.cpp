@@ -70,6 +70,8 @@ void initTextures()
     BOX = new Texture("images/Box.png", true);
     CHEST = new Texture("images/Chest.png", true);
     HEART = new Texture("images/Heart.png", true);
+    MAXLIFE = new Texture("images/MaxLife.png", true);
+    THREEHEART = new Texture("images/3Heart.png", true);
     KEY = new Texture("images/Key.png", true);
     BOW = new Texture("images/Bow.png", true);
     QUIVER = new Texture("images/Quiver.png", true);

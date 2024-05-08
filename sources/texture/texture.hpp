@@ -58,6 +58,8 @@ Texture *BOX;
 Texture *CHEST;
 Texture *FIREBALL;
 Texture *HEART;
+Texture *THREEHEART;
+Texture *MAXLIFE;
 Texture *KEY;
 Texture *MAGMA;
 Texture *WALL;

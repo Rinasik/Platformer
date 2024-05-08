@@ -49,6 +49,14 @@ Bonus::Bonus(double ix, double iy, BonusType type) : Entity{
     {
         _texture = KEY;
     }
+    else if (type == BonusType::MaxLives)
+    {
+        _texture = MAXLIFE;
+    }
+    else if (type == BonusType::ThreeLives)
+    {
+        _texture = THREEHEART;
+    }
     else
     {
         _texture = HEART;
