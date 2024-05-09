@@ -94,7 +94,7 @@ auto Bonus::Run(std::unordered_set<std::shared_ptr<Object>> neighbours) -> void 
 auto Bonus::collisionLeftDetected(std::shared_ptr<Object> neighbour, Shape nshape, double &virtualDeltaX) -> void {};
 auto Bonus::collisionRightDetected(std::shared_ptr<Object> neighbour, Shape nshape, double &virtualDeltaX) -> void {};
 
-auto CreateKey(Position position, std::unordered_set<std::shared_ptr<Entity>> &entities) -> void
+auto CreateKey(Position position, std::vector<std::shared_ptr<Entity>> &entities) -> void
 {
-    entities.emplace(std::shared_ptr<Bonus>(new Bonus(position.ix * DELTA_X, (HEIGHT - 1 - position.iy) * DELTA_Y, BonusType::Key)));
+    entities.push_back(std::shared_ptr<Bonus>(new Bonus(position.ix * DELTA_X, (HEIGHT - 1 - position.iy) * DELTA_Y, BonusType::Key)));
 }

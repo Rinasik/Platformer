@@ -30,9 +30,9 @@ Box::Box(double ix, double iy) : Entity{
     _box = BOX;
 };
 
-auto CreateBox(Position position, std::unordered_set<std::shared_ptr<Entity>> &entities) -> void
+auto CreateBox(Position position, std::vector<std::shared_ptr<Entity>> &entities) -> void
 {
-    entities.emplace(std::shared_ptr<Box>(new Box(position.ix, position.iy)));
+    entities.push_back(std::shared_ptr<Box>(new Box(position.ix, position.iy)));
 }
 
 auto Box::Draw() -> void

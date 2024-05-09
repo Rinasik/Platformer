@@ -26,9 +26,9 @@ Jumper::Jumper(int ix, int iy) : Enemy{
     _velX = ENEMY_X_VELOCITY;
 }
 
-void CreateJumper(Position position, std::unordered_set<std::shared_ptr<Entity>> &entities)
+void CreateJumper(Position position, std::vector<std::shared_ptr<Entity>> &entities)
 {
-    entities.emplace(std::shared_ptr<Jumper>(new Jumper(position.ix, position.iy)));
+    entities.push_back(std::shared_ptr<Jumper>(new Jumper(position.ix, position.iy)));
 }
 
 auto Jumper::Draw() -> void

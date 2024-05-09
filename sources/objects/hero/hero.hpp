@@ -63,7 +63,7 @@ public:
     auto Draw() -> void;
     auto HandleSpecialClickDown(int key) -> void;
     auto HandleSpecialClickUp(int key) -> void;
-    auto HandleClickDown(unsigned char key, std::unordered_set<std::shared_ptr<Entity>> neighbours) -> void;
+    auto HandleClickDown(unsigned char key, std::vector<std::shared_ptr<Entity>> neighbours) -> void;
 
     auto UpdatePosition(int ix, int iy) -> void;
 };
@@ -239,7 +239,7 @@ auto Hero::HandleSpecialClickUp(int key) -> void
     }
 }
 
-auto Hero::HandleClickDown(unsigned char key, std::unordered_set<std::shared_ptr<Entity>> neighbours) -> void
+auto Hero::HandleClickDown(unsigned char key, std::vector<std::shared_ptr<Entity>> neighbours) -> void
 {
     if (!_lives)
     {

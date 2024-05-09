@@ -18,7 +18,7 @@
 #include "../objects/box/box.hpp"
 #include "../objects/bonus/bonus.hpp"
 
-auto AddEntity(Machine &machine, std::unordered_set<std::shared_ptr<Entity>> &entities) -> std::function<void(std::shared_ptr<Entity>)>;
+auto AddEntity(Machine &machine, std::vector<std::shared_ptr<Entity>> &entities) -> std::function<void(std::shared_ptr<Entity>)>;
 
 class Engine
 {
@@ -26,20 +26,20 @@ private:
     Map _map;
     Machine _machine;
 
-    auto createEntities(std::vector<EntityPosition> positions, std::unordered_set<std::shared_ptr<Entity>> &entities) -> void;
-    auto removeEntity(const std::shared_ptr<Entity> &entity, std::unordered_set<std::shared_ptr<Entity>> &entities) -> void;
-    auto fillState(std::shared_ptr<Hero> &hero, std::shared_ptr<Boss> &boss, std::unordered_set<std::shared_ptr<Entity>> &entities, MapPattern &pattern) -> void;
+    auto createEntities(std::vector<EntityPosition> positions, std::vector<std::shared_ptr<Entity>> &entities) -> void;
+    auto removeEntity(std::shared_ptr<Entity> entity, std::vector<std::shared_ptr<Entity>> &entities) -> void;
+    auto fillState(std::shared_ptr<Hero> &hero, std::shared_ptr<Boss> &boss, std::vector<std::shared_ptr<Entity>> &entities, MapPattern &pattern) -> void;
 
 public:
     Engine(){};
     Engine(std::string path) : _map(Map(WIDTH, HEIGHT, path)), _machine(Machine()){};
 
-    auto InitState(std::shared_ptr<Hero> &hero, std::shared_ptr<Boss> &boss, std::unordered_set<std::shared_ptr<Entity>> &entities) -> void;
-    auto UpdateState(std::shared_ptr<Hero> &hero, std::shared_ptr<Boss> &boss, std::unordered_set<std::shared_ptr<Entity>> &entities) -> void;
-    auto Draw(std::shared_ptr<Hero> &hero, std::shared_ptr<Boss> &boss, std::unordered_set<std::shared_ptr<Entity>> &entities) -> void;
+    auto InitState(std::shared_ptr<Hero> &hero, std::shared_ptr<Boss> &boss, std::vector<std::shared_ptr<Entity>> &entities) -> void;
+    auto UpdateState(std::shared_ptr<Hero> &hero, std::shared_ptr<Boss> &boss, std::vector<std::shared_ptr<Entity>> &entities) -> void;
+    auto Draw(std::shared_ptr<Hero> &hero, std::shared_ptr<Boss> &boss, std::vector<std::shared_ptr<Entity>> &entities) -> void;
 };
 
-auto Engine::createEntities(std::vector<EntityPosition> positions, std::unordered_set<std::shared_ptr<Entity>> &entities) -> void
+auto Engine::createEntities(std::vector<EntityPosition> positions, std::vector<std::shared_ptr<Entity>> &entities) -> void
 {
     for (auto &position : positions)
     {
@@ -78,7 +78,7 @@ auto Engine::createEntities(std::vector<EntityPosition> positions, std::unordere
     }
 }
 
-auto Engine::UpdateState(std::shared_ptr<Hero> &hero, std::shared_ptr<Boss> &boss, std::unordered_set<std::shared_ptr<Entity>> &entities) -> void
+auto Engine::UpdateState(std::shared_ptr<Hero> &hero, std::shared_ptr<Boss> &boss, std::vector<std::shared_ptr<Entity>> &entities) -> void
 {
     for (auto &entity : entities)
     {
@@ -107,14 +107,14 @@ auto Engine::UpdateState(std::shared_ptr<Hero> &hero, std::shared_ptr<Boss> &bos
                     auto warrior = std::shared_ptr<Warrior>(new Warrior(shape.left / DELTA_X, HEIGHT - 1 - shape.bottom / DELTA_Y));
 
                     _machine.AddObject(warrior);
-                    entities.emplace(warrior);
+                    entities.push_back(warrior);
                 }
             }
 
             if (bonus.has_value())
             {
                 _machine.AddObject(bonus.value());
-                entities.emplace(bonus.value());
+                entities.push_back(bonus.value());
             }
 
             removeEntity(entity, entities);
@@ -138,8 +138,8 @@ auto Engine::UpdateState(std::shared_ptr<Hero> &hero, std::shared_ptr<Boss> &bos
         }
         else
         {
-            std::unordered_set<std::shared_ptr<Object>> additionalObjects = std::unordered_set<std::shared_ptr<Object>>();
-            additionalObjects.emplace(hero);
+            std::vector<std::shared_ptr<Object>> additionalObjects = std::vector<std::shared_ptr<Object>>();
+            additionalObjects.push_back(hero);
 
             boss->Run(_machine.FindNearby(boss, additionalObjects));
             _machine.UpdatePosition(boss);
@@ -156,7 +156,7 @@ auto Engine::UpdateState(std::shared_ptr<Hero> &hero, std::shared_ptr<Boss> &bos
     }
 }
 
-auto Engine::InitState(std::shared_ptr<Hero> &hero, std::shared_ptr<Boss> &boss, std::unordered_set<std::shared_ptr<Entity>> &entities) -> void
+auto Engine::InitState(std::shared_ptr<Hero> &hero, std::shared_ptr<Boss> &boss, std::vector<std::shared_ptr<Entity>> &entities) -> void
 {
     hero = nullptr;
 
@@ -166,14 +166,11 @@ auto Engine::InitState(std::shared_ptr<Hero> &hero, std::shared_ptr<Boss> &boss,
     fillState(hero, boss, entities, pattern);
 }
 
-auto Engine::fillState(std::shared_ptr<Hero> &hero, std::shared_ptr<Boss> &boss, std::unordered_set<std::shared_ptr<Entity>> &entities, MapPattern &pattern) -> void
+auto Engine::fillState(std::shared_ptr<Hero> &hero, std::shared_ptr<Boss> &boss, std::vector<std::shared_ptr<Entity>> &entities, MapPattern &pattern) -> void
 {
-    for (auto &entity : entities)
-    {
-        removeEntity(entity, entities);
-    }
     boss = nullptr;
-    entities = std::unordered_set<std::shared_ptr<Entity>>();
+
+    entities = std::vector<std::shared_ptr<Entity>>();
     _machine.Clear();
 
     createEntities(pattern.positions, entities);
@@ -206,7 +203,7 @@ auto Engine::fillState(std::shared_ptr<Hero> &hero, std::shared_ptr<Boss> &boss,
     }
 }
 
-auto Engine::Draw(std::shared_ptr<Hero> &hero, std::shared_ptr<Boss> &boss, std::unordered_set<std::shared_ptr<Entity>> &entities) -> void
+auto Engine::Draw(std::shared_ptr<Hero> &hero, std::shared_ptr<Boss> &boss, std::vector<std::shared_ptr<Entity>> &entities) -> void
 {
     _map.Draw();
 
@@ -222,18 +219,29 @@ auto Engine::Draw(std::shared_ptr<Hero> &hero, std::shared_ptr<Boss> &boss, std:
     }
 }
 
-auto Engine::removeEntity(const std::shared_ptr<Entity> &entity, std::unordered_set<std::shared_ptr<Entity>> &entities) -> void
+auto Engine::removeEntity(std::shared_ptr<Entity> entity, std::vector<std::shared_ptr<Entity>> &entities) -> void
 {
     _machine.RemoveObject(entity);
-    // entities.erase(entity);
+
+    auto new_set = std::vector<std::shared_ptr<Entity>>();
+
+    for (auto &ent : entities)
+    {
+        if (ent != entity)
+        {
+            new_set.push_back(ent);
+        }
+    }
+
+    entities = new_set;
 }
 
-auto AddEntity(Machine &machine, std::unordered_set<std::shared_ptr<Entity>> &entities) -> std::function<void(std::shared_ptr<Entity>)>
+auto AddEntity(Machine &machine, std::vector<std::shared_ptr<Entity>> &entities) -> std::function<void(std::shared_ptr<Entity>)>
 {
     auto cb = [&machine, &entities](std::shared_ptr<Entity> hit)
     {
         machine.AddObject(hit);
-        entities.emplace(hit);
+        entities.push_back(hit);
     };
 
     return cb;

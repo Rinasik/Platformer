@@ -20,9 +20,9 @@ public:
     auto Run(std::unordered_set<std::shared_ptr<Object>> neighbours) -> void;
 };
 
-void CreatePlatforms(Position position, std::unordered_set<std::shared_ptr<Entity>> &entities)
+void CreatePlatforms(Position position, std::vector<std::shared_ptr<Entity>> &entities)
 {
-    entities.emplace(std::shared_ptr<Platform>(new Platform(position.ix, position.iy, 2)));
+    entities.push_back(std::shared_ptr<Platform>(new Platform(position.ix, position.iy, 2)));
 }
 
 Platform::Platform(int ix, int iy, int sizeX) : Entity{

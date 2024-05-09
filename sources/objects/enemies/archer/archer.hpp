@@ -29,9 +29,9 @@ Archer::Archer(int ix, int iy, std::function<void(std::shared_ptr<Arrow>)> addAr
     _velX = 0;
 }
 
-void CreateArcher(Position position, std::unordered_set<std::shared_ptr<Entity>> &entities, std::function<void(std::shared_ptr<Arrow>)> addArrow)
+void CreateArcher(Position position, std::vector<std::shared_ptr<Entity>> &entities, std::function<void(std::shared_ptr<Arrow>)> addArrow)
 {
-    entities.emplace(std::shared_ptr<Archer>(new Archer(position.ix, position.iy, addArrow)));
+    entities.push_back(std::shared_ptr<Archer>(new Archer(position.ix, position.iy, addArrow)));
 }
 
 auto Archer::Draw() -> void
