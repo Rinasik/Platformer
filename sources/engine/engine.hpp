@@ -26,6 +26,8 @@ private:
     Map _map;
     Machine _machine;
 
+    std::vector<std::shared_ptr<Entity>> _queue;
+
     auto createEntities(std::vector<EntityPosition> positions, std::vector<std::shared_ptr<Entity>> &entities) -> void;
     auto removeEntity(std::shared_ptr<Entity> entity, std::vector<std::shared_ptr<Entity>> &entities) -> void;
     auto fillState(std::shared_ptr<Hero> &hero, std::shared_ptr<Boss> &boss, std::vector<std::shared_ptr<Entity>> &entities, MapPattern &pattern) -> void;
@@ -57,11 +59,11 @@ auto Engine::createEntities(std::vector<EntityPosition> positions, std::vector<s
         }
         else if (position.entityType == MapEncoding::Archer)
         {
-            CreateArcher(position.position, entities, AddEntity(_machine, entities));
+            CreateArcher(position.position, entities, AddEntity(_machine, _queue));
         }
         else if (position.entityType == MapEncoding::Monster)
         {
-            CreateMonster(position.position, entities, AddEntity(_machine, entities));
+            CreateMonster(position.position, entities, AddEntity(_machine, _queue));
         }
         else if (position.entityType == MapEncoding::Chest)
         {
@@ -128,6 +130,16 @@ auto Engine::UpdateState(std::shared_ptr<Hero> &hero, std::shared_ptr<Boss> &bos
     hero->Run(_machine.FindNearby(hero));
     _machine.UpdatePosition(hero);
 
+    if (_queue.size())
+    {
+        for (auto ent : _queue)
+        {
+            entities.push_back(ent);
+        }
+
+        _queue = std::vector<std::shared_ptr<Entity>>();
+    }
+
     if (boss)
     {
         if (boss->isDestroyed)
@@ -188,7 +200,7 @@ auto Engine::fillState(std::shared_ptr<Hero> &hero, std::shared_ptr<Boss> &boss,
     {
         if (!hero && position.entityType == MapEncoding::Hero)
         {
-            hero = std::shared_ptr<Hero>(new Hero(position.position.ix, position.position.iy, 1, 1, HERO_MAX_LIVES, AddEntity(_machine, entities)));
+            hero = std::shared_ptr<Hero>(new Hero(position.position.ix, position.position.iy, 1, 1, HERO_MAX_LIVES, AddEntity(_machine, _queue)));
             _machine.AddObject(hero);
         }
         else if (hero && position.entityType == MapEncoding::Hero)
@@ -236,12 +248,12 @@ auto Engine::removeEntity(std::shared_ptr<Entity> entity, std::vector<std::share
     entities = new_set;
 }
 
-auto AddEntity(Machine &machine, std::vector<std::shared_ptr<Entity>> &entities) -> std::function<void(std::shared_ptr<Entity>)>
+auto AddEntity(Machine &machine, std::vector<std::shared_ptr<Entity>> &queue) -> std::function<void(std::shared_ptr<Entity>)>
 {
-    auto cb = [&machine, &entities](std::shared_ptr<Entity> hit)
+    auto cb = [&machine, &queue](std::shared_ptr<Entity> hit)
     {
         machine.AddObject(hit);
-        entities.push_back(hit);
+        queue.push_back(hit);
     };
 
     return cb;
