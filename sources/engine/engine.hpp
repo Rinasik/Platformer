@@ -225,7 +225,7 @@ auto Engine::Draw(std::shared_ptr<Hero> &hero, std::shared_ptr<Boss> &boss, std:
 auto Engine::removeEntity(const std::shared_ptr<Entity> &entity, std::unordered_set<std::shared_ptr<Entity>> &entities) -> void
 {
     _machine.RemoveObject(entity);
-    entities.erase(entity);
+    // entities.erase(entity);
 }
 
 auto AddEntity(Machine &machine, std::unordered_set<std::shared_ptr<Entity>> &entities) -> std::function<void(std::shared_ptr<Entity>)>

@@ -96,5 +96,5 @@ auto Bonus::collisionRightDetected(std::shared_ptr<Object> neighbour, Shape nsha
 
 auto CreateKey(Position position, std::unordered_set<std::shared_ptr<Entity>> &entities) -> void
 {
-    entities.emplace(new Bonus(position.ix * DELTA_X, (HEIGHT - 1 - position.iy) * DELTA_Y, BonusType::Key));
+    entities.emplace(std::shared_ptr<Bonus>(new Bonus(position.ix * DELTA_X, (HEIGHT - 1 - position.iy) * DELTA_Y, BonusType::Key)));
 }

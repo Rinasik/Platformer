@@ -32,7 +32,7 @@ Chest::Chest(double ix, double iy) : Entity{
 
 auto CreateChest(Position position, std::unordered_set<std::shared_ptr<Entity>> &entities) -> void
 {
-    entities.emplace(new Chest(position.ix, position.iy));
+    entities.emplace(std::shared_ptr<Chest>(new Chest(position.ix, position.iy)));
 }
 
 auto Chest::Draw() -> void

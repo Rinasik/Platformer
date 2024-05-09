@@ -32,7 +32,7 @@ Box::Box(double ix, double iy) : Entity{
 
 auto CreateBox(Position position, std::unordered_set<std::shared_ptr<Entity>> &entities) -> void
 {
-    entities.emplace(new Box(position.ix, position.iy));
+    entities.emplace(std::shared_ptr<Box>(new Box(position.ix, position.iy)));
 }
 
 auto Box::Draw() -> void

@@ -26,7 +26,7 @@ Warrior::Warrior(double ix, double iy) : Enemy{
 
 void CreateWarrior(Position position, std::unordered_set<std::shared_ptr<Entity>> &entities)
 {
-    entities.emplace(new Warrior(position.ix, position.iy));
+    entities.emplace(std::shared_ptr<Warrior>(new Warrior(position.ix, position.iy)));
 }
 
 auto Warrior::Draw() -> void

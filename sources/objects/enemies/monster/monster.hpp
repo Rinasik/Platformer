@@ -45,7 +45,7 @@ Monster::Monster(double ix, double iy, std::function<void(std::shared_ptr<Entity
 
 void CreateMonster(Position position, std::unordered_set<std::shared_ptr<Entity>> &entities, std::function<void(std::shared_ptr<Entity>)> addHit)
 {
-    entities.emplace(new Monster(position.ix, position.iy, addHit));
+    entities.emplace(std::shared_ptr<Monster>(new Monster(position.ix, position.iy, addHit)));
 }
 
 auto Monster::Draw() -> void

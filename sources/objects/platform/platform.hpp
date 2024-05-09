@@ -22,7 +22,7 @@ public:
 
 void CreatePlatforms(Position position, std::unordered_set<std::shared_ptr<Entity>> &entities)
 {
-    entities.emplace(new Platform(position.ix, position.iy, 2));
+    entities.emplace(std::shared_ptr<Platform>(new Platform(position.ix, position.iy, 2)));
 }
 
 Platform::Platform(int ix, int iy, int sizeX) : Entity{
