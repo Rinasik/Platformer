@@ -178,29 +178,23 @@ auto Hero::HandleSpecialClickDown(int key) -> void
     switch (key)
     {
     case GLUT_KEY_RIGHT:
-        if (abs(_velX) < MAX_X_VELOCITY)
+        if (_isFalling)
         {
-            if (_isFalling)
-            {
-                _velX += DELTA_X_VELOCITY / 2;
-            }
-            else
-            {
-                _velX += DELTA_X_VELOCITY;
-            }
+            _velX += DELTA_X_VELOCITY / 2;
+        }
+        else
+        {
+            _velX += DELTA_X_VELOCITY;
         }
         break;
     case GLUT_KEY_LEFT:
-        if (abs(_velX) < MAX_X_VELOCITY)
+        if (_isFalling)
         {
-            if (_isFalling)
-            {
-                _velX -= DELTA_X_VELOCITY / 2;
-            }
-            else
-            {
-                _velX -= DELTA_X_VELOCITY;
-            }
+            _velX -= DELTA_X_VELOCITY / 2;
+        }
+        else
+        {
+            _velX -= DELTA_X_VELOCITY;
         }
         break;
     case GLUT_KEY_UP:
@@ -399,12 +393,18 @@ auto Hero::Run(std::unordered_set<std::shared_ptr<Object>> neighbours) -> void
         }
     }
 
+    if (abs(_velX) > MAX_X_VELOCITY)
+    {
+        _velX = Sign(_velX) * MAX_X_VELOCITY;
+    }
+
     auto initialVelX = _velX;
     auto initialVelY = _velY;
 
-    auto x_acc = _isFalling ? X_ACC / 4 : X_ACC;
+    auto x_acc_value = X_ACC * (1 + abs(_velX) / MAX_X_VELOCITY);
+    auto x_acc = _isFalling ? x_acc_value / 4 : x_acc_value;
 
-    if (abs(_velX - Sign(_velX) * x_acc) <= x_acc + EPSILON)
+    if (abs(_velX) <= x_acc + EPSILON)
     {
         _velX = 0;
     }
