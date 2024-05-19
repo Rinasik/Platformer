@@ -66,5 +66,11 @@ Texture *WALL;
 Texture *BOW;
 Texture *QUIVER;
 Texture *DOUBLEJUMP;
+Texture *JUMPER;
+Texture *MONSTER;
+Texture *WARRIOR;
+Texture *ARCHER;
+
+
 
 

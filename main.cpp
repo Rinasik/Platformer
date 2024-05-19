@@ -76,6 +76,10 @@ void initTextures()
     BOW = new Texture("images/Bow.png", true);
     QUIVER = new Texture("images/Quiver.png", true);
     DOUBLEJUMP = new Texture("images/DoubleJump.png", true);
+    JUMPER = new Texture("images/Jumper.png");
+    MONSTER = new Texture("images/Monster.png", true);
+    WARRIOR = new Texture("images/Warrior.png", true);
+    ARCHER = new Texture("images/Archer.png", true);
 }
 
 int main(int argc, char **argv)

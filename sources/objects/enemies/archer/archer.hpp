@@ -9,6 +9,8 @@ private:
     std::optional<std::shared_ptr<Arrow>> _arrow = std::nullopt;
     std::function<void(std::shared_ptr<Arrow>)> _addArrow;
 
+    Texture*_archer;
+
 public:
     Archer(int ix, int iy, std::function<void(std::shared_ptr<Arrow>)> addArrow);
 
@@ -27,6 +29,7 @@ Archer::Archer(int ix, int iy, std::function<void(std::shared_ptr<Arrow>)> addAr
                                                                                        _addArrow(addArrow)
 {
     _velX = 0;
+    _archer = ARCHER;
 }
 
 void CreateArcher(Position position, std::vector<std::shared_ptr<Entity>> &entities, std::function<void(std::shared_ptr<Arrow>)> addArrow)
@@ -41,16 +44,29 @@ auto Archer::Draw() -> void
         return;
     }
 
-    glColor4f(0.32f, 0.8f, 0.87f, 1.0f);
+    glBindTexture(GL_TEXTURE_2D, _archer->GetTexture());
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
+    glEnable(GL_TEXTURE_2D);
 
     glBegin(GL_QUADS);
 
+    glTexCoord2f(0, 0);
     glVertex2f(_x - 1.f, _y - 1.f);
+
+    glTexCoord2f(0, 1);
     glVertex2f(_x - 1.f, _y + DELTA_Y * _sizeY - 1.f);
+
+    glTexCoord2f(1, 1);
     glVertex2f(_x + DELTA_X * _sizeX - 1.f, _y + DELTA_Y * _sizeY - 1.f);
+
+    glTexCoord2f(1, 0);
     glVertex2f(_x + DELTA_X * _sizeX - 1.f, _y - 1.f);
 
     glEnd();
+
+    glDisable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 auto Archer::Run(std::unordered_set<std::shared_ptr<Object>> neighbours) -> void

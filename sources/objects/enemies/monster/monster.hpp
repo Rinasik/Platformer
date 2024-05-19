@@ -7,6 +7,7 @@ class Monster : virtual public Enemy
 {
 private:
     bool _isFalling = false;
+    Texture *_monster;
 
     std::optional<std::shared_ptr<Hit>> _hit = std::nullopt;
     std::function<void(std::shared_ptr<Entity>)> _addHit;
@@ -41,6 +42,7 @@ Monster::Monster(double ix, double iy, std::function<void(std::shared_ptr<Entity
 {
     _velX = ENEMY_X_VELOCITY;
     _addHit = addHit;
+    _monster = MONSTER;
 }
 
 void CreateMonster(Position position, std::vector<std::shared_ptr<Entity>> &entities, std::function<void(std::shared_ptr<Entity>)> addHit)
@@ -54,17 +56,30 @@ auto Monster::Draw() -> void
     {
         return;
     }
+    
+    glBindTexture(GL_TEXTURE_2D, _monster->GetTexture());
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
-    glColor4f(0.87f, 0.0f, 0.32f, 1.0f);
+    glEnable(GL_TEXTURE_2D);
 
     glBegin(GL_QUADS);
 
+    glTexCoord2f(0, 0);
     glVertex2f(_x - 1.f, _y - 1.f);
+
+    glTexCoord2f(0, 1);
     glVertex2f(_x - 1.f, _y + DELTA_Y * _sizeY - 1.f);
+
+    glTexCoord2f(1, 1);
     glVertex2f(_x + DELTA_X * _sizeX - 1.f, _y + DELTA_Y * _sizeY - 1.f);
+
+    glTexCoord2f(1, 0);
     glVertex2f(_x + DELTA_X * _sizeX - 1.f, _y - 1.f);
 
     glEnd();
+
+    glDisable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 auto Monster::Run(std::unordered_set<std::shared_ptr<Object>> neighbours) -> void

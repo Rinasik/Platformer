@@ -6,6 +6,7 @@ class Jumper : virtual public Enemy
 {
 private:
     bool _isFalling = false;
+    Texture *_jumper;
 
 public:
     Jumper(int ix, int iy);
@@ -24,6 +25,7 @@ Jumper::Jumper(int ix, int iy) : Enemy{
                                      MapEncoding::Jumper}
 {
     _velX = ENEMY_X_VELOCITY;
+    _jumper = JUMPER;
 }
 
 void CreateJumper(Position position, std::vector<std::shared_ptr<Entity>> &entities)
@@ -38,16 +40,29 @@ auto Jumper::Draw() -> void
         return;
     }
 
-    glColor4f(0.32f, 0.8f, 0.87f, 1.0f);
+    glBindTexture(GL_TEXTURE_2D, _jumper->GetTexture());
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
+    glEnable(GL_TEXTURE_2D);
 
     glBegin(GL_QUADS);
 
+    glTexCoord2f(0, 0);
     glVertex2f(_x - 1.f, _y - 1.f);
+
+    glTexCoord2f(0, 1);
     glVertex2f(_x - 1.f, _y + DELTA_Y * _sizeY - 1.f);
+
+    glTexCoord2f(1, 1);
     glVertex2f(_x + DELTA_X * _sizeX - 1.f, _y + DELTA_Y * _sizeY - 1.f);
+
+    glTexCoord2f(1, 0);
     glVertex2f(_x + DELTA_X * _sizeX - 1.f, _y - 1.f);
 
     glEnd();
+
+    glDisable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 auto Jumper::Run(std::unordered_set<std::shared_ptr<Object>> neighbours) -> void
