@@ -65,6 +65,7 @@ auto Box::Draw() -> void
 auto Box::GetBonus() -> std::optional<std::shared_ptr<Bonus>>
 {
     int probability = std::rand() % 10;
+    return std::nullopt;
 
     if (probability <= 2)
     {
@@ -96,6 +97,9 @@ auto Box::collisionLeftDetected(std::shared_ptr<Object> neighbour, Shape nshape,
 {
     if (neighbour->type == MapEncoding::Hit)
     {
+        auto hit = std::dynamic_pointer_cast<Hit>(neighbour);
+
+        hit->isDestroyed = true;
         isDestroyed = true;
     }
 };
@@ -103,6 +107,9 @@ auto Box::collisionRightDetected(std::shared_ptr<Object> neighbour, Shape nshape
 {
     if (neighbour->type == MapEncoding::Hit)
     {
+        auto hit = std::dynamic_pointer_cast<Hit>(neighbour);
+
+        hit->isDestroyed = true;
         isDestroyed = true;
     }
 };

@@ -94,6 +94,11 @@ auto Engine::UpdateState(std::shared_ptr<Hero> &hero, std::shared_ptr<Boss> &bos
 {
     for (auto &entity : entities)
     {
+        if (!entity)
+        {
+            continue;
+        }
+
         if (entity->isDestroyed)
         {
             std::optional<std::shared_ptr<Bonus>> bonus = std::nullopt;
