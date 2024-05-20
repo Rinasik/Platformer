@@ -161,6 +161,10 @@ auto Map::InitDraw(int newMap) -> std::optional<MapPattern>
         {
             positions.push_back(EntityPosition{MapEncoding::BreakingBrick, Position{i % _width, i / _width}});
         }
+        else if (point == -3)
+        {
+            positions.push_back(EntityPosition{MapEncoding::TemporaryPlatform, Position{i % _width, i / _width}});
+        }
     }
 
     _currentMap = mapPattern;

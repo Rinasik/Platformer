@@ -30,12 +30,15 @@ constexpr double HIT_VELOCITY = 0.005;
 
 constexpr double ARROW_VELOCITY = 0.01;
 
+constexpr int PLATFORM_PERIOD = 100;
+
 enum class MapEncoding
 {
     Magma = -1,
     Empty = 0,
     Brick = 1,
     BreakingBrick = -2,
+    TemporaryPlatform = -3,
     Exit = 100,
 
     Hero = 2,

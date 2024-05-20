@@ -7,6 +7,7 @@
 #include "../entity/entity.hpp"
 #include "../enemies/enemy/enemy.hpp"
 #include "../platform/platform.hpp"
+#include "../temporaryPlatform/temporaryPlatform.hpp"
 #include "../exit/exit.hpp"
 #include "../weapon/hit/hit.hpp"
 #include "../../texture/texture.hpp"
@@ -534,6 +535,18 @@ auto Hero::collisionRightDetected(std::shared_ptr<Object> neighbour, Shape nShap
         _velX = 0;
         virtualDeltaX = 0;
     }
+    else if (neighbour->type == MapEncoding::TemporaryPlatform)
+    {
+        auto platform = std::dynamic_pointer_cast<TemporaryPLatform>(neighbour);
+
+        if (!platform->isInvisible)
+        {
+            _x = nShape.left - _sizeX * DELTA_X;
+
+            _velX = 0;
+            virtualDeltaX = 0;
+        };
+    }
     else if (neighbour->type == MapEncoding::Exit)
     {
         auto exit = std::dynamic_pointer_cast<Exit>(neighbour);
@@ -573,6 +586,17 @@ auto Hero::collisionLeftDetected(std::shared_ptr<Object> neighbour, Shape nShape
 
         _velX = 0;
         virtualDeltaX = 0;
+    }
+    else if (neighbour->type == MapEncoding::TemporaryPlatform)
+    {
+        auto platform = std::dynamic_pointer_cast<TemporaryPLatform>(neighbour);
+        if (!platform->isInvisible)
+        {
+            _x = nShape.right;
+
+            _velX = 0;
+            virtualDeltaX = 0;
+        };
     }
     else if (neighbour->type == MapEncoding::Exit)
     {
@@ -616,6 +640,20 @@ auto Hero::collisionBottomDetected(std::shared_ptr<Object> neighbour, Shape nSha
         _velY = 0;
 
         virtualDeltaY = 0;
+    }
+    else if (neighbour->type == MapEncoding::TemporaryPlatform)
+    {
+        auto platform = std::dynamic_pointer_cast<TemporaryPLatform>(neighbour);
+        if (!platform->isInvisible)
+        {
+            _y = nShape.top;
+
+            _isFalling = false;
+            _isDoubleJumped = false;
+            _velY = 0;
+
+            virtualDeltaY = 0;
+        };
     }
     else if (neighbour->type == MapEncoding::Exit)
     {
@@ -668,6 +706,17 @@ auto Hero::collisionTopDetected(std::shared_ptr<Object> neighbour, Shape nShape,
 
         _velY = -_velY / 2;
         virtualDeltaY = 0;
+    }
+    else if (neighbour->type == MapEncoding::TemporaryPlatform)
+    {
+        auto platform = std::dynamic_pointer_cast<TemporaryPLatform>(neighbour);
+        if (!platform->isInvisible)
+        {
+            _y = nShape.bottom - _sizeY * DELTA_Y;
+
+            _velY = -_velY / 2;
+            virtualDeltaY = 0;
+        };
     }
     else if (neighbour->type == MapEncoding::Exit)
     {

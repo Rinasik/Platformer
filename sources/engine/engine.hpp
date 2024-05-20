@@ -18,6 +18,7 @@
 #include "../objects/box/box.hpp"
 #include "../objects/bonus/bonus.hpp"
 #include "../objects/breakingBrick/breakingBrick.hpp"
+#include "../objects/temporaryPlatform/temporaryPlatform.hpp"
 
 auto AddEntity(Machine &machine, std::vector<std::shared_ptr<Entity>> &entities) -> std::function<void(std::shared_ptr<Entity>)>;
 
@@ -81,6 +82,10 @@ auto Engine::createEntities(std::vector<EntityPosition> positions, std::vector<s
         else if (position.entityType == MapEncoding::BreakingBrick)
         {
             CreateBreakingBrick(position.position, entities);
+        }
+        else if (position.entityType == MapEncoding::TemporaryPlatform)
+        {
+            CreateTemporaryPlatform(position.position, entities);
         }
     }
 }
