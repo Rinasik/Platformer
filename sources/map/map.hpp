@@ -7,6 +7,8 @@
 #include <fstream>
 #include <optional>
 #include <cstdlib>
+#include <map>
+#include <regex>
 
 #include "../objects/object/object.hpp"
 #include "../objects/brick/brick.hpp"
@@ -34,7 +36,7 @@ private:
 
     std::vector<MapEncoding> _currentMap;
 
-    std::vector<std::vector<int>> _maps;
+    std::vector<std::vector<int>> _maps = std::vector<std::vector<int>>();
 
     auto parseMaps(const std::string &path) -> void;
 
@@ -244,6 +246,10 @@ auto Map::Draw() -> void
 
 auto Map::parseMaps(const std::string &path) -> void
 {
+    auto temp = std::map<int, std::vector<int>>();
+    std::regex number_regex("\\d+");
+    std::smatch number;
+
     for (const auto &entry : fs::directory_iterator(path))
     {
         auto stream = std::ifstream(entry.path());
@@ -260,7 +266,15 @@ auto Map::parseMaps(const std::string &path) -> void
                 empty.push_back(ParseHash(i, j, tmp));
             }
         }
+        auto path_to_file = entry.path().string();
+        if (std::regex_search(path_to_file, number, number_regex))
+        {
+            temp.emplace(std::stoi(number[0]), empty);
+        }
+    }
 
-        _maps.push_back(empty);
+    for (auto &temp_map : temp)
+    {
+        _maps.push_back(temp_map.second);
     }
 }
