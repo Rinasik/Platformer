@@ -89,7 +89,7 @@ auto Map::InitDraw(int newMap) -> std::optional<MapPattern>
         if (point == -1)
         {
             mapPattern.push_back(MapEncoding::Magma);
-            auto magma = std::shared_ptr<Magma>( new Magma(i % _width, i / _width));
+            auto magma = std::shared_ptr<Magma>(new Magma(i % _width, i / _width));
 
             bricks.push_back(magma);
         }
@@ -156,6 +156,10 @@ auto Map::InitDraw(int newMap) -> std::optional<MapPattern>
         else if (point == -10)
         {
             positions.push_back(EntityPosition{MapEncoding::Bonus, Position{i % _width, i / _width}});
+        }
+        else if (point == -2)
+        {
+            positions.push_back(EntityPosition{MapEncoding::BreakingBrick, Position{i % _width, i / _width}});
         }
     }
 

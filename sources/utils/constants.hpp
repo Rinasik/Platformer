@@ -35,6 +35,7 @@ enum class MapEncoding
     Magma = -1,
     Empty = 0,
     Brick = 1,
+    BreakingBrick = -2,
     Exit = 100,
 
     Hero = 2,

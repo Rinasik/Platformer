@@ -39,6 +39,7 @@ private:
 
     Texture *_heart;
     Texture *_key;
+    Texture *_arrow;
 
     auto computeCollision(std::unordered_set<std::shared_ptr<Object>> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
     auto entitiesAndMapCollision(std::unordered_set<std::shared_ptr<Object>> neighbours, double &virtualDeltaX, double &virtualDeltaY) -> void;
@@ -79,6 +80,7 @@ Hero::Hero(int ix, int iy, int sizeX, int sizeY, int lives, std::function<void(s
 {
     _heart = HEART;
     _key = KEY;
+    _arrow = ARROW;
 }
 
 auto Hero::UpdatePosition(int ix, int iy) -> void
@@ -120,6 +122,7 @@ auto Hero::Draw() -> void
 
     double padding = (1.2 * _maxLives + 0.2) * DELTA_X / 2;
 
+    // Отрисовка ключей
     for (int i = 0; i < _keys; ++i)
     {
         glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -141,6 +144,35 @@ auto Hero::Draw() -> void
 
         glTexCoord2f(1, 1);
         glVertex2f(padding + DELTA_X * (0.6 * i + 1.2) / 2 - 1.f, -DELTA_Y * (0.2) / 2 + 1.f);
+
+        glEnd();
+
+        glDisable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    // Отрисовка стрел
+    for (int i = 0; i < _arrows; ++i)
+    {
+        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+        glBindTexture(GL_TEXTURE_2D, _arrow->GetTexture());
+        glEnable(GL_TEXTURE_2D);
+
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
+        glBegin(GL_QUADS);
+
+        glTexCoord2f(0, 1);
+        glVertex2f(1 - (DELTA_X * (0.6 * i + 0.2) / 2), -DELTA_Y * (0.2) / 2 + 1.f);
+
+        glTexCoord2f(1, 1);
+        glVertex2f(1 - (DELTA_X * (0.6 * i + 0.2) / 2), -DELTA_Y * (2.2) / 2 + 1.f);
+
+        glTexCoord2f(1, 0);
+        glVertex2f(1 - (DELTA_X * (0.6 * i + 1.2) / 2), -DELTA_Y * (2.2) / 2 + 1.f);
+
+        glTexCoord2f(0, 0);
+        glVertex2f(1 - (DELTA_X * (0.6 * i + 1.2) / 2), -DELTA_Y * (0.2) / 2 + 1.f);
 
         glEnd();
 
@@ -242,7 +274,7 @@ auto Hero::HandleClickDown(unsigned char key, std::vector<std::shared_ptr<Entity
 
     switch (key)
     {
-    case 'e':
+    case 'r':
         if (_isHasBow)
         {
             if (_weapon == Weapon::Bow)
@@ -254,7 +286,7 @@ auto Hero::HandleClickDown(unsigned char key, std::vector<std::shared_ptr<Entity
                 _weapon = Weapon::Bow;
             }
         }
-    case 'r':
+    case 'e':
         if (!_keys)
         {
             break;
@@ -495,7 +527,7 @@ auto Hero::computeCollision(std::unordered_set<std::shared_ptr<Object>> neighbou
 
 auto Hero::collisionRightDetected(std::shared_ptr<Object> neighbour, Shape nShape, double &virtualDeltaX) -> void
 {
-    if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform || neighbour->type == MapEncoding::Chest || neighbour->type == MapEncoding::Box)
+    if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform || neighbour->type == MapEncoding::Chest || neighbour->type == MapEncoding::Box || neighbour->type == MapEncoding::BreakingBrick)
     {
         _x = nShape.left - _sizeX * DELTA_X;
 
@@ -535,7 +567,7 @@ auto Hero::collisionRightDetected(std::shared_ptr<Object> neighbour, Shape nShap
 
 auto Hero::collisionLeftDetected(std::shared_ptr<Object> neighbour, Shape nShape, double &virtualDeltaX) -> void
 {
-    if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform || neighbour->type == MapEncoding::Chest || neighbour->type == MapEncoding::Box)
+    if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform || neighbour->type == MapEncoding::Chest || neighbour->type == MapEncoding::Box || neighbour->type == MapEncoding::BreakingBrick)
     {
         _x = nShape.right;
 
@@ -575,7 +607,7 @@ auto Hero::collisionLeftDetected(std::shared_ptr<Object> neighbour, Shape nShape
 
 auto Hero::collisionBottomDetected(std::shared_ptr<Object> neighbour, Shape nShape, double &virtualDeltaY) -> void
 {
-    if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Chest || neighbour->type == MapEncoding::Box)
+    if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Chest || neighbour->type == MapEncoding::Box || neighbour->type == MapEncoding::BreakingBrick)
     {
         _y = nShape.top;
 
@@ -630,7 +662,7 @@ auto Hero::collisionBottomDetected(std::shared_ptr<Object> neighbour, Shape nSha
 
 auto Hero::collisionTopDetected(std::shared_ptr<Object> neighbour, Shape nShape, double &virtualDeltaY) -> void
 {
-    if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform || neighbour->type == MapEncoding::Chest || neighbour->type == MapEncoding::Box)
+    if (neighbour->type == MapEncoding::Brick || neighbour->type == MapEncoding::Platform || neighbour->type == MapEncoding::Chest || neighbour->type == MapEncoding::Box || neighbour->type == MapEncoding::BreakingBrick)
     {
         _y = nShape.bottom - _sizeY * DELTA_Y;
 
