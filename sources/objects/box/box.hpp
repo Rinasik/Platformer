@@ -65,7 +65,6 @@ auto Box::Draw() -> void
 auto Box::GetBonus() -> std::optional<std::shared_ptr<Bonus>>
 {
     int probability = std::rand() % 10;
-    return std::nullopt;
 
     if (probability <= 2)
     {
