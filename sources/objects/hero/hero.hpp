@@ -493,7 +493,24 @@ auto Hero::entitiesAndMapCollisionY(std::unordered_set<std::shared_ptr<Object>> 
                 collisionTopDetected(neighbour, nShape, virtualDeltaY);
             }
 
-            auto isOnTop = abs(nShape.top - shape.bottom) <= EPSILON;
+            bool isOnTop;
+            if (neighbour->type == MapEncoding::TemporaryPlatform)
+            {
+                auto platform = std::dynamic_pointer_cast<TemporaryPLatform>(neighbour);
+                if (platform->isInvisible)
+                {
+                    isOnTop = false;
+                }
+                else
+                {
+                    isOnTop = abs(nShape.top - shape.bottom) <= EPSILON;
+                }
+            }
+            else
+            {
+                isOnTop = abs(nShape.top - shape.bottom) <= EPSILON;
+            }
+
             // На платформе(не за платформой && не падает && не под платформой)
             if (!_isFalling && isOnTop)
             {
