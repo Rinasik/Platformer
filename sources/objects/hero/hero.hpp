@@ -211,24 +211,10 @@ auto Hero::HandleSpecialClickDown(int key) -> void
     switch (key)
     {
     case GLUT_KEY_RIGHT:
-        if (_isFalling)
-        {
-            _velX += DELTA_X_VELOCITY / 2;
-        }
-        else
-        {
-            _velX += DELTA_X_VELOCITY;
-        }
+        _velX += DELTA_X_VELOCITY;
         break;
     case GLUT_KEY_LEFT:
-        if (_isFalling)
-        {
-            _velX -= DELTA_X_VELOCITY / 2;
-        }
-        else
-        {
-            _velX -= DELTA_X_VELOCITY;
-        }
+        _velX -= DELTA_X_VELOCITY;
         break;
     case GLUT_KEY_UP:
         if (!_isFalling || (_isDoubleJump && !_isDoubleJumped))
@@ -260,6 +246,12 @@ auto Hero::HandleSpecialClickUp(int key) -> void
     {
     case GLUT_KEY_DOWN:
         _sizeY = 1;
+        break;
+    case GLUT_KEY_LEFT:
+        _velX = 0;
+        break;
+    case GLUT_KEY_RIGHT:
+        _velX = 0;
         break;
     default:
         break;
