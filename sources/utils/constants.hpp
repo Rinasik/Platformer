@@ -16,7 +16,7 @@ constexpr double DELTA_Y = 2.0 / HEIGHT;
 constexpr double MAX_X_VELOCITY = 0.012;
 constexpr double MAX_Y_VELOCITY = 0.6;
 
-constexpr double DELTA_X_VELOCITY = 0.0028;
+constexpr double DELTA_X_VELOCITY = 0.003;
 constexpr double X_ACC = 0.0003;
 
 constexpr double DELTA_Y_VELOCITY = 0.42;
